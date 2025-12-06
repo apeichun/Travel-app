@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Kansai Trip 2025 (Firebase Ready)</title>
+    <title>Kansai Trip 2025 (Row Edit)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -145,7 +145,6 @@
 
       // =================================================================================
       // [重要] 請在此處填入您的 Firebase 設定
-      // 您可以在 Firebase Console > Project Settings > General > Your apps 下方找到這些資訊
       // =================================================================================
       const YOUR_FIREBASE_CONFIG = {
         apiKey: "AIzaSyCH2awCY1eWCKO03nCc3ixJiOGtoz1u5tg",
@@ -156,7 +155,6 @@
         appId: "1:813547420756:web:f6f21c91b28556627741c1",
       };
 
-      // 這是您在 Firestore 中的主要集合名稱，您可以隨意修改以區分不同行程
       const APP_ID = "my-kansai-trip-2025";
       // =================================================================================
 
@@ -380,6 +378,7 @@
         wifiOff:
           "M1 1l22 22 M16.72 11.06A10.94 10.94 0 0 1 19 12.55 M5 12.55a10.94 10.94 0 0 1 5.17-2.39 M10.71 5.05A16 16 0 0 1 22.58 9 M1.42 9a15.91 15.91 0 0 1 4.7-2.88 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
         grip: "M3 12h18 M3 6h18 M3 18h18",
+        sort: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01", // Simple list icon for sort
       };
 
       // --- 連結自動識別元件 ---
@@ -424,8 +423,9 @@
           expenses: [],
         });
 
-        // UI States - Single Day Edit
-        const [editingDayId, setEditingDayId] = useState(null);
+        // UI States
+        const [editingEventId, setEditingEventId] = useState(null); // Track WHICH event is being edited (row based)
+        const [reorderingDayId, setReorderingDayId] = useState(null); // Track WHICH day is in reorder mode
 
         const [newItem, setNewItem] = useState({ name: "", qty: 1, note: "" });
         const [expenseForm, setExpenseForm] = useState({
@@ -446,7 +446,6 @@
           const initFirebase = async () => {
             if (!window.Firebase) return;
 
-            // 檢查是否已設定 Config
             if (YOUR_FIREBASE_CONFIG.apiKey.includes("請在此處貼上")) {
               setConfigError(true);
               setAuthLoading(false);
@@ -459,7 +458,6 @@
               const firestore = window.Firebase.getFirestore(app);
               setDb(firestore);
 
-              // 匿名登入
               await window.Firebase.signInAnonymously(auth);
 
               window.Firebase.onAuthStateChanged(auth, (u) => {
@@ -468,7 +466,7 @@
               });
             } catch (error) {
               console.error("Firebase Init Error:", error);
-              alert("Firebase 初始化失敗，請檢查 Config 是否正確");
+              alert("Firebase 初始化失敗");
               setAuthLoading(false);
             }
           };
@@ -480,7 +478,6 @@
           if (!user || !db) return;
 
           const setupListener = (docName, dataKey, defaultVal) => {
-            // 路徑結構： artifacts / {APP_ID} / public / data / trip_data / {docName}
             const collectionRef = window.Firebase.collection(
               db,
               "artifacts",
@@ -500,7 +497,6 @@
                     [dataKey]: docSnap.data().list || [],
                   }));
                 } else {
-                  // 初次使用或資料庫為空時，載入預設值
                   if (dataKey === "itinerary" && defaultVal) {
                     setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
                   } else if (dataKey === "mustBuy" && defaultVal) {
@@ -554,28 +550,11 @@
             );
           } catch (e) {
             console.error("Save failed:", e);
-            // 權限錯誤提示
-            if (e.code === "permission-denied") {
-              alert(
-                "權限不足：請檢查 Firebase Console > Firestore Database > Rules 是否已設定為允許讀寫。"
-              );
-            }
+            if (e.code === "permission-denied") alert("權限不足");
           }
         };
 
-        // --- Logic Handlers ---
-
-        const toggleEditDay = (dayId) => {
-          if (editingDayId && editingDayId !== dayId) {
-            saveToFirebase("itinerary", data.itinerary);
-          }
-          if (editingDayId === dayId) {
-            saveToFirebase("itinerary", data.itinerary);
-            setEditingDayId(null);
-          } else {
-            setEditingDayId(dayId);
-          }
-        };
+        // --- Itinerary Logic (Row Edit Mode) ---
 
         const updateItineraryLocal = (dId, eId, k, v) => {
           const newList = data.itinerary.map((d) =>
@@ -591,7 +570,14 @@
           setData((p) => ({ ...p, itinerary: newList }));
         };
 
+        const saveSingleEvent = () => {
+          // Because we update local state optimistically, saving the whole itinerary saves the edits for this row
+          saveToFirebase("itinerary", data.itinerary);
+          setEditingEventId(null);
+        };
+
         const addItineraryEventLocal = (dId) => {
+          const newEventId = `new_${Date.now()}`;
           const newList = data.itinerary.map((d) =>
             d.id === dId
               ? {
@@ -599,7 +585,7 @@
                   events: [
                     ...d.events,
                     {
-                      id: `new_${Date.now()}`,
+                      id: newEventId,
                       time: "待定",
                       location: "新地點",
                       transport: "",
@@ -609,11 +595,16 @@
                 }
               : d
           );
+
           setData((p) => ({ ...p, itinerary: newList }));
+          // Save immediately so the new row exists in DB
+          saveToFirebase("itinerary", newList);
+          // Automatically enter edit mode for the new row
+          setEditingEventId(newEventId);
         };
 
         const deleteItineraryEventLocal = (dId, eId) => {
-          if (confirm("刪除？")) {
+          if (confirm("刪除此活動？")) {
             const newList = data.itinerary.map((d) =>
               d.id === dId
                 ? { ...d, events: d.events.filter((e) => e.id !== eId) }
@@ -621,6 +612,15 @@
             );
             setData((p) => ({ ...p, itinerary: newList }));
             saveToFirebase("itinerary", newList);
+            setEditingEventId(null);
+          }
+        };
+
+        const toggleReorderMode = (dayId) => {
+          if (reorderingDayId === dayId) {
+            setReorderingDayId(null);
+          } else {
+            setReorderingDayId(dayId);
           }
         };
 
@@ -660,6 +660,7 @@
           dragOverItem.current = null;
         };
 
+        // Other tabs logic (Shopping etc...)
         const addShop = () => {
           if (!newItem.name) return;
           const newList = [
@@ -681,7 +682,6 @@
             saveToFirebase("shopping", newList);
           }
         };
-
         const addMustBuy = () => {
           if (!mustBuyForm.area || !mustBuyForm.item) return;
           const newList = [...data.mustBuy];
@@ -697,7 +697,6 @@
           newList[zIdx].items.splice(iIdx, 1);
           saveToFirebase("mustBuy", newList);
         };
-
         const addExp = () => {
           if (!expenseForm.item || !expenseForm.total) return;
           const n = {
@@ -722,9 +721,8 @@
             saveToFirebase("expenses", newList);
           }
         };
-
         const resetData = () => {
-          if (confirm("確定要重置所有資料庫內容為預設值嗎？此動作無法復原。")) {
+          if (confirm("確定要重置所有資料庫內容為預設值嗎？")) {
             saveToFirebase("itinerary", DEFAULT_ITINERARY);
             saveToFirebase("shopping", []);
             saveToFirebase("mustBuy", DEFAULT_MUSTBUY);
@@ -753,7 +751,6 @@
                 </span>
               </div>
             </div>
-
             <nav className="flex-1 p-4 space-y-2">
               {[
                 { id: "itinerary", icon: ICONS.calendar, label: "行程規劃" },
@@ -775,7 +772,6 @@
                 </button>
               ))}
             </nav>
-
             <div className="p-4 border-t border-gray-100 bg-gray-50/50 space-y-3">
               <button
                 onClick={resetData}
@@ -799,12 +795,9 @@
 
         return (
           <div className="min-h-screen bg-gray-50 md:flex relative">
-            {/* --- Desktop Sidebar --- */}
             <Sidebar />
-
-            {/* --- Main Content Area --- */}
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
-              {/* --- Mobile Header --- */}
+              {/* Mobile Header */}
               <div className="md:hidden bg-white/90 backdrop-blur-md px-4 py-3 sticky top-0 z-50 flex justify-between items-center border-b border-gray-100">
                 <div className="flex flex-col">
                   <h1 className="text-xl font-black text-gray-800 tracking-tight flex items-center gap-2">
@@ -836,7 +829,6 @@
                 </div>
               </div>
 
-              {/* --- Scrollable Content --- */}
               <div className="flex-1 overflow-y-auto p-4 md:p-8 pb-24 md:pb-8">
                 <div className="max-w-7xl mx-auto w-full">
                   {configError && (
@@ -865,22 +857,15 @@
                         </h2>
                       </div>
 
-                      {/* RWD Grid System for Days */}
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
                         {(data.itinerary || []).map((d, dIdx) => {
                           const color = DAY_COLORS[dIdx % DAY_COLORS.length];
-                          const isEditing = editingDayId === d.id;
+                          const isReordering = reorderingDayId === d.id;
 
                           return (
                             <div
                               key={d.id}
-                              className={`bg-white rounded-2xl shadow-sm border ${
-                                color.border
-                              } overflow-hidden flex flex-col transition-all duration-300 ${
-                                isEditing
-                                  ? "ring-2 ring-sky-400 shadow-md scale-[1.01]"
-                                  : ""
-                              }`}
+                              className={`bg-white rounded-2xl shadow-sm border ${color.border} overflow-hidden flex flex-col transition-all duration-300`}
                             >
                               <div
                                 className={`${color.header} p-4 border-b ${color.border} flex items-center justify-between gap-3`}
@@ -896,192 +881,229 @@
                                   </h3>
                                 </div>
                                 <button
-                                  onClick={() => toggleEditDay(d.id)}
-                                  className={`px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1 transition-all active:scale-95 flex-shrink-0 ${
-                                    isEditing
-                                      ? "bg-green-500 text-white shadow-lg shadow-green-200"
-                                      : "bg-white/50 hover:bg-white text-gray-600 border border-transparent hover:border-gray-200"
+                                  onClick={() => toggleReorderMode(d.id)}
+                                  className={`p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all active:scale-95 flex-shrink-0 ${
+                                    isReordering
+                                      ? "bg-orange-500 text-white"
+                                      : "hover:bg-black/5 text-gray-500"
                                   }`}
+                                  title="拖拉排序"
                                 >
-                                  <Icon
-                                    path={isEditing ? ICONS.save : ICONS.edit}
-                                    size={14}
-                                  />
-                                  {isEditing ? "完成" : "編輯"}
+                                  <Icon path={ICONS.sort} size={18} />
                                 </button>
                               </div>
                               <div
                                 className={`divide-y ${color.border} ${color.body} flex-1`}
                               >
-                                {d.events.map((e, eIdx) => (
-                                  <div
-                                    key={e.id}
-                                    className="event-item p-4 flex gap-3 relative group bg-white/60 hover:bg-white/80 transition-colors"
-                                    draggable={isEditing}
-                                    onDragStart={(ev) =>
-                                      onDragStart(ev, d.id, eIdx)
-                                    }
-                                    onDragEnter={(ev) =>
-                                      onDragEnter(ev, d.id, eIdx)
-                                    }
-                                    onDragEnd={onDragEnd}
-                                    onDragOver={(ev) => ev.preventDefault()}
-                                  >
-                                    {isEditing && (
-                                      <div className="drag-handle w-6 flex items-center justify-center text-gray-300 cursor-move hover:text-gray-500">
-                                        <Icon path={ICONS.grip} size={18} />
-                                      </div>
-                                    )}
-                                    <div className="w-16 flex-shrink-0 flex flex-col items-center pt-1">
-                                      {isEditing ? (
-                                        <select
-                                          value={e.time}
-                                          onChange={(ev) =>
-                                            updateItineraryLocal(
-                                              d.id,
-                                              e.id,
-                                              "time",
-                                              ev.target.value
-                                            )
-                                          }
-                                          className="w-full text-xs border border-gray-300 rounded p-1 text-center bg-white appearance-none focus:ring-2 focus:ring-sky-500"
-                                          style={{ textAlignLast: "center" }}
-                                        >
-                                          {!TIME_OPTIONS.includes(e.time) && (
-                                            <option value={e.time}>
-                                              {e.time}
-                                            </option>
-                                          )}
-                                          {TIME_OPTIONS.map((t) => (
-                                            <option key={t} value={t}>
-                                              {t}
-                                            </option>
-                                          ))}
-                                        </select>
-                                      ) : (
-                                        <span
-                                          className={`text-sm font-bold ${color.accent} font-mono bg-white/80 px-1.5 rounded shadow-sm`}
-                                        >
-                                          {e.time}
-                                        </span>
+                                {d.events.map((e, eIdx) => {
+                                  const isEditing = editingEventId === e.id;
+                                  return (
+                                    <div
+                                      key={e.id}
+                                      className={`event-item p-4 flex gap-3 relative group transition-all duration-200 ${
+                                        isEditing
+                                          ? "bg-white shadow-md z-10 scale-[1.02] border-y border-sky-200 my-1"
+                                          : "bg-white/60 hover:bg-white/80"
+                                      }`}
+                                      draggable={isReordering}
+                                      onDragStart={(ev) =>
+                                        isReordering &&
+                                        onDragStart(ev, d.id, eIdx)
+                                      }
+                                      onDragEnter={(ev) =>
+                                        isReordering &&
+                                        onDragEnter(ev, d.id, eIdx)
+                                      }
+                                      onDragEnd={onDragEnd}
+                                      onDragOver={(ev) => ev.preventDefault()}
+                                    >
+                                      {isReordering && (
+                                        <div className="drag-handle w-8 flex items-center justify-center text-gray-400 cursor-move hover:text-gray-600 border-r border-gray-100 mr-1">
+                                          <Icon path={ICONS.grip} size={20} />
+                                        </div>
                                       )}
-                                      <div
-                                        className={`h-full w-0.5 ${color.border.replace(
-                                          "border",
-                                          "bg"
-                                        )} mt-2 mb-[-20px] rounded-full`}
-                                      ></div>
-                                    </div>
-                                    <div className="flex-1 pb-2 space-y-1.5 min-w-0">
-                                      {isEditing ? (
-                                        <div className="space-y-2 animate-pulse-fast">
-                                          <input
-                                            value={e.location}
+
+                                      <div className="w-16 flex-shrink-0 flex flex-col items-center pt-1">
+                                        {isEditing ? (
+                                          <select
+                                            value={e.time}
                                             onChange={(ev) =>
                                               updateItineraryLocal(
                                                 d.id,
                                                 e.id,
-                                                "location",
+                                                "time",
                                                 ev.target.value
                                               )
                                             }
-                                            className="w-full border border-gray-300 p-2 rounded-lg font-bold text-gray-800 text-sm"
-                                            placeholder="地點"
-                                          />
-                                          <div className="flex gap-2">
-                                            <input
-                                              value={e.transport}
-                                              onChange={(ev) =>
-                                                updateItineraryLocal(
-                                                  d.id,
-                                                  e.id,
-                                                  "transport",
-                                                  ev.target.value
-                                                )
-                                              }
-                                              className="w-1/3 border border-gray-300 p-2 rounded-lg text-xs"
-                                              placeholder="交通"
-                                            />
-                                            <textarea
-                                              value={e.note}
-                                              onChange={(ev) =>
-                                                updateItineraryLocal(
-                                                  d.id,
-                                                  e.id,
-                                                  "note",
-                                                  ev.target.value
-                                                )
-                                              }
-                                              className="flex-1 border border-gray-300 p-2 rounded-lg text-xs"
-                                              rows="1"
-                                              placeholder="備註"
-                                            ></textarea>
-                                          </div>
-                                          <button
-                                            onClick={() =>
-                                              deleteItineraryEventLocal(
-                                                d.id,
-                                                e.id
-                                              )
-                                            }
-                                            className="text-red-500 text-xs flex items-center gap-1 bg-red-50 px-3 py-1.5 rounded-full border border-red-100 font-bold hover:bg-red-100 transition-colors"
+                                            className="w-full text-xs border border-gray-300 rounded p-1.5 text-center bg-white focus:ring-2 focus:ring-sky-500 shadow-sm"
+                                            style={{ textAlignLast: "center" }}
                                           >
-                                            <Icon
-                                              path={ICONS.trash}
-                                              size={12}
-                                            />{" "}
-                                            刪除
-                                          </button>
-                                        </div>
-                                      ) : (
-                                        <>
-                                          <div className="flex justify-between items-start">
-                                            <h4 className="font-bold text-gray-800 text-base">
-                                              {e.location}
-                                            </h4>
-                                            <a
-                                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                e.location
-                                              )}`}
-                                              target="_blank"
-                                              className={`text-gray-400 hover:${color.accent} p-1 rounded-full transition-colors`}
+                                            {!TIME_OPTIONS.includes(e.time) && (
+                                              <option value={e.time}>
+                                                {e.time}
+                                              </option>
+                                            )}
+                                            {TIME_OPTIONS.map((t) => (
+                                              <option key={t} value={t}>
+                                                {t}
+                                              </option>
+                                            ))}
+                                          </select>
+                                        ) : (
+                                          <span
+                                            className={`text-sm font-bold ${color.accent} font-mono bg-white/80 px-1.5 rounded shadow-sm`}
+                                          >
+                                            {e.time}
+                                          </span>
+                                        )}
+                                        {!isEditing && (
+                                          <div
+                                            className={`h-full w-0.5 ${color.border.replace(
+                                              "border",
+                                              "bg"
+                                            )} mt-2 mb-[-20px] rounded-full`}
+                                          ></div>
+                                        )}
+                                      </div>
+
+                                      <div className="flex-1 pb-1 space-y-1.5 min-w-0">
+                                        {isEditing ? (
+                                          <div className="space-y-3">
+                                            <input
+                                              value={e.location}
+                                              onChange={(ev) =>
+                                                updateItineraryLocal(
+                                                  d.id,
+                                                  e.id,
+                                                  "location",
+                                                  ev.target.value
+                                                )
+                                              }
+                                              className="w-full border border-gray-300 p-2 rounded-lg font-bold text-gray-800 text-sm focus:ring-2 focus:ring-sky-500"
+                                              placeholder="地點"
+                                            />
+                                            <div className="flex gap-2">
+                                              <input
+                                                value={e.transport}
+                                                onChange={(ev) =>
+                                                  updateItineraryLocal(
+                                                    d.id,
+                                                    e.id,
+                                                    "transport",
+                                                    ev.target.value
+                                                  )
+                                                }
+                                                className="w-1/3 border border-gray-300 p-2 rounded-lg text-xs"
+                                                placeholder="交通"
+                                              />
+                                              <textarea
+                                                value={e.note}
+                                                onChange={(ev) =>
+                                                  updateItineraryLocal(
+                                                    d.id,
+                                                    e.id,
+                                                    "note",
+                                                    ev.target.value
+                                                  )
+                                                }
+                                                className="flex-1 border border-gray-300 p-2 rounded-lg text-xs"
+                                                rows="2"
+                                                placeholder="備註"
+                                              ></textarea>
+                                            </div>
+                                          </div>
+                                        ) : (
+                                          <>
+                                            <div className="flex justify-between items-start">
+                                              <h4 className="font-bold text-gray-800 text-base">
+                                                {e.location}
+                                              </h4>
+                                            </div>
+                                            {e.transport && (
+                                              <div
+                                                className={`inline-flex items-center gap-1.5 text-[11px] ${color.accent} bg-white/80 px-2 py-1 rounded-md font-medium border ${color.border}`}
+                                              >
+                                                <Icon
+                                                  path={ICONS.train}
+                                                  size={12}
+                                                />{" "}
+                                                {e.transport}
+                                              </div>
+                                            )}
+                                            {e.note && (
+                                              <p className="text-sm text-gray-500 whitespace-pre-line leading-relaxed bg-white/50 p-2 rounded-lg border border-transparent">
+                                                <LinkifiedText text={e.note} />
+                                              </p>
+                                            )}
+                                          </>
+                                        )}
+                                      </div>
+
+                                      {/* Action Buttons Column */}
+                                      <div className="flex flex-col items-center justify-start gap-2 pl-2 border-l border-gray-100/50">
+                                        {isEditing ? (
+                                          <>
+                                            <button
+                                              onClick={saveSingleEvent}
+                                              className="p-2 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 active:scale-90 transition-all"
+                                              title="儲存"
                                             >
                                               <Icon
-                                                path={ICONS.mapPin}
+                                                path={ICONS.check}
                                                 size={16}
                                               />
-                                            </a>
-                                          </div>
-                                          {e.transport && (
-                                            <div
-                                              className={`inline-flex items-center gap-1.5 text-[11px] ${color.accent} bg-white/80 px-2 py-1 rounded-md font-medium border ${color.border}`}
+                                            </button>
+                                            <button
+                                              onClick={() =>
+                                                deleteItineraryEventLocal(
+                                                  d.id,
+                                                  e.id
+                                                )
+                                              }
+                                              className="p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 active:scale-90 transition-all"
+                                              title="刪除"
                                             >
                                               <Icon
-                                                path={ICONS.train}
-                                                size={12}
-                                              />{" "}
-                                              {e.transport}
-                                            </div>
-                                          )}
-                                          {e.note && (
-                                            <p className="text-sm text-gray-500 whitespace-pre-line leading-relaxed bg-white/50 p-2 rounded-lg border border-transparent">
-                                              <LinkifiedText text={e.note} />
-                                            </p>
-                                          )}
-                                        </>
-                                      )}
+                                                path={ICONS.trash}
+                                                size={16}
+                                              />
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <button
+                                            onClick={() =>
+                                              setEditingEventId(e.id)
+                                            }
+                                            className="p-2 text-gray-400 hover:text-sky-500 hover:bg-sky-50 rounded-full transition-all"
+                                            title="編輯內容"
+                                          >
+                                            <Icon path={ICONS.edit} size={18} />
+                                          </button>
+                                        )}
+                                        {!isEditing && (
+                                          <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                              e.location
+                                            )}`}
+                                            target="_blank"
+                                            className="p-2 text-gray-300 hover:text-green-500 hover:bg-green-50 rounded-full transition-all"
+                                          >
+                                            <Icon
+                                              path={ICONS.mapPin}
+                                              size={18}
+                                            />
+                                          </a>
+                                        )}
+                                      </div>
                                     </div>
-                                  </div>
-                                ))}
-                                {isEditing && (
-                                  <button
-                                    onClick={() => addItineraryEventLocal(d.id)}
-                                    className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/50 border-t border-dashed ${color.border} transition-colors`}
-                                  >
-                                    <Icon path={ICONS.plus} size={18} />{" "}
-                                    新增事件
-                                  </button>
-                                )}
+                                  );
+                                })}
+                                <button
+                                  onClick={() => addItineraryEventLocal(d.id)}
+                                  className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/50 border-t border-dashed ${color.border} transition-colors`}
+                                >
+                                  <Icon path={ICONS.plus} size={18} /> 新增事件
+                                </button>
                               </div>
                             </div>
                           );
@@ -1133,8 +1155,6 @@
                           </button>
                         </div>
                       </div>
-
-                      {/* Shopping Grid RWD */}
                       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
                         {(data.shopping || []).map((i) => (
                           <div
@@ -1195,7 +1215,6 @@
 
                   {activeTab === "tools" && (
                     <div className="mt-2 animate-fade-in flex flex-col md:flex-row gap-6 items-start">
-                      {/* Left Column: Form */}
                       <div className="w-full md:w-80 md:sticky md:top-6 space-y-5">
                         <div className="bg-white p-5 rounded-2xl shadow-sm border border-purple-100 relative overflow-hidden">
                           <div className="absolute top-0 right-0 w-20 h-20 bg-purple-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
@@ -1276,7 +1295,6 @@
                             </div>
                           </div>
                         </div>
-
                         <div className="grid grid-cols-2 gap-3">
                           <a
                             href="https://weather.yahoo.co.jp/weather/jp/27/6200.html"
@@ -1295,8 +1313,6 @@
                           </a>
                         </div>
                       </div>
-
-                      {/* Right Column: List */}
                       <div className="flex-1 w-full space-y-3">
                         <h3 className="hidden md:block font-bold text-gray-700 text-lg mb-4">
                           消費紀錄
@@ -1394,8 +1410,6 @@
                           <Icon path={ICONS.plus} size={20} /> 新增推薦
                         </button>
                       </div>
-
-                      {/* Masonry-like Grid for Recommendations */}
                       <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 pb-10">
                         {(data.mustBuy || []).map((z, zIdx) => (
                           <div
@@ -1431,7 +1445,6 @@
                 </div>
               </div>
 
-              {/* --- Mobile Bottom Nav (Hidden on Desktop) --- */}
               <div className="md:hidden fixed bottom-0 w-full bg-white/95 backdrop-blur border-t border-gray-200 pb-safe z-50 safe-bottom">
                 <div className="flex justify-around items-center h-14">
                   {[
