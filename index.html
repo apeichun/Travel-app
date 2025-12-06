@@ -6,12 +6,12 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Kansai Trip 2025 (Fixed DnD)</title>
+    <title>Kansai Trip 2025 (Row Edit)</title>
 
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
 
-    <!-- Mobile Drag Drop Polyfill (Essential for Mobile) -->
+    <!-- Mobile Drag Drop Polyfill -->
     <link
       rel="stylesheet"
       href="https://cdn.jsdelivr.net/npm/mobile-drag-drop@2.3.0-rc.2/default.css"
@@ -63,16 +63,12 @@
 
     <script>
       // 初始化手機拖拉支援
-      // dragImageTranslateOverride 修正拖曳時預覽圖偏移的問題
       var polyfillOptions = {
         dragImageTranslateOverride: function () {
           return { x: 0, y: 0 };
         },
-        holdToDrag: 300, // 手機上長按 300ms 觸發拖曳
       };
       MobileDragDrop.polyfill(polyfillOptions);
-
-      // 防止 iOS 橡皮筋捲動效果干擾拖曳
       window.addEventListener("touchmove", function () {}, { passive: false });
     </script>
 
@@ -108,17 +104,15 @@
         padding-bottom: env(safe-area-inset-bottom);
       }
 
-      /* 拖拉時的樣式 */
+      /* 拖拉樣式 */
       .dragging {
-        opacity: 0.4;
-        background: #e0f2fe !important;
-        border: 2px dashed #0ea5e9 !important;
+        opacity: 0.5;
+        background: #f0f9ff;
+        border: 2px dashed #38bdf8;
         transform: scale(0.98);
       }
-
-      /* 拖拉把手 */
       .drag-handle {
-        touch-action: none; /* 關鍵：防止瀏覽器處理觸控捲動 */
+        touch-action: none;
         cursor: grab;
       }
       .drag-handle:active {
@@ -164,20 +158,21 @@
       const APP_ID = "my-kansai-trip-2025";
       // =================================================================================
 
-      const TIME_OPTIONS = (() => {
+      // --- 時間選項產生器 ---
+      const generateTimeOptions = () => {
         const options = ["待定"];
         for (let h = 0; h < 24; h++) {
           for (let m = 0; m < 60; m += 15) {
-            options.push(
-              `${h.toString().padStart(2, "0")}:${m
-                .toString()
-                .padStart(2, "0")}`
-            );
+            const hh = h.toString().padStart(2, "0");
+            const mm = m.toString().padStart(2, "0");
+            options.push(`${hh}:${mm}`);
           }
         }
         return options;
-      })();
+      };
+      const TIME_OPTIONS = generateTimeOptions();
 
+      // --- 預設資料 ---
       const DEFAULT_ITINERARY = [
         {
           id: 1,
@@ -228,12 +223,77 @@
             },
           ],
         },
+        {
+          id: 3,
+          date: "2/8 (日)",
+          title: "Day 3: 京都一日遊",
+          events: [
+            {
+              id: "e14",
+              time: "09:00",
+              location: "清水寺",
+              transport: "京阪電車",
+              note: "早起出發，避開人潮\n參考網址：https://www.kiyomizudera.or.jp/",
+            },
+            {
+              id: "e15",
+              time: "13:00",
+              location: "錦市場",
+              transport: "巴士",
+              note: "吃午餐與逛街",
+            },
+          ],
+        },
+        {
+          id: 4,
+          date: "2/9 (一)",
+          title: "Day 4: 梅田購物",
+          events: [
+            {
+              id: "e18",
+              time: "10:00",
+              location: "梅田百貨圈",
+              transport: "御堂筋線",
+              note: "LUCUA, 阪急百貨",
+            },
+            {
+              id: "e19",
+              time: "18:00",
+              location: "梅田藍天大廈",
+              transport: "步行",
+              note: "看夜景",
+            },
+          ],
+        },
+        {
+          id: 5,
+          date: "2/10 (二)",
+          title: "Day 5: 返程",
+          events: [
+            {
+              id: "e21",
+              time: "07:00",
+              location: "黑門市場",
+              transport: "日本橋",
+              note: "最後採買與早餐",
+            },
+            {
+              id: "e22",
+              time: "11:00",
+              location: "前往機場",
+              transport: "南海電鐵",
+              note: "預留 2.5 小時 check-in",
+            },
+          ],
+        },
       ];
       const DEFAULT_MUSTBUY = [
         { area: "梅田", items: ["Baton d'or", "Grand Calbee"] },
         { area: "京都", items: ["茶之菓", "京年輪蛋糕"] },
+        { area: "藥妝", items: ["EVE", "合利他命"] },
       ];
 
+      // --- 配色方案 ---
       const DAY_COLORS = [
         {
           header: "bg-blue-100 text-blue-900",
@@ -272,6 +332,7 @@
         },
       ];
 
+      // --- Icons ---
       const Icon = ({ path, size = 20, className = "", onClick }) => (
         <svg
           xmlns="http://www.w3.org/2000/svg"
@@ -317,31 +378,33 @@
         wifiOff:
           "M1 1l22 22 M16.72 11.06A10.94 10.94 0 0 1 19 12.55 M5 12.55a10.94 10.94 0 0 1 5.17-2.39 M10.71 5.05A16 16 0 0 1 22.58 9 M1.42 9a15.91 15.91 0 0 1 4.7-2.88 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
         grip: "M3 12h18 M3 6h18 M3 18h18",
-        sort: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01",
+        sort: "M8 6h13M8 12h13M8 18h13M3 6h.01M3 12h.01M3 18h.01", // Simple list icon for sort
       };
 
+      // --- 連結自動識別元件 ---
       const LinkifiedText = ({ text }) => {
         if (!text) return null;
         const urlRegex = /(https?:\/\/[^\s]+)/g;
         const parts = text.split(urlRegex);
         return (
           <>
-            {parts.map((part, index) =>
-              part.match(urlRegex) ? (
-                <a
-                  key={index}
-                  href={part}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-sky-500 hover:text-sky-600 hover:underline break-all relative z-10"
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  {part}
-                </a>
-              ) : (
-                part
-              )
-            )}
+            {parts.map((part, index) => {
+              if (part.match(urlRegex)) {
+                return (
+                  <a
+                    key={index}
+                    href={part}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sky-500 hover:text-sky-600 hover:underline break-all relative z-10"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {part}
+                  </a>
+                );
+              }
+              return part;
+            })}
           </>
         );
       };
@@ -351,6 +414,8 @@
         const [authLoading, setAuthLoading] = useState(true);
         const [user, setUser] = useState(null);
         const [configError, setConfigError] = useState(false);
+
+        // Data States
         const [data, setData] = useState({
           itinerary: [],
           shopping: [],
@@ -359,8 +424,8 @@
         });
 
         // UI States
-        const [editingEventId, setEditingEventId] = useState(null);
-        const [reorderingDayId, setReorderingDayId] = useState(null);
+        const [editingEventId, setEditingEventId] = useState(null); // Track WHICH event is being edited (row based)
+        const [reorderingDayId, setReorderingDayId] = useState(null); // Track WHICH day is in reorder mode
 
         const [newItem, setNewItem] = useState({ name: "", qty: 1, note: "" });
         const [expenseForm, setExpenseForm] = useState({
@@ -373,22 +438,28 @@
 
         const dragItem = useRef(null);
         const dragOverItem = useRef(null);
+
+        // --- Firebase Init ---
         const [db, setDb] = useState(null);
 
         useEffect(() => {
           const initFirebase = async () => {
             if (!window.Firebase) return;
+
             if (YOUR_FIREBASE_CONFIG.apiKey.includes("請在此處貼上")) {
               setConfigError(true);
               setAuthLoading(false);
               return;
             }
+
             try {
               const app = window.Firebase.initializeApp(YOUR_FIREBASE_CONFIG);
               const auth = window.Firebase.getAuth(app);
               const firestore = window.Firebase.getFirestore(app);
               setDb(firestore);
+
               await window.Firebase.signInAnonymously(auth);
+
               window.Firebase.onAuthStateChanged(auth, (u) => {
                 setUser(u);
                 setAuthLoading(false);
@@ -402,112 +473,89 @@
           initFirebase();
         }, []);
 
+        // --- Realtime Listeners ---
         useEffect(() => {
           if (!user || !db) return;
+
           const setupListener = (docName, dataKey, defaultVal) => {
-            const docRef = window.Firebase.doc(
-              window.Firebase.collection(
-                db,
-                "artifacts",
-                APP_ID,
-                "public",
-                "data",
-                "trip_data"
-              ),
-              docName
+            const collectionRef = window.Firebase.collection(
+              db,
+              "artifacts",
+              APP_ID,
+              "public",
+              "data",
+              "trip_data"
             );
-            return window.Firebase.onSnapshot(docRef, (docSnap) => {
-              if (docSnap.exists())
-                setData((prev) => ({
-                  ...prev,
-                  [dataKey]: docSnap.data().list || [],
-                }));
-              else if (defaultVal)
-                setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
-            });
+            const docRef = window.Firebase.doc(collectionRef, docName);
+
+            return window.Firebase.onSnapshot(
+              docRef,
+              (docSnap) => {
+                if (docSnap.exists()) {
+                  setData((prev) => ({
+                    ...prev,
+                    [dataKey]: docSnap.data().list || [],
+                  }));
+                } else {
+                  if (dataKey === "itinerary" && defaultVal) {
+                    setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
+                  } else if (dataKey === "mustBuy" && defaultVal) {
+                    setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
+                  } else {
+                    setData((prev) => ({ ...prev, [dataKey]: [] }));
+                  }
+                }
+              },
+              (error) => {
+                console.error(`Error fetching ${docName}:`, error);
+              }
+            );
           };
-          const unsubs = [
-            setupListener("itinerary", "itinerary", DEFAULT_ITINERARY),
-            setupListener("shopping", "shopping", []),
-            setupListener("mustBuy", "mustBuy", DEFAULT_MUSTBUY),
-            setupListener("expenses", "expenses", []),
-          ];
-          return () => unsubs.forEach((u) => u());
+
+          const unsubItin = setupListener(
+            "itinerary",
+            "itinerary",
+            DEFAULT_ITINERARY
+          );
+          const unsubShop = setupListener("shopping", "shopping", []);
+          const unsubMust = setupListener(
+            "mustBuy",
+            "mustBuy",
+            DEFAULT_MUSTBUY
+          );
+          const unsubExp = setupListener("expenses", "expenses", []);
+
+          return () => {
+            unsubItin();
+            unsubShop();
+            unsubMust();
+            unsubExp();
+          };
         }, [user, db]);
 
         const saveToFirebase = async (key, newList) => {
           if (!user || !db) return;
           try {
+            const collectionRef = window.Firebase.collection(
+              db,
+              "artifacts",
+              APP_ID,
+              "public",
+              "data",
+              "trip_data"
+            );
             await window.Firebase.setDoc(
-              window.Firebase.doc(
-                window.Firebase.collection(
-                  db,
-                  "artifacts",
-                  APP_ID,
-                  "public",
-                  "data",
-                  "trip_data"
-                ),
-                key
-              ),
+              window.Firebase.doc(collectionRef, key),
               { list: newList }
             );
           } catch (e) {
             console.error("Save failed:", e);
+            if (e.code === "permission-denied") alert("權限不足");
           }
         };
 
-        // --- Drag & Drop Logic (Robust) ---
-        const handleDragStart = (e, dayId, index) => {
-          if (!reorderingDayId) return;
-          dragItem.current = { dayId, index };
-          e.target.closest(".event-item").classList.add("dragging");
-          e.dataTransfer.effectAllowed = "move";
-          e.dataTransfer.setData(
-            "text/plain",
-            JSON.stringify({ dayId, index })
-          );
-        };
+        // --- Itinerary Logic (Row Edit Mode) ---
 
-        const handleDragOver = (e, dayId, index) => {
-          e.preventDefault(); // Necessary for drop to work
-          if (reorderingDayId === dayId) {
-            dragOverItem.current = { dayId, index };
-          }
-        };
-
-        const handleDragEnd = (e) => {
-          e.target.closest(".event-item").classList.remove("dragging");
-
-          // Check validity
-          if (!dragItem.current || !dragOverItem.current) return;
-          if (dragItem.current.dayId !== dragOverItem.current.dayId) return;
-          if (dragItem.current.index === dragOverItem.current.index) return;
-
-          const dayId = dragItem.current.dayId;
-          const dayIndex = data.itinerary.findIndex((d) => d.id === dayId);
-          if (dayIndex === -1) return;
-
-          const newItin = [...data.itinerary];
-          const events = [...newItin[dayIndex].events];
-
-          // Reorder
-          const [item] = events.splice(dragItem.current.index, 1);
-          events.splice(dragOverItem.current.index, 0, item);
-
-          newItin[dayIndex].events = events;
-
-          // Optimistic update + Save
-          setData((p) => ({ ...p, itinerary: newItin }));
-          saveToFirebase("itinerary", newItin);
-
-          dragItem.current = null;
-          dragOverItem.current = null;
-        };
-
-        // --- Logic Handlers ---
-        const toggleReorderMode = (dayId) =>
-          setReorderingDayId(reorderingDayId === dayId ? null : dayId);
         const updateItineraryLocal = (dId, eId, k, v) => {
           const newList = data.itinerary.map((d) =>
             d.id !== dId
@@ -521,12 +569,15 @@
           );
           setData((p) => ({ ...p, itinerary: newList }));
         };
+
         const saveSingleEvent = () => {
+          // Because we update local state optimistically, saving the whole itinerary saves the edits for this row
           saveToFirebase("itinerary", data.itinerary);
           setEditingEventId(null);
         };
+
         const addItineraryEventLocal = (dId) => {
-          const newId = `new_${Date.now()}`;
+          const newEventId = `new_${Date.now()}`;
           const newList = data.itinerary.map((d) =>
             d.id === dId
               ? {
@@ -534,7 +585,7 @@
                   events: [
                     ...d.events,
                     {
-                      id: newId,
+                      id: newEventId,
                       time: "待定",
                       location: "新地點",
                       transport: "",
@@ -544,10 +595,14 @@
                 }
               : d
           );
+
           setData((p) => ({ ...p, itinerary: newList }));
+          // Save immediately so the new row exists in DB
           saveToFirebase("itinerary", newList);
-          setEditingEventId(newId);
+          // Automatically enter edit mode for the new row
+          setEditingEventId(newEventId);
         };
+
         const deleteItineraryEventLocal = (dId, eId) => {
           if (confirm("刪除此活動？")) {
             const newList = data.itinerary.map((d) =>
@@ -561,73 +616,113 @@
           }
         };
 
-        // Other handlers
+        const toggleReorderMode = (dayId) => {
+          if (reorderingDayId === dayId) {
+            setReorderingDayId(null);
+          } else {
+            setReorderingDayId(dayId);
+          }
+        };
+
+        // Drag & Drop
+        const onDragStart = (e, dayId, index) => {
+          dragItem.current = { dayId, index };
+          e.target.closest(".event-item").classList.add("dragging");
+          e.dataTransfer.effectAllowed = "move";
+          e.dataTransfer.setData(
+            "text/plain",
+            JSON.stringify({ dayId, index })
+          );
+        };
+        const onDragEnter = (e, dayId, index) => {
+          dragOverItem.current = { dayId, index };
+        };
+        const onDragEnd = (e) => {
+          e.target.closest(".event-item").classList.remove("dragging");
+          if (
+            !dragItem.current ||
+            !dragOverItem.current ||
+            dragItem.current.dayId !== dragOverItem.current.dayId
+          )
+            return;
+          const newItin = [...data.itinerary];
+          const dIdx = newItin.findIndex(
+            (d) => d.id === dragItem.current.dayId
+          );
+          const evs = [...newItin[dIdx].events];
+          const [item] = evs.splice(dragItem.current.index, 1);
+          evs.splice(dragOverItem.current.index, 0, item);
+          newItin[dIdx].events = evs;
+
+          setData((p) => ({ ...p, itinerary: newItin }));
+          saveToFirebase("itinerary", newItin);
+          dragItem.current = null;
+          dragOverItem.current = null;
+        };
+
+        // Other tabs logic (Shopping etc...)
         const addShop = () => {
           if (!newItem.name) return;
-          const l = [
+          const newList = [
             ...data.shopping,
             { ...newItem, id: Date.now(), checked: false },
           ];
-          saveToFirebase("shopping", l);
+          saveToFirebase("shopping", newList);
           setNewItem({ name: "", qty: 1, note: "" });
         };
-        const toggleShop = (id) =>
-          saveToFirebase(
-            "shopping",
-            data.shopping.map((i) =>
-              i.id === id ? { ...i, checked: !i.checked } : i
-            )
+        const toggleShop = (id) => {
+          const newList = data.shopping.map((i) =>
+            i.id === id ? { ...i, checked: !i.checked } : i
           );
+          saveToFirebase("shopping", newList);
+        };
         const delShop = (id) => {
-          if (confirm("刪除？"))
-            saveToFirebase(
-              "shopping",
-              data.shopping.filter((i) => i.id !== id)
-            );
+          if (confirm("刪除？")) {
+            const newList = data.shopping.filter((i) => i.id !== id);
+            saveToFirebase("shopping", newList);
+          }
         };
         const addMustBuy = () => {
           if (!mustBuyForm.area || !mustBuyForm.item) return;
-          const l = [...data.mustBuy];
-          const i = l.findIndex((a) => a.area === mustBuyForm.area);
-          if (i >= 0) l[i].items.push(mustBuyForm.item);
-          else l.push({ area: mustBuyForm.area, items: [mustBuyForm.item] });
-          saveToFirebase("mustBuy", l);
+          const newList = [...data.mustBuy];
+          const idx = newList.findIndex((a) => a.area === mustBuyForm.area);
+          if (idx >= 0) newList[idx].items.push(mustBuyForm.item);
+          else
+            newList.push({ area: mustBuyForm.area, items: [mustBuyForm.item] });
+          saveToFirebase("mustBuy", newList);
           setMustBuyForm((p) => ({ ...p, item: "" }));
         };
-        const delMustBuy = (z, i) => {
-          const l = [...data.mustBuy];
-          l[z].items.splice(i, 1);
-          saveToFirebase("mustBuy", l);
+        const delMustBuy = (zIdx, iIdx) => {
+          const newList = [...data.mustBuy];
+          newList[zIdx].items.splice(iIdx, 1);
+          saveToFirebase("mustBuy", newList);
         };
         const addExp = () => {
           if (!expenseForm.item || !expenseForm.total) return;
-          const l = [
-            {
-              id: Date.now(),
-              date: new Date().toLocaleDateString("zh-TW", {
-                month: "2-digit",
-                day: "2-digit",
-              }),
-              item: expenseForm.item,
-              total: Number(expenseForm.total),
-              people: Number(expenseForm.people),
-              perPerson: Math.round(expenseForm.total / expenseForm.people),
-              payer: expenseForm.payer,
-            },
-            ...data.expenses,
-          ];
-          saveToFirebase("expenses", l);
+          const n = {
+            id: Date.now(),
+            date: new Date().toLocaleDateString("zh-TW", {
+              month: "2-digit",
+              day: "2-digit",
+            }),
+            item: expenseForm.item,
+            total: Number(expenseForm.total),
+            people: Number(expenseForm.people),
+            perPerson: Math.round(expenseForm.total / expenseForm.people),
+            payer: expenseForm.payer,
+          };
+          const newList = [n, ...data.expenses];
+          saveToFirebase("expenses", newList);
           setExpenseForm({ ...expenseForm, item: "", total: "" });
         };
         const delExp = (id) => {
-          if (confirm("刪除？"))
-            saveToFirebase(
-              "expenses",
-              data.expenses.filter((e) => e.id !== id)
-            );
+          if (confirm("刪除？")) {
+            const newList = data.expenses.filter((e) => e.id !== id);
+            saveToFirebase("expenses", newList);
+          }
         };
         const resetData = () => {
-          if (confirm("重置所有資料庫？")) {
+          if (confirm("確定要重置所有資料庫內容為預設值嗎？")) {
             saveToFirebase("itinerary", DEFAULT_ITINERARY);
             saveToFirebase("shopping", []);
             saveToFirebase("mustBuy", DEFAULT_MUSTBUY);
@@ -702,6 +797,7 @@
           <div className="min-h-screen bg-gray-50 md:flex relative">
             <Sidebar />
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
+              {/* Mobile Header */}
               <div className="md:hidden bg-white/90 backdrop-blur-md px-4 py-3 sticky top-0 z-50 flex justify-between items-center border-b border-gray-100">
                 <div className="flex flex-col">
                   <h1 className="text-xl font-black text-gray-800 tracking-tight flex items-center gap-2">
@@ -760,6 +856,7 @@
                           行程總覽
                         </h2>
                       </div>
+
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
                         {(data.itinerary || []).map((d, dIdx) => {
                           const color = DAY_COLORS[dIdx % DAY_COLORS.length];
@@ -787,66 +884,45 @@
                                   onClick={() => toggleReorderMode(d.id)}
                                   className={`p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all active:scale-95 flex-shrink-0 ${
                                     isReordering
-                                      ? "bg-orange-500 text-white shadow-md"
-                                      : "bg-white/50 hover:bg-white text-gray-500 hover:text-sky-600"
+                                      ? "bg-orange-500 text-white"
+                                      : "hover:bg-black/5 text-gray-500"
                                   }`}
-                                  title={isReordering ? "完成排序" : "排序行程"}
+                                  title="拖拉排序"
                                 >
-                                  <Icon
-                                    path={
-                                      isReordering ? ICONS.check : ICONS.sort
-                                    }
-                                    size={18}
-                                  />
+                                  <Icon path={ICONS.sort} size={18} />
                                 </button>
                               </div>
                               <div
-                                className={`divide-y ${color.border} ${
-                                  color.body
-                                } flex-1 ${
-                                  isReordering ? "bg-orange-50/30" : ""
-                                }`}
+                                className={`divide-y ${color.border} ${color.body} flex-1`}
                               >
                                 {d.events.map((e, eIdx) => {
                                   const isEditing = editingEventId === e.id;
                                   return (
                                     <div
                                       key={e.id}
-                                      className={`event-item p-4 flex gap-3 relative group transition-all duration-200 
-                                                    ${
-                                                      isEditing
-                                                        ? "bg-white shadow-lg z-10 scale-[1.02] border-y border-sky-200 my-2 rounded-lg"
-                                                        : "bg-white/60 hover:bg-white/90"
-                                                    }
-                                                    ${
-                                                      isReordering
-                                                        ? "cursor-move touch-none border-dashed border-2 border-transparent hover:border-orange-300"
-                                                        : ""
-                                                    }
-                                                `}
+                                      className={`event-item p-4 flex gap-3 relative group transition-all duration-200 ${
+                                        isEditing
+                                          ? "bg-white shadow-md z-10 scale-[1.02] border-y border-sky-200 my-1"
+                                          : "bg-white/60 hover:bg-white/80"
+                                      }`}
                                       draggable={isReordering}
                                       onDragStart={(ev) =>
                                         isReordering &&
-                                        handleDragStart(ev, d.id, eIdx)
+                                        onDragStart(ev, d.id, eIdx)
                                       }
                                       onDragEnter={(ev) =>
                                         isReordering &&
-                                        handleDragOver(ev, d.id, eIdx)
-                                      } // Use DragOver logic on enter too for safety
-                                      onDragOver={(ev) =>
-                                        isReordering &&
-                                        handleDragOver(ev, d.id, eIdx)
+                                        onDragEnter(ev, d.id, eIdx)
                                       }
-                                      onDragEnd={handleDragEnd}
+                                      onDragEnd={onDragEnd}
+                                      onDragOver={(ev) => ev.preventDefault()}
                                     >
-                                      {/* 拖拉把手 (只在排序模式顯示) */}
                                       {isReordering && (
-                                        <div className="drag-handle w-10 -ml-2 flex items-center justify-center text-orange-400 hover:text-orange-600 cursor-grab active:cursor-grabbing border-r border-orange-100/50 mr-2">
-                                          <Icon path={ICONS.grip} size={24} />
+                                        <div className="drag-handle w-8 flex items-center justify-center text-gray-400 cursor-move hover:text-gray-600 border-r border-gray-100 mr-1">
+                                          <Icon path={ICONS.grip} size={20} />
                                         </div>
                                       )}
 
-                                      {/* 時間欄位 */}
                                       <div className="w-16 flex-shrink-0 flex flex-col items-center pt-1">
                                         {isEditing ? (
                                           <select
@@ -875,16 +951,12 @@
                                           </select>
                                         ) : (
                                           <span
-                                            className={`text-sm font-bold ${
-                                              color.accent
-                                            } font-mono bg-white/80 px-1.5 rounded shadow-sm ${
-                                              isReordering ? "opacity-50" : ""
-                                            }`}
+                                            className={`text-sm font-bold ${color.accent} font-mono bg-white/80 px-1.5 rounded shadow-sm`}
                                           >
                                             {e.time}
                                           </span>
                                         )}
-                                        {!isEditing && !isReordering && (
+                                        {!isEditing && (
                                           <div
                                             className={`h-full w-0.5 ${color.border.replace(
                                               "border",
@@ -894,7 +966,6 @@
                                         )}
                                       </div>
 
-                                      {/* 內容欄位 */}
                                       <div className="flex-1 pb-1 space-y-1.5 min-w-0">
                                         {isEditing ? (
                                           <div className="space-y-3">
@@ -942,13 +1013,7 @@
                                             </div>
                                           </div>
                                         ) : (
-                                          <div
-                                            className={
-                                              isReordering
-                                                ? "opacity-70 pointer-events-none"
-                                                : ""
-                                            }
-                                          >
+                                          <>
                                             <div className="flex justify-between items-start">
                                               <h4 className="font-bold text-gray-800 text-base">
                                                 {e.location}
@@ -970,83 +1035,75 @@
                                                 <LinkifiedText text={e.note} />
                                               </p>
                                             )}
-                                          </div>
+                                          </>
                                         )}
                                       </div>
 
-                                      {/* 操作按鈕 (編輯模式或檢視模式) - 排序模式下隱藏 */}
-                                      {!isReordering && (
-                                        <div className="flex flex-col items-center justify-start gap-2 pl-2 border-l border-gray-100/50">
-                                          {isEditing ? (
-                                            <>
-                                              <button
-                                                onClick={saveSingleEvent}
-                                                className="p-2 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 active:scale-90 transition-all"
-                                                title="儲存"
-                                              >
-                                                <Icon
-                                                  path={ICONS.check}
-                                                  size={16}
-                                                />
-                                              </button>
-                                              <button
-                                                onClick={() =>
-                                                  deleteItineraryEventLocal(
-                                                    d.id,
-                                                    e.id
-                                                  )
-                                                }
-                                                className="p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 active:scale-90 transition-all"
-                                                title="刪除"
-                                              >
-                                                <Icon
-                                                  path={ICONS.trash}
-                                                  size={16}
-                                                />
-                                              </button>
-                                            </>
-                                          ) : (
+                                      {/* Action Buttons Column */}
+                                      <div className="flex flex-col items-center justify-start gap-2 pl-2 border-l border-gray-100/50">
+                                        {isEditing ? (
+                                          <>
                                             <button
-                                              onClick={() =>
-                                                setEditingEventId(e.id)
-                                              }
-                                              className="p-2 text-gray-400 hover:text-sky-500 hover:bg-sky-50 rounded-full transition-all"
-                                              title="編輯內容"
+                                              onClick={saveSingleEvent}
+                                              className="p-2 bg-green-500 text-white rounded-full shadow-lg hover:bg-green-600 active:scale-90 transition-all"
+                                              title="儲存"
                                             >
                                               <Icon
-                                                path={ICONS.edit}
-                                                size={18}
+                                                path={ICONS.check}
+                                                size={16}
                                               />
                                             </button>
-                                          )}
-                                          {!isEditing && (
-                                            <a
-                                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                                e.location
-                                              )}`}
-                                              target="_blank"
-                                              className="p-2 text-gray-300 hover:text-green-500 hover:bg-green-50 rounded-full transition-all"
+                                            <button
+                                              onClick={() =>
+                                                deleteItineraryEventLocal(
+                                                  d.id,
+                                                  e.id
+                                                )
+                                              }
+                                              className="p-2 bg-red-50 text-red-500 rounded-full hover:bg-red-100 active:scale-90 transition-all"
+                                              title="刪除"
                                             >
                                               <Icon
-                                                path={ICONS.mapPin}
-                                                size={18}
+                                                path={ICONS.trash}
+                                                size={16}
                                               />
-                                            </a>
-                                          )}
-                                        </div>
-                                      )}
+                                            </button>
+                                          </>
+                                        ) : (
+                                          <button
+                                            onClick={() =>
+                                              setEditingEventId(e.id)
+                                            }
+                                            className="p-2 text-gray-400 hover:text-sky-500 hover:bg-sky-50 rounded-full transition-all"
+                                            title="編輯內容"
+                                          >
+                                            <Icon path={ICONS.edit} size={18} />
+                                          </button>
+                                        )}
+                                        {!isEditing && (
+                                          <a
+                                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                              e.location
+                                            )}`}
+                                            target="_blank"
+                                            className="p-2 text-gray-300 hover:text-green-500 hover:bg-green-50 rounded-full transition-all"
+                                          >
+                                            <Icon
+                                              path={ICONS.mapPin}
+                                              size={18}
+                                            />
+                                          </a>
+                                        )}
+                                      </div>
                                     </div>
                                   );
                                 })}
-                                {!isReordering && (
-                                  <button
-                                    onClick={() => addItineraryEventLocal(d.id)}
-                                    className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/50 border-t border-dashed ${color.border} transition-colors`}
-                                  >
-                                    <Icon path={ICONS.plus} size={18} />{" "}
-                                    新增事件
-                                  </button>
-                                )}
+                                <button
+                                  onClick={() => addItineraryEventLocal(d.id)}
+                                  className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/50 border-t border-dashed ${color.border} transition-colors`}
+                                >
+                                  <Icon path={ICONS.plus} size={18} /> 新增事件
+                                </button>
                               </div>
                             </div>
                           );
@@ -1156,16 +1213,233 @@
                     </div>
                   )}
 
-                  {/* (Other tabs: tools and recommend are kept same structure but omitted here for brevity if unchanged logic, but included in full code block above) */}
-                  {/* Simplified view for other tabs to save space, assuming they work as before */}
                   {activeTab === "tools" && (
-                    <div className="p-10 text-center text-gray-400">
-                      記帳功能 (同上)
+                    <div className="mt-2 animate-fade-in flex flex-col md:flex-row gap-6 items-start">
+                      <div className="w-full md:w-80 md:sticky md:top-6 space-y-5">
+                        <div className="bg-white p-5 rounded-2xl shadow-sm border border-purple-100 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-20 h-20 bg-purple-50 rounded-bl-full -mr-4 -mt-4 z-0"></div>
+                          <div className="relative z-10">
+                            <div className="flex items-center gap-2 font-bold text-gray-700 mb-4 text-lg">
+                              <div className="p-1.5 bg-purple-100 rounded-lg text-purple-600">
+                                <Icon path={ICONS.receipt} size={20} />
+                              </div>
+                              新增記帳
+                            </div>
+                            <div className="space-y-4">
+                              <input
+                                placeholder="消費項目 (例如: 晚餐)"
+                                value={expenseForm.item}
+                                onChange={(e) =>
+                                  setExpenseForm({
+                                    ...expenseForm,
+                                    item: e.target.value,
+                                  })
+                                }
+                                className="w-full border border-gray-200 bg-gray-50 p-3 rounded-xl text-sm focus:bg-white transition-colors"
+                              />
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="relative">
+                                  <span className="absolute left-3 top-2.5 text-gray-400 text-sm">
+                                    ¥
+                                  </span>
+                                  <input
+                                    type="number"
+                                    placeholder="總金額"
+                                    value={expenseForm.total}
+                                    onChange={(e) =>
+                                      setExpenseForm({
+                                        ...expenseForm,
+                                        total: e.target.value,
+                                      })
+                                    }
+                                    className="border border-gray-200 bg-gray-50 p-2.5 pl-7 rounded-xl w-full text-sm font-mono focus:bg-white transition-colors"
+                                  />
+                                </div>
+                                <div className="relative flex items-center">
+                                  <input
+                                    type="number"
+                                    placeholder="人數"
+                                    value={expenseForm.people}
+                                    onChange={(e) =>
+                                      setExpenseForm({
+                                        ...expenseForm,
+                                        people: e.target.value,
+                                      })
+                                    }
+                                    className="border border-gray-200 bg-gray-50 p-2.5 rounded-xl w-full text-center text-sm focus:bg-white transition-colors"
+                                  />
+                                  <span className="absolute right-3 text-gray-400 text-xs">
+                                    人
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="bg-purple-50 p-3 rounded-xl flex justify-between items-center border border-purple-100">
+                                <span className="text-purple-700 text-xs font-bold">
+                                  每人分擔
+                                </span>
+                                <span className="text-xl font-bold text-purple-700 font-mono">
+                                  ¥{" "}
+                                  {expenseForm.total && expenseForm.people
+                                    ? Math.round(
+                                        expenseForm.total / expenseForm.people
+                                      ).toLocaleString()
+                                    : 0}
+                                </span>
+                              </div>
+                              <button
+                                onClick={addExp}
+                                className="w-full bg-purple-500 hover:bg-purple-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-purple-200 active:scale-95 transition-all"
+                              >
+                                加入紀錄
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <a
+                            href="https://weather.yahoo.co.jp/weather/jp/27/6200.html"
+                            target="_blank"
+                            className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center gap-2 text-blue-500 font-bold text-xs hover:bg-blue-50 transition-colors"
+                          >
+                            <Icon path={ICONS.externalLink} size={14} />{" "}
+                            大阪天氣
+                          </a>
+                          <a
+                            href="https://translate.google.com/?sl=zh-TW&tl=ja"
+                            target="_blank"
+                            className="bg-white p-3 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center gap-2 text-gray-600 font-bold text-xs hover:bg-gray-50 transition-colors"
+                          >
+                            <Icon path={ICONS.globe} size={14} /> Google 翻譯
+                          </a>
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full space-y-3">
+                        <h3 className="hidden md:block font-bold text-gray-700 text-lg mb-4">
+                          消費紀錄
+                        </h3>
+                        {(!data.expenses || data.expenses.length === 0) && (
+                          <div className="text-center py-10 text-gray-400 text-sm bg-white rounded-xl border border-gray-100 border-dashed">
+                            尚無消費紀錄
+                          </div>
+                        )}
+                        {(data.expenses || []).map((ex) => (
+                          <div
+                            key={ex.id}
+                            className="flex justify-between items-center text-sm bg-white p-4 rounded-xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow"
+                          >
+                            <div className="flex gap-4 items-center">
+                              <div className="bg-gray-100 text-gray-500 text-xs font-bold px-3 py-2 rounded-lg text-center leading-tight">
+                                {ex.date.split("/")[0]}
+                                <br />
+                                <span className="text-lg text-gray-700">
+                                  {ex.date.split("/")[1]}
+                                </span>
+                              </div>
+                              <div>
+                                <div className="font-bold text-gray-800 text-base">
+                                  {ex.item}
+                                </div>
+                                <div className="text-xs text-gray-400 mt-0.5">
+                                  總計 ¥{ex.total.toLocaleString()} /{" "}
+                                  {ex.people}人
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-4">
+                              <div className="text-right">
+                                <div className="text-[10px] text-purple-400 font-bold mb-0.5">
+                                  每人
+                                </div>
+                                <span className="font-bold text-purple-600 font-mono text-lg">
+                                  ¥{ex.perPerson.toLocaleString()}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => delExp(ex.id)}
+                                className="text-gray-300 hover:text-red-500 p-2 rounded-full hover:bg-red-50 transition-colors"
+                              >
+                                <Icon path={ICONS.x} size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
+
                   {activeTab === "recommend" && (
-                    <div className="p-10 text-center text-gray-400">
-                      推薦功能 (同上)
+                    <div className="space-y-6 mt-2 animate-fade-in">
+                      <div className="bg-white p-5 rounded-2xl shadow-sm border border-orange-100 space-y-3 sticky top-0 z-40 md:static md:max-w-2xl md:mx-auto">
+                        <h2 className="hidden md:flex font-bold text-gray-700 items-center gap-2 mb-2">
+                          <Icon path={ICONS.mapPin} size={20} /> 新增推薦
+                        </h2>
+                        <div className="flex gap-2">
+                          <input
+                            value={mustBuyForm.area}
+                            onChange={(e) =>
+                              setMustBuyForm({
+                                ...mustBuyForm,
+                                area: e.target.value,
+                              })
+                            }
+                            list="area-list"
+                            placeholder="區域 (例如: 梅田)"
+                            className="w-1/3 p-3 bg-orange-50 rounded-xl border border-orange-200 text-sm focus:bg-white transition-colors"
+                          />
+                          <datalist id="area-list">
+                            {(data.mustBuy || []).map((z) => (
+                              <option key={z.area} value={z.area} />
+                            ))}
+                          </datalist>
+                          <input
+                            value={mustBuyForm.item}
+                            onChange={(e) =>
+                              setMustBuyForm({
+                                ...mustBuyForm,
+                                item: e.target.value,
+                              })
+                            }
+                            placeholder="必買商品 / 美食"
+                            className="flex-1 p-3 bg-orange-50 rounded-xl border border-orange-200 text-sm focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <button
+                          onClick={addMustBuy}
+                          className="w-full bg-orange-500 hover:bg-orange-600 text-white py-3 rounded-xl font-bold shadow-lg shadow-orange-200 active:scale-95 transition-transform flex justify-center items-center gap-2"
+                        >
+                          <Icon path={ICONS.plus} size={20} /> 新增推薦
+                        </button>
+                      </div>
+                      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 pb-10">
+                        {(data.mustBuy || []).map((z, zIdx) => (
+                          <div
+                            key={zIdx}
+                            className="break-inside-avoid bg-white rounded-2xl shadow-sm border border-orange-100 overflow-hidden hover:shadow-md transition-shadow"
+                          >
+                            <div className="bg-orange-50 px-4 py-3 font-bold text-orange-800 flex gap-2 items-center text-sm border-b border-orange-100">
+                              <Icon path={ICONS.mapPin} size={16} /> {z.area}
+                            </div>
+                            <div className="p-4 grid grid-cols-1 gap-2">
+                              {z.items.map((it, iIdx) => (
+                                <div
+                                  key={iIdx}
+                                  className="bg-white p-3 rounded-lg text-sm text-gray-700 flex justify-between items-center border border-gray-100 shadow-sm hover:border-orange-200 transition-colors"
+                                >
+                                  <span className="truncate pl-1 font-medium">
+                                    {it}
+                                  </span>
+                                  <button
+                                    onClick={() => delMustBuy(zIdx, iIdx)}
+                                    className="text-gray-300 hover:text-red-400 p-1 rounded hover:bg-red-50 transition-colors"
+                                  >
+                                    <Icon path={ICONS.x} size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
                   )}
                 </div>
