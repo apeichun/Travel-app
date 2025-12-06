@@ -335,7 +335,8 @@
         wifiOff:
           "M1 1l22 22 M16.72 11.06A10.94 10.94 0 0 1 19 12.55 M5 12.55a10.94 10.94 0 0 1 5.17-2.39 M10.71 5.05A16 16 0 0 1 22.58 9 M1.42 9a15.91 15.91 0 0 1 4.7-2.88 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
         grip: "M3 12h18 M3 6h18 M3 18h18",
-        sort: "M3 6h18M3 12h18M3 18h18",
+        sort: "M4 6h16 M4 12h16 M4 18h16",
+        x: "M18 6L6 18M6 6l12 12", // Added X icon
       };
 
       const LinkifiedText = ({ text }) => {
@@ -364,6 +365,348 @@
         );
       };
 
+      // --- Components Moved Outside of App (Fixes Input Focus Issue) ---
+
+      const Sidebar = ({ user, configError, activeTab, setActiveTab }) => (
+        <aside className="hidden md:flex flex-col w-64 bg-jp-bg border-r border-stone-100 h-screen sticky top-0 shadow-[2px_0_15px_-3px_rgba(0,0,0,0.05)] z-50 bg-pattern-asanoha">
+          <div className="p-6 border-b-2 border-dashed border-jp-sakura/30 bg-jp-bg/95 backdrop-blur-sm">
+            <h1 className="text-2xl font-bold text-jp-ink tracking-widest flex items-center gap-2 font-serif">
+              KANSAI{" "}
+              <span className="text-jp-red text-sm bg-white px-2 rounded-full border border-jp-red shadow-sm">
+                旅
+              </span>
+            </h1>
+            <div className="mt-3 flex items-center gap-2">
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  user ? "bg-jp-matcha animate-pulse" : "bg-red-400"
+                }`}
+              ></div>
+              <span className="text-xs text-jp-ink/60 font-medium font-sans">
+                {user ? "連線中" : "離線"}
+              </span>
+            </div>
+          </div>
+          <nav className="flex-1 p-4 space-y-3 bg-jp-bg/90">
+            {[
+              { id: "itinerary", icon: ICONS.torii, label: "行程表" },
+              { id: "shopping", icon: ICONS.fukubukuro, label: "購物清單" },
+              { id: "tools", icon: ICONS.yen, label: "記帳本" },
+              { id: "recommend", icon: ICONS.fuji, label: "推薦景點" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold tracking-wide border-2 ${
+                  activeTab === t.id
+                    ? "bg-white text-jp-red border-jp-sakura shadow-sm"
+                    : "border-transparent text-jp-ink/60 hover:bg-white hover:text-jp-ink"
+                }`}
+              >
+                <Icon
+                  path={t.icon}
+                  size={22}
+                  className={
+                    activeTab === t.id ? "text-jp-red" : "text-jp-ink/40"
+                  }
+                />
+                {t.label}
+              </button>
+            ))}
+          </nav>
+        </aside>
+      );
+
+      const DayCard = ({
+        day,
+        color,
+        isReordering,
+        toggleReorder,
+        onUpdateEvents,
+        onDeleteEvent,
+        onEditEvent,
+        editingEventId,
+        onSaveEvent,
+        updateItineraryLocal,
+        onAddEvent,
+      }) => {
+        const listRef = useRef(null);
+        const sortableInstance = useRef(null);
+
+        // FIXED: Improved useEffect to prevent crash on re-render/destroy
+        useEffect(() => {
+          // Cleanup previous instance if exists to prevent double-binding
+          if (sortableInstance.current) {
+            sortableInstance.current.destroy();
+            sortableInstance.current = null;
+          }
+
+          if (isReordering && listRef.current) {
+            if (typeof window.Sortable !== "undefined") {
+              sortableInstance.current = new window.Sortable(listRef.current, {
+                handle: ".drag-handle",
+                animation: 150,
+                ghostClass: "sortable-ghost",
+                dragClass: "sortable-drag",
+                delay: 0,
+                onEnd: (evt) => {
+                  const newEvents = [...day.events];
+                  const [movedItem] = newEvents.splice(evt.oldIndex, 1);
+                  newEvents.splice(evt.newIndex, 0, movedItem);
+                  onUpdateEvents(day.id, newEvents);
+                },
+              });
+            } else {
+              console.warn("SortableJS not loaded");
+            }
+          }
+
+          // Cleanup function
+          return () => {
+            if (sortableInstance.current) {
+              sortableInstance.current.destroy();
+              sortableInstance.current = null; // Critical: set to null
+            }
+          };
+        }, [isReordering, day.events, onUpdateEvents, day.id]);
+
+        return (
+          <div
+            className={`bg-white rounded-2xl shadow-sm border-2 ${
+              color.border
+            } overflow-hidden flex flex-col transition-all duration-300 relative ${
+              isReordering
+                ? "ring-4 ring-jp-mikan/50 scale-[0.98]"
+                : "hover:shadow-lg"
+            }`}
+          >
+            <div className="sakura-icon">
+              <Icon path={ICONS.sakura} size={40} className="text-jp-sakura" />
+            </div>
+            <div
+              className={`${color.header} p-3 md:p-4 border-b-2 ${color.border} flex items-center justify-between gap-3`}
+            >
+              <div className="flex items-center gap-3 overflow-hidden">
+                <span
+                  className={`${color.sub} text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex-shrink-0 tracking-wide font-sans`}
+                >
+                  {day.date}
+                </span>
+                <h3 className="font-bold text-base md:text-lg truncate tracking-wider font-serif">
+                  {day.title.replace(/^Day \d+: /, "")}
+                </h3>
+              </div>
+              <button
+                onClick={toggleReorder}
+                className={`p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all active:scale-95 flex-shrink-0 ${
+                  isReordering
+                    ? "bg-jp-mikan text-white shadow-md"
+                    : "bg-white/60 hover:bg-white text-jp-ink hover:text-jp-sakura-dark"
+                }`}
+              >
+                <Icon
+                  path={isReordering ? ICONS.check : ICONS.sort}
+                  size={18}
+                />
+              </button>
+            </div>
+            <div
+              ref={listRef}
+              className={`divide-y divide-dashed ${color.border} ${
+                color.body
+              } flex-1 ${isReordering ? "bg-orange-50/20" : ""}`}
+            >
+              {day.events.map((e) => {
+                const isEditing = editingEventId === e.id;
+                return (
+                  <div
+                    key={e.id}
+                    className={`event-item p-4 flex gap-3 relative group transition-all duration-300 ${
+                      isEditing
+                        ? "bg-white shadow-xl z-10 scale-[1.02] border-2 border-jp-sakura my-3 rounded-xl"
+                        : "hover:bg-white/80"
+                    }`}
+                  >
+                    {isReordering && (
+                      <div className="drag-handle w-10 -ml-2 flex items-center justify-center text-jp-mikan hover:text-orange-500 cursor-grab active:cursor-grabbing border-r border-gray-200/50 mr-2">
+                        <Icon path={ICONS.grip} size={20} />
+                      </div>
+                    )}
+                    <div className="w-14 flex-shrink-0 flex flex-col items-center pt-1">
+                      {isEditing ? (
+                        <select
+                          value={e.time}
+                          onChange={(ev) =>
+                            updateItineraryLocal(
+                              day.id,
+                              e.id,
+                              "time",
+                              ev.target.value
+                            )
+                          }
+                          className="w-full text-xs border-2 border-jp-sakura rounded-lg p-1 text-center bg-white shadow-sm font-bold text-jp-ink"
+                          style={{ textAlignLast: "center" }}
+                        >
+                          {!TIME_OPTIONS.includes(e.time) && (
+                            <option>{e.time}</option>
+                          )}
+                          {TIME_OPTIONS.map((t) => (
+                            <option key={t} value={t}>
+                              {t}
+                            </option>
+                          ))}
+                        </select>
+                      ) : (
+                        <span
+                          className={`text-sm font-black ${
+                            color.accent
+                          } font-sans tracking-wide bg-white/90 px-2 py-0.5 rounded-lg shadow-sm border border-white ${
+                            isReordering ? "opacity-50" : ""
+                          }`}
+                        >
+                          {e.time}
+                        </span>
+                      )}
+                      {!isEditing && !isReordering && (
+                        <div
+                          className={`h-full w-0.5 ${color.border.replace(
+                            "border",
+                            "bg"
+                          )} mt-2 mb-[-20px] opacity-40 rounded-full`}
+                        ></div>
+                      )}
+                    </div>
+                    <div className="flex-1 pb-1 space-y-1.5 min-w-0">
+                      {isEditing ? (
+                        <div className="space-y-3">
+                          <input
+                            value={e.location}
+                            onChange={(ev) =>
+                              updateItineraryLocal(
+                                day.id,
+                                e.id,
+                                "location",
+                                ev.target.value
+                              )
+                            }
+                            className="w-full border-2 border-jp-sakura p-2 rounded-xl font-bold text-jp-ink text-sm bg-white focus:ring-2 focus:ring-jp-sakura/50 transition-all font-serif"
+                            placeholder="地點"
+                          />
+                          <div className="flex gap-2">
+                            <input
+                              value={e.transport}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  day.id,
+                                  e.id,
+                                  "transport",
+                                  ev.target.value
+                                )
+                              }
+                              className="w-1/3 border-2 border-jp-sakura/50 p-2 rounded-xl text-xs bg-white focus:border-jp-sakura transition-colors"
+                              placeholder="交通"
+                            />
+                            <textarea
+                              value={e.note}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  day.id,
+                                  e.id,
+                                  "note",
+                                  ev.target.value
+                                )
+                              }
+                              className="flex-1 border-2 border-jp-sakura/50 p-2 rounded-xl text-xs bg-white focus:border-jp-sakura transition-colors"
+                              rows="2"
+                              placeholder="備註"
+                            ></textarea>
+                          </div>
+                        </div>
+                      ) : (
+                        <div
+                          className={
+                            isReordering ? "opacity-70 pointer-events-none" : ""
+                          }
+                        >
+                          <div className="flex justify-between items-start">
+                            <h4 className="font-bold text-jp-ink text-base font-serif tracking-wide">
+                              {e.location}
+                            </h4>
+                          </div>
+                          {e.transport && (
+                            <div
+                              className={`inline-flex items-center gap-1.5 text-[11px] ${color.accent} bg-white/80 px-2 py-0.5 rounded-full border ${color.border} mt-1 font-medium`}
+                            >
+                              <Icon path={ICONS.train} size={11} />{" "}
+                              {e.transport}
+                            </div>
+                          )}
+                          {e.note && (
+                            <p className="text-sm text-jp-ink/70 whitespace-pre-line leading-relaxed mt-1 font-sans">
+                              <LinkifiedText text={e.note} />
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                    {!isReordering && (
+                      <div className="flex flex-col items-center justify-start gap-2 pl-2 border-l-2 border-dashed border-gray-100">
+                        {isEditing ? (
+                          <>
+                            <button
+                              onClick={onSaveEvent}
+                              className="p-2 bg-jp-matcha text-white rounded-full shadow-lg hover:bg-green-400 active:scale-95 transition-all transform hover:rotate-12"
+                            >
+                              <Icon
+                                path={ICONS.check}
+                                size={16}
+                                strokeWidth="3"
+                              />
+                            </button>
+                            <button
+                              onClick={() => onDeleteEvent(day.id, e.id)}
+                              className="p-2 bg-jp-red text-white rounded-full shadow-lg hover:bg-red-500 active:scale-95 transition-all transform hover:-rotate-12"
+                            >
+                              <Icon path={ICONS.trash} size={16} />
+                            </button>
+                          </>
+                        ) : (
+                          <button
+                            onClick={() => onEditEvent(e.id)}
+                            className="p-2 text-jp-sakura-dark hover:text-white hover:bg-jp-sakura rounded-full transition-all"
+                          >
+                            <Icon path={ICONS.edit} size={16} />
+                          </button>
+                        )}
+                        {!isEditing && (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                              e.location
+                            )}`}
+                            target="_blank"
+                            className="p-2 text-gray-300 hover:text-jp-fuji hover:bg-blue-50 rounded-full transition-all"
+                          >
+                            <Icon path={ICONS.mapPin} size={16} />
+                          </a>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            {!isReordering && (
+              <button
+                onClick={() => onAddEvent(day.id)}
+                className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/60 transition-colors tracking-wide font-serif`}
+              >
+                <Icon path={ICONS.plus} size={16} /> 新增活動
+              </button>
+            )}
+          </div>
+        );
+      };
+
       const App = () => {
         const [activeTab, setActiveTab] = useState("itinerary");
         const [authLoading, setAuthLoading] = useState(true);
@@ -386,14 +729,6 @@
         });
         const [mustBuyForm, setMustBuyForm] = useState({ area: "", item: "" });
         const [db, setDb] = useState(null);
-
-        // 計算總支出
-        const totalExpenses = useMemo(() => {
-          return (data.expenses || []).reduce(
-            (acc, curr) => acc + (Number(curr.total) || 0),
-            0
-          );
-        }, [data.expenses]);
 
         // --- Firebase Init ---
         useEffect(() => {
@@ -508,7 +843,8 @@
           saveToFirebase("itinerary", data.itinerary);
           setEditingEventId(null);
         };
-        window.addItineraryEventLocal = (dId) => {
+
+        const addItineraryEventLocal = (dId) => {
           const newId = `new_${Date.now()}`;
           const newList = data.itinerary.map((d) =>
             d.id === dId
@@ -531,6 +867,7 @@
           saveToFirebase("itinerary", newList);
           setEditingEventId(newId);
         };
+
         const deleteItineraryEventLocal = (dId, eId) => {
           if (confirm("刪除此活動？")) {
             const newList = data.itinerary.map((d) =>
@@ -607,357 +944,14 @@
               data.expenses.filter((e) => e.id !== id)
             );
         };
-        const resetData = () => {
-          if (confirm("重置所有資料？此動作無法復原")) {
-            saveToFirebase("itinerary", DEFAULT_ITINERARY);
-            saveToFirebase("shopping", []);
-            saveToFirebase("mustBuy", DEFAULT_MUSTBUY);
-            saveToFirebase("expenses", []);
+
+        // Handle sort toggle logic
+        const handleToggleReorder = (dayId) => {
+          if (reorderingDayId !== dayId) {
+            setEditingEventId(null); // Close any open edits
           }
+          setReorderingDayId(reorderingDayId === dayId ? null : dayId);
         };
-
-        const DayCard = ({
-          day,
-          color,
-          isReordering,
-          toggleReorder,
-          onUpdateEvents,
-          onDeleteEvent,
-          onEditEvent,
-          editingEventId,
-          onSaveEvent,
-          updateItineraryLocal,
-        }) => {
-          const listRef = useRef(null);
-          const sortableInstance = useRef(null);
-          useEffect(() => {
-            if (isReordering && listRef.current) {
-              sortableInstance.current = new Sortable(listRef.current, {
-                handle: ".drag-handle",
-                animation: 150,
-                ghostClass: "sortable-ghost",
-                dragClass: "sortable-drag",
-                delay: 0,
-                onEnd: (evt) => {
-                  const newEvents = [...day.events];
-                  const [movedItem] = newEvents.splice(evt.oldIndex, 1);
-                  newEvents.splice(evt.newIndex, 0, movedItem);
-                  onUpdateEvents(day.id, newEvents);
-                },
-              });
-            } else if (sortableInstance.current) {
-              sortableInstance.current.destroy();
-              sortableInstance.current = null;
-            }
-            return () => {
-              if (sortableInstance.current) sortableInstance.current.destroy();
-            };
-          }, [isReordering, day.events, onUpdateEvents, day.id]);
-
-          return (
-            <div
-              className={`bg-white rounded-2xl shadow-sm border-2 ${
-                color.border
-              } overflow-hidden flex flex-col transition-all duration-300 relative ${
-                isReordering
-                  ? "ring-4 ring-jp-mikan/50 scale-[0.98]"
-                  : "hover:shadow-lg"
-              }`}
-            >
-              <div className="sakura-icon">
-                <Icon
-                  path={ICONS.sakura}
-                  size={40}
-                  className="text-jp-sakura"
-                />
-              </div>
-              <div
-                className={`${color.header} p-3 md:p-4 border-b-2 ${color.border} flex items-center justify-between gap-3`}
-              >
-                <div className="flex items-center gap-3 overflow-hidden">
-                  <span
-                    className={`${color.sub} text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex-shrink-0 tracking-wide font-sans`}
-                  >
-                    {day.date}
-                  </span>
-                  <h3 className="font-bold text-base md:text-lg truncate tracking-wider font-serif">
-                    {day.title.replace(/^Day \d+: /, "")}
-                  </h3>
-                </div>
-                <button
-                  onClick={toggleReorder}
-                  className={`p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all active:scale-95 flex-shrink-0 ${
-                    isReordering
-                      ? "bg-jp-mikan text-white shadow-md rotate-180"
-                      : "bg-white/60 hover:bg-white text-jp-ink hover:text-jp-sakura-dark"
-                  }`}
-                >
-                  <Icon
-                    path={isReordering ? ICONS.check : ICONS.sort}
-                    size={18}
-                  />
-                </button>
-              </div>
-              <div
-                ref={listRef}
-                className={`divide-y divide-dashed ${color.border} ${
-                  color.body
-                } flex-1 ${isReordering ? "bg-orange-50/20" : ""}`}
-              >
-                {day.events.map((e) => {
-                  const isEditing = editingEventId === e.id;
-                  return (
-                    <div
-                      key={e.id}
-                      className={`event-item p-4 flex gap-3 relative group transition-all duration-300 ${
-                        isEditing
-                          ? "bg-white shadow-xl z-10 scale-[1.02] border-2 border-jp-sakura my-3 rounded-xl"
-                          : "hover:bg-white/80"
-                      }`}
-                    >
-                      {isReordering && (
-                        <div className="drag-handle w-10 -ml-2 flex items-center justify-center text-jp-mikan hover:text-orange-500 cursor-grab active:cursor-grabbing border-r border-gray-200/50 mr-2">
-                          <Icon path={ICONS.grip} size={20} />
-                        </div>
-                      )}
-                      <div className="w-14 flex-shrink-0 flex flex-col items-center pt-1">
-                        {isEditing ? (
-                          <select
-                            value={e.time}
-                            onChange={(ev) =>
-                              updateItineraryLocal(
-                                day.id,
-                                e.id,
-                                "time",
-                                ev.target.value
-                              )
-                            }
-                            className="w-full text-xs border-2 border-jp-sakura rounded-lg p-1 text-center bg-white shadow-sm font-bold text-jp-ink"
-                            style={{ textAlignLast: "center" }}
-                          >
-                            {!TIME_OPTIONS.includes(e.time) && (
-                              <option>{e.time}</option>
-                            )}
-                            {TIME_OPTIONS.map((t) => (
-                              <option key={t} value={t}>
-                                {t}
-                              </option>
-                            ))}
-                          </select>
-                        ) : (
-                          <span
-                            className={`text-sm font-black ${
-                              color.accent
-                            } font-sans tracking-wide bg-white/90 px-2 py-0.5 rounded-lg shadow-sm border border-white ${
-                              isReordering ? "opacity-50" : ""
-                            }`}
-                          >
-                            {e.time}
-                          </span>
-                        )}
-                        {!isEditing && !isReordering && (
-                          <div
-                            className={`h-full w-0.5 ${color.border.replace(
-                              "border",
-                              "bg"
-                            )} mt-2 mb-[-20px] opacity-40 rounded-full`}
-                          ></div>
-                        )}
-                      </div>
-                      <div className="flex-1 pb-1 space-y-1.5 min-w-0">
-                        {isEditing ? (
-                          <div className="space-y-3">
-                            <input
-                              value={e.location}
-                              onChange={(ev) =>
-                                updateItineraryLocal(
-                                  day.id,
-                                  e.id,
-                                  "location",
-                                  ev.target.value
-                                )
-                              }
-                              className="w-full border-2 border-jp-sakura p-2 rounded-xl font-bold text-jp-ink text-sm bg-white focus:ring-2 focus:ring-jp-sakura/50 transition-all font-serif"
-                              placeholder="地點"
-                            />
-                            <div className="flex gap-2">
-                              <input
-                                value={e.transport}
-                                onChange={(ev) =>
-                                  updateItineraryLocal(
-                                    day.id,
-                                    e.id,
-                                    "transport",
-                                    ev.target.value
-                                  )
-                                }
-                                className="w-1/3 border-2 border-jp-sakura/50 p-2 rounded-xl text-xs bg-white focus:border-jp-sakura transition-colors"
-                                placeholder="交通"
-                              />
-                              <textarea
-                                value={e.note}
-                                onChange={(ev) =>
-                                  updateItineraryLocal(
-                                    day.id,
-                                    e.id,
-                                    "note",
-                                    ev.target.value
-                                  )
-                                }
-                                className="flex-1 border-2 border-jp-sakura/50 p-2 rounded-xl text-xs bg-white focus:border-jp-sakura transition-colors"
-                                rows="2"
-                                placeholder="備註"
-                              ></textarea>
-                            </div>
-                          </div>
-                        ) : (
-                          <div
-                            className={
-                              isReordering
-                                ? "opacity-70 pointer-events-none"
-                                : ""
-                            }
-                          >
-                            <div className="flex justify-between items-start">
-                              <h4 className="font-bold text-jp-ink text-base font-serif tracking-wide">
-                                {e.location}
-                              </h4>
-                            </div>
-                            {e.transport && (
-                              <div
-                                className={`inline-flex items-center gap-1.5 text-[11px] ${color.accent} bg-white/80 px-2 py-0.5 rounded-full border ${color.border} mt-1 font-medium`}
-                              >
-                                <Icon path={ICONS.train} size={11} />{" "}
-                                {e.transport}
-                              </div>
-                            )}
-                            {e.note && (
-                              <p className="text-sm text-jp-ink/70 whitespace-pre-line leading-relaxed mt-1 font-sans">
-                                <LinkifiedText text={e.note} />
-                              </p>
-                            )}
-                          </div>
-                        )}
-                      </div>
-                      {!isReordering && (
-                        <div className="flex flex-col items-center justify-start gap-2 pl-2 border-l-2 border-dashed border-gray-100">
-                          {isEditing ? (
-                            <>
-                              <button
-                                onClick={onSaveEvent}
-                                className="p-2 bg-jp-matcha text-white rounded-full shadow-lg hover:bg-green-400 active:scale-95 transition-all transform hover:rotate-12"
-                              >
-                                <Icon
-                                  path={ICONS.check}
-                                  size={16}
-                                  strokeWidth="3"
-                                />
-                              </button>
-                              <button
-                                onClick={() => onDeleteEvent(day.id, e.id)}
-                                className="p-2 bg-jp-red text-white rounded-full shadow-lg hover:bg-red-500 active:scale-95 transition-all transform hover:-rotate-12"
-                              >
-                                <Icon path={ICONS.trash} size={16} />
-                              </button>
-                            </>
-                          ) : (
-                            <button
-                              onClick={() => onEditEvent(e.id)}
-                              className="p-2 text-jp-sakura-dark hover:text-white hover:bg-jp-sakura rounded-full transition-all"
-                            >
-                              <Icon path={ICONS.edit} size={16} />
-                            </button>
-                          )}
-                          {!isEditing && (
-                            <a
-                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
-                                e.location
-                              )}`}
-                              target="_blank"
-                              className="p-2 text-gray-300 hover:text-jp-fuji hover:bg-blue-50 rounded-full transition-all"
-                            >
-                              <Icon path={ICONS.mapPin} size={16} />
-                            </a>
-                          )}
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-              {!isReordering && (
-                <button
-                  onClick={
-                    window.addItineraryEventLocal
-                      ? () => window.addItineraryEventLocal(day.id)
-                      : null
-                  }
-                  className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/60 transition-colors tracking-wide font-serif`}
-                >
-                  <Icon path={ICONS.plus} size={16} /> 新增活動
-                </button>
-              )}
-            </div>
-          );
-        };
-
-        const Sidebar = () => (
-          <aside className="hidden md:flex flex-col w-64 bg-jp-bg border-r border-stone-100 h-screen sticky top-0 shadow-[2px_0_15px_-3px_rgba(0,0,0,0.05)] z-50 bg-pattern-asanoha">
-            <div className="p-6 border-b-2 border-dashed border-jp-sakura/30 bg-jp-bg/95 backdrop-blur-sm">
-              <h1 className="text-2xl font-bold text-jp-ink tracking-widest flex items-center gap-2 font-serif">
-                KANSAI{" "}
-                <span className="text-jp-red text-sm bg-white px-2 rounded-full border border-jp-red shadow-sm">
-                  旅
-                </span>
-              </h1>
-              <div className="mt-3 flex items-center gap-2">
-                <div
-                  className={`w-2 h-2 rounded-full ${
-                    user ? "bg-jp-matcha animate-pulse" : "bg-red-400"
-                  }`}
-                ></div>
-                <span className="text-xs text-jp-ink/60 font-medium font-sans">
-                  {user ? "連線中" : "離線"}
-                </span>
-              </div>
-            </div>
-            <nav className="flex-1 p-4 space-y-3 bg-jp-bg/90">
-              {[
-                { id: "itinerary", icon: ICONS.torii, label: "行程表" },
-                { id: "shopping", icon: ICONS.fukubukuro, label: "購物清單" },
-                { id: "tools", icon: ICONS.yen, label: "記帳本" },
-                { id: "recommend", icon: ICONS.fuji, label: "推薦景點" },
-              ].map((t) => (
-                <button
-                  key={t.id}
-                  onClick={() => setActiveTab(t.id)}
-                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold tracking-wide border-2 ${
-                    activeTab === t.id
-                      ? "bg-white text-jp-red border-jp-sakura shadow-sm"
-                      : "border-transparent text-jp-ink/60 hover:bg-white hover:text-jp-ink"
-                  }`}
-                >
-                  <Icon
-                    path={t.icon}
-                    size={22}
-                    className={
-                      activeTab === t.id ? "text-jp-red" : "text-jp-ink/40"
-                    }
-                  />
-                  {t.label}
-                </button>
-              ))}
-            </nav>
-            <div className="p-4 border-t border-stone-100 bg-jp-bg/95">
-              <button
-                onClick={resetData}
-                className="w-full flex items-center justify-center gap-2 py-2 text-xs text-jp-ink/40 hover:text-jp-red transition-colors border border-dashed border-stone-200 rounded-full hover:border-jp-red"
-              >
-                <Icon path={ICONS.refresh} size={12} /> 資料庫重置
-              </button>
-            </div>
-          </aside>
-        );
 
         if (authLoading)
           return (
@@ -971,7 +965,12 @@
 
         return (
           <div className="min-h-screen bg-jp-bg md:flex relative font-sans text-jp-ink bg-pattern-asanoha">
-            <Sidebar />
+            <Sidebar
+              user={user}
+              configError={configError}
+              activeTab={activeTab}
+              setActiveTab={setActiveTab}
+            />
             <div className="flex-1 flex flex-col h-screen overflow-hidden">
               <div className="md:hidden bg-jp-bg/95 backdrop-blur-md px-4 py-3 sticky top-0 z-50 flex justify-between items-center border-b-2 border-dashed border-jp-sakura/30 shadow-sm">
                 <div className="flex flex-col">
@@ -1038,17 +1037,14 @@
                               day={d}
                               color={color}
                               isReordering={reorderingDayId === d.id}
-                              toggleReorder={() =>
-                                setReorderingDayId(
-                                  reorderingDayId === d.id ? null : d.id
-                                )
-                              }
+                              toggleReorder={() => handleToggleReorder(d.id)}
                               onUpdateEvents={onUpdateEvents}
                               onDeleteEvent={deleteItineraryEventLocal}
                               onEditEvent={setEditingEventId}
                               editingEventId={editingEventId}
                               onSaveEvent={saveSingleEvent}
                               updateItineraryLocal={updateItineraryLocal}
+                              onAddEvent={addItineraryEventLocal}
                             />
                           );
                         })}
@@ -1071,7 +1067,10 @@
                           <input
                             value={newItem.name}
                             onChange={(e) =>
-                              setNewItem({ ...newItem, name: e.target.value })
+                              setNewItem({
+                                ...newItem,
+                                name: e.target.value,
+                              })
                             }
                             placeholder="想買什麼？"
                             className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-sakura text-sm focus:bg-white transition-colors"
@@ -1080,7 +1079,10 @@
                             type="number"
                             value={newItem.qty}
                             onChange={(e) =>
-                              setNewItem({ ...newItem, qty: e.target.value })
+                              setNewItem({
+                                ...newItem,
+                                qty: e.target.value,
+                              })
                             }
                             placeholder="數"
                             className="w-20 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-sakura text-center text-sm focus:bg-white transition-colors"
@@ -1090,7 +1092,10 @@
                           <input
                             value={newItem.note}
                             onChange={(e) =>
-                              setNewItem({ ...newItem, note: e.target.value })
+                              setNewItem({
+                                ...newItem,
+                                note: e.target.value,
+                              })
                             }
                             placeholder="備註 (規格、顏色...)"
                             className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-sakura text-xs focus:bg-white transition-colors"
@@ -1260,20 +1265,10 @@
                         </div>
                       </div>
                       <div className="flex-1 w-full space-y-3">
-                        <div className="flex justify-between items-end border-b-2 border-dashed border-jp-matcha/30 pb-2 mb-4">
-                          <h3 className="font-bold text-jp-ink text-xl font-serif">
-                            <span className="text-jp-matcha mr-2">●</span>{" "}
-                            消費紀錄
-                          </h3>
-                          <div className="text-right">
-                            <span className="text-xs text-jp-ink/60 font-bold block">
-                              總支出
-                            </span>
-                            <span className="text-xl font-bold text-jp-red font-mono">
-                              ¥ {totalExpenses.toLocaleString()}
-                            </span>
-                          </div>
-                        </div>
+                        <h3 className="hidden md:block font-bold text-jp-ink text-xl font-serif mb-4 pb-2 border-b-2 border-dashed border-jp-matcha/30">
+                          <span className="text-jp-matcha mr-2">●</span>{" "}
+                          消費紀錄
+                        </h3>
                         {(!data.expenses || data.expenses.length === 0) && (
                           <div className="text-center py-12 text-jp-ink/30 text-sm bg-white rounded-3xl border-2 border-stone-100 border-dashed font-serif">
                             尚無消費紀錄
@@ -1415,10 +1410,22 @@
               <div className="md:hidden fixed bottom-0 w-full bg-jp-bg/95 backdrop-blur border-t-2 border-jp-sakura/20 pb-safe z-50 safe-bottom shadow-[0_-5px_15px_rgba(0,0,0,0.03)]">
                 <div className="flex justify-around items-center h-16">
                   {[
-                    { id: "itinerary", icon: ICONS.torii, label: "行程" },
-                    { id: "shopping", icon: ICONS.fukubukuro, label: "購物" },
+                    {
+                      id: "itinerary",
+                      icon: ICONS.torii,
+                      label: "行程",
+                    },
+                    {
+                      id: "shopping",
+                      icon: ICONS.fukubukuro,
+                      label: "購物",
+                    },
                     { id: "tools", icon: ICONS.yen, label: "記帳" },
-                    { id: "recommend", icon: ICONS.fuji, label: "推薦" },
+                    {
+                      id: "recommend",
+                      icon: ICONS.fuji,
+                      label: "推薦",
+                    },
                   ].map((t) => (
                     <button
                       key={t.id}
