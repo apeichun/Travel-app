@@ -1,0 +1,1459 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Kansai Trip 2025 (Kawaii Style - Public Data)</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700&family=Zen+Old+Mincho:wght@400;700;900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "jp-bg": "#fffbf0",
+              "jp-sakura": "#ffcae4",
+              "jp-sakura-dark": "#e088a8",
+              "jp-matcha": "#c5e1a5",
+              "jp-fuji": "#a0d8ef",
+              "jp-mikan": "#ffcc80",
+              "jp-ink": "#4a4a4a",
+              "jp-red": "#ff6b6b",
+            },
+            fontFamily: {
+              sans: ['"Zen Maru Gothic"', "sans-serif"],
+              serif: ['"Zen Old Mincho"', "serif"],
+            },
+            backgroundImage: {
+              "pattern-asanoha":
+                "url(\"data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 0h32v32H0z' fill='%23fffbf0' fill-opacity='1'/%3E%3Cpath d='M16 16L0 0m16 16L32 0M16 16v16M16 16l16 16M16 16L0 32' stroke='%23ffcae4' stroke-width='1' stroke-opacity='0.4'/%3E%3C/svg%3E\")",
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <!-- React & ReactDOM -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        onSnapshot,
+        setDoc,
+        collection,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      window.Firebase = {
+        initializeApp,
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+        getFirestore,
+        doc,
+        onSnapshot,
+        setDoc,
+        collection,
+      };
+    </script>
+
+    <style>
+      body {
+        -webkit-tap-highlight-color: transparent;
+        background-color: #fffbf0;
+        color: #4a4a4a;
+        user-select: none;
+        font-family: "Zen Maru Gothic", sans-serif;
+      }
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-family: "Zen Old Mincho", serif;
+      }
+      .pb-safe {
+        padding-bottom: calc(4rem + env(safe-area-inset-bottom));
+      }
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #ffcae4;
+        box-shadow: 0 0 0 3px rgba(255, 202, 228, 0.3);
+      }
+      .safe-bottom {
+        padding-bottom: env(safe-area-inset-bottom);
+      }
+      .sortable-ghost {
+        opacity: 0.6;
+        background: #fff0f5;
+        border: 2px dashed #ffcae4;
+        border-radius: 12px;
+      }
+      .sortable-drag {
+        opacity: 1;
+        background: #fff;
+        box-shadow: 0 10px 25px -5px rgba(255, 182, 193, 0.4);
+        transform: scale(1.02) rotate(-1deg);
+        border: 2px solid #ffcae4;
+        border-radius: 12px;
+      }
+      .drag-handle {
+        touch-action: none;
+        cursor: grab;
+      }
+      .drag-handle:active {
+        cursor: grabbing;
+      }
+      .sakura-icon {
+        position: absolute;
+        top: -5px;
+        right: -5px;
+        opacity: 0.2;
+        pointer-events: none;
+        transform: rotate(15deg);
+      }
+      @media (min-width: 768px) {
+        ::-webkit-scrollbar {
+          width: 8px;
+          height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+          background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+          background: #ffcae4;
+          border-radius: 10px;
+          border: 2px solid #fffbf0;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+          background: #e088a8;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect, useRef, useCallback, memo, useMemo } = React;
+
+      // =================================================================================
+      // [設定] 請在此處填入您的 Firebase 設定
+      // =================================================================================
+      const YOUR_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCH2awCY1eWCKO03nCc3ixJiOGtoz1u5tg",
+        authDomain: "travel-app-4560d.firebaseapp.com",
+        projectId: "travel-app-4560d",
+        storageBucket: "travel-app-4560d.firebasestorage.app",
+        messagingSenderId: "813547420756",
+        appId: "1:813547420756:web:f6f21c91b28556627741c1",
+      };
+
+      const APP_ID = "my-kansai-trip-2025";
+      // =================================================================================
+
+      const TIME_OPTIONS = (() => {
+        const options = ["待定"];
+        for (let h = 0; h < 24; h++) {
+          for (let m = 0; m < 60; m += 15) {
+            options.push(
+              `${h.toString().padStart(2, "0")}:${m
+                .toString()
+                .padStart(2, "0")}`
+            );
+          }
+        }
+        return options;
+      })();
+
+      const DEFAULT_ITINERARY = [
+        {
+          id: 1,
+          date: "2/6 (五)",
+          title: "Day 1: 抵達大阪",
+          events: [
+            {
+              id: "e1",
+              time: "10:55",
+              location: "關西機場 (KIX)",
+              transport: "入境",
+              note: "抵達後前往二樓，順空橋走至南海電鐵",
+            },
+            {
+              id: "e2",
+              time: "12:00",
+              location: "南海電鐵",
+              transport: "Rapit 特急",
+              note: "搭乘 Rapit 到天下茶屋或難波轉乘",
+            },
+          ],
+        },
+        {
+          id: 2,
+          date: "2/7 (六)",
+          title: "Day 2: 大阪城 & 歷史",
+          events: [
+            {
+              id: "e8",
+              time: "08:30",
+              location: "木津市場",
+              transport: "地鐵",
+              note: "新鮮海鮮早餐",
+            },
+          ],
+        },
+      ];
+      const DEFAULT_MUSTBUY = [
+        { area: "梅田", items: ["Baton d'or", "Grand Calbee"] },
+        { area: "京都", items: ["茶之菓", "京年輪蛋糕"] },
+      ];
+
+      // --- 日本可愛配色 ---
+      const DAY_COLORS = [
+        {
+          header: "bg-[#ffe4e1] text-[#d65d7a]",
+          body: "bg-[#fff0f5]/50",
+          border: "border-[#ffb7b2]",
+          accent: "text-[#d65d7a]",
+          sub: "bg-white text-[#d65d7a]",
+        },
+        {
+          header: "bg-[#e2f0cb] text-[#558b2f]",
+          body: "bg-[#f1f8e9]/50",
+          border: "border-[#c5e1a5]",
+          accent: "text-[#558b2f]",
+          sub: "bg-white text-[#558b2f]",
+        },
+        {
+          header: "bg-[#e1f5fe] text-[#0277bd]",
+          body: "bg-[#e3f2fd]/50",
+          border: "border-[#81d4fa]",
+          accent: "text-[#0277bd]",
+          sub: "bg-white text-[#0277bd]",
+        },
+        {
+          header: "bg-[#fff3e0] text-[#ef6c00]",
+          body: "bg-[#fff8e1]/50",
+          border: "border-[#ffcc80]",
+          accent: "text-[#ef6c00]",
+          sub: "bg-white text-[#ef6c00]",
+        },
+        {
+          header: "bg-[#f3e5f5] text-[#8e24aa]",
+          body: "bg-[#f3e5f5]/50",
+          border: "border-[#ce93d8]",
+          accent: "text-[#8e24aa]",
+          sub: "bg-white text-[#8e24aa]",
+        },
+      ];
+
+      // --- Custom SVG Icons ---
+      const Icon = ({
+        path,
+        size = 20,
+        className = "",
+        onClick,
+        viewBox = "0 0 24 24",
+      }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox={viewBox}
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.5"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+          onClick={onClick}
+          style={{ cursor: onClick ? "pointer" : "default" }}
+        >
+          <path d={path} />
+        </svg>
+      );
+
+      const ICONS = {
+        torii:
+          "M4 10h16 M4 6h16 M6 10v12 M18 10v12 M2 6l2-4h16l2 4 M6 6v4 M18 6v4",
+        fukubukuro:
+          "M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0 M12 14v2",
+        yen: "M12 1a11 11 0 1 0 11 11 A11 11 0 0 0 12 1zm0 4v14 M8 7l4 6 4-6 M8 13h8 M8 16h8",
+        fuji: "M12 2L2 22h20L12 2zm0 4l3 6H9l3-6z",
+        sakura:
+          "M12 2c0 5-5 5-5 10s5 10 5 10 5-5 5-10-5-5-5-10z M12 12m-3 3a3 3 0 1 0 6 0 3 3 0 1 0-6 0",
+        edit: "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7 M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z",
+        save: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8",
+        trash:
+          "M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+        plus: "M12 5v14M5 12h14",
+        check: "M20 6L9 17l-5-5",
+        train:
+          "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H12c-.7 0-1.3.3-1.8.7-.9.9-2.2 2.3-2.2 2.3s-2.7.6-4.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2 M7 19h10 M9 10h6 M12 5v5",
+        mapPin:
+          "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6",
+        externalLink:
+          "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
+        globe:
+          "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
+        refresh: "M23 4v6h-6 M1 20v-6h6",
+        wifi: "M5 12.55a11 11 0 0 1 14.08 0 M1.42 9a16 16 0 0 1 21.16 0 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
+        wifiOff:
+          "M1 1l22 22 M16.72 11.06A10.94 10.94 0 0 1 19 12.55 M5 12.55a10.94 10.94 0 0 1 5.17-2.39 M10.71 5.05A16 16 0 0 1 22.58 9 M1.42 9a15.91 15.91 0 0 1 4.7-2.88 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
+        grip: "M3 12h18 M3 6h18 M3 18h18",
+        sort: "M3 6h18M3 12h18M3 18h18",
+      };
+
+      const LinkifiedText = ({ text }) => {
+        if (!text) return null;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const parts = text.split(urlRegex);
+        return (
+          <>
+            {parts.map((part, index) =>
+              part.match(urlRegex) ? (
+                <a
+                  key={index}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-jp-red hover:text-jp-sakura-dark hover:underline break-all relative z-10 font-bold"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {part}
+                </a>
+              ) : (
+                part
+              )
+            )}
+          </>
+        );
+      };
+
+      const App = () => {
+        const [activeTab, setActiveTab] = useState("itinerary");
+        const [authLoading, setAuthLoading] = useState(true);
+        const [user, setUser] = useState(null);
+        const [configError, setConfigError] = useState(false);
+        const [data, setData] = useState({
+          itinerary: [],
+          shopping: [],
+          mustBuy: [],
+          expenses: [],
+        });
+        const [editingEventId, setEditingEventId] = useState(null);
+        const [reorderingDayId, setReorderingDayId] = useState(null);
+        const [newItem, setNewItem] = useState({ name: "", qty: 1, note: "" });
+        const [expenseForm, setExpenseForm] = useState({
+          item: "",
+          total: "",
+          people: "2",
+          payer: "公費",
+        });
+        const [mustBuyForm, setMustBuyForm] = useState({ area: "", item: "" });
+        const [db, setDb] = useState(null);
+
+        // 計算總支出
+        const totalExpenses = useMemo(() => {
+          return (data.expenses || []).reduce(
+            (acc, curr) => acc + (Number(curr.total) || 0),
+            0
+          );
+        }, [data.expenses]);
+
+        // --- Firebase Init ---
+        useEffect(() => {
+          const initFirebase = async () => {
+            if (!window.Firebase) return;
+            if (YOUR_FIREBASE_CONFIG.apiKey.includes("請在此處貼上")) {
+              setConfigError(true);
+              setAuthLoading(false);
+              return;
+            }
+            try {
+              const app = window.Firebase.initializeApp(YOUR_FIREBASE_CONFIG);
+              const auth = window.Firebase.getAuth(app);
+              const firestore = window.Firebase.getFirestore(app);
+              setDb(firestore);
+              await window.Firebase.signInAnonymously(auth);
+              window.Firebase.onAuthStateChanged(auth, (u) => {
+                setUser(u);
+                setAuthLoading(false);
+              });
+            } catch (error) {
+              console.error("Firebase Init Error:", error);
+              alert("Firebase 初始化失敗");
+              setAuthLoading(false);
+            }
+          };
+          initFirebase();
+        }, []);
+
+        // --- Realtime Listeners ---
+        useEffect(() => {
+          if (!user || !db) return;
+          const publicPath = `artifacts/${APP_ID}/public/data/trip_data`;
+
+          const setupListener = (docName, dataKey, defaultVal) => {
+            const docRef = window.Firebase.doc(
+              window.Firebase.collection(db, publicPath),
+              docName
+            );
+            return window.Firebase.onSnapshot(
+              docRef,
+              (docSnap) => {
+                if (docSnap.exists())
+                  setData((prev) => ({
+                    ...prev,
+                    [dataKey]: docSnap.data().list || [],
+                  }));
+                else if (defaultVal)
+                  setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
+              },
+              (err) => {
+                if (err.code === "permission-denied")
+                  console.error(
+                    "Permission Denied: 請檢查 Firebase Rules 是否允許讀取 public 路徑"
+                  );
+              }
+            );
+          };
+          const unsubs = [
+            setupListener("itinerary", "itinerary", DEFAULT_ITINERARY),
+            setupListener("shopping", "shopping", []),
+            setupListener("mustBuy", "mustBuy", DEFAULT_MUSTBUY),
+            setupListener("expenses", "expenses", []),
+          ];
+          return () => unsubs.forEach((u) => u());
+        }, [user, db]);
+
+        const saveToFirebase = async (key, newList) => {
+          if (!user || !db) return;
+          const publicPath = `artifacts/${APP_ID}/public/data/trip_data`;
+          const docRef = window.Firebase.doc(
+            window.Firebase.collection(db, publicPath),
+            key
+          );
+          try {
+            await window.Firebase.setDoc(docRef, { list: newList });
+          } catch (e) {
+            console.error("Save failed:", e);
+            if (e.code === "permission-denied")
+              alert(
+                "儲存失敗：您沒有權限寫入，請確認 Firebase Rules 允許 public 寫入"
+              );
+          }
+        };
+
+        // --- Logic Handlers ---
+        const onUpdateEvents = useCallback(
+          (dayId, newEvents) => {
+            const newData = data.itinerary.map((d) =>
+              d.id === dayId ? { ...d, events: newEvents } : d
+            );
+            setData((prev) => ({ ...prev, itinerary: newData }));
+            saveToFirebase("itinerary", newData);
+          },
+          [data.itinerary, user]
+        );
+
+        const updateItineraryLocal = (dId, eId, k, v) => {
+          const newList = data.itinerary.map((d) =>
+            d.id !== dId
+              ? d
+              : {
+                  ...d,
+                  events: d.events.map((e) =>
+                    e.id === eId ? { ...e, [k]: v } : e
+                  ),
+                }
+          );
+          setData((p) => ({ ...p, itinerary: newList }));
+        };
+        const saveSingleEvent = () => {
+          saveToFirebase("itinerary", data.itinerary);
+          setEditingEventId(null);
+        };
+        window.addItineraryEventLocal = (dId) => {
+          const newId = `new_${Date.now()}`;
+          const newList = data.itinerary.map((d) =>
+            d.id === dId
+              ? {
+                  ...d,
+                  events: [
+                    ...d.events,
+                    {
+                      id: newId,
+                      time: "待定",
+                      location: "新地點",
+                      transport: "",
+                      note: "",
+                    },
+                  ],
+                }
+              : d
+          );
+          setData((p) => ({ ...p, itinerary: newList }));
+          saveToFirebase("itinerary", newList);
+          setEditingEventId(newId);
+        };
+        const deleteItineraryEventLocal = (dId, eId) => {
+          if (confirm("刪除此活動？")) {
+            const newList = data.itinerary.map((d) =>
+              d.id === dId
+                ? { ...d, events: d.events.filter((e) => e.id !== eId) }
+                : d
+            );
+            setData((p) => ({ ...p, itinerary: newList }));
+            saveToFirebase("itinerary", newList);
+            setEditingEventId(null);
+          }
+        };
+        const addShop = () => {
+          if (!newItem.name) return;
+          const newList = [
+            ...data.shopping,
+            { ...newItem, id: Date.now(), checked: false },
+          ];
+          saveToFirebase("shopping", newList);
+          setNewItem({ name: "", qty: 1, note: "" });
+        };
+        const toggleShop = (id) =>
+          saveToFirebase(
+            "shopping",
+            data.shopping.map((i) =>
+              i.id === id ? { ...i, checked: !i.checked } : i
+            )
+          );
+        const delShop = (id) => {
+          if (confirm("刪除？"))
+            saveToFirebase(
+              "shopping",
+              data.shopping.filter((i) => i.id !== id)
+            );
+        };
+        const addMustBuy = () => {
+          if (!mustBuyForm.area || !mustBuyForm.item) return;
+          const l = [...data.mustBuy];
+          const i = l.findIndex((a) => a.area === mustBuyForm.area);
+          if (i >= 0) l[i].items.push(mustBuyForm.item);
+          else l.push({ area: mustBuyForm.area, items: [mustBuyForm.item] });
+          saveToFirebase("mustBuy", l);
+          setMustBuyForm((p) => ({ ...p, item: "" }));
+        };
+        const delMustBuy = (z, i) => {
+          const l = [...data.mustBuy];
+          l[z].items.splice(i, 1);
+          saveToFirebase("mustBuy", l);
+        };
+        const addExp = () => {
+          if (!expenseForm.item || !expenseForm.total) return;
+          const l = [
+            {
+              id: Date.now(),
+              date: new Date().toLocaleDateString("zh-TW", {
+                month: "2-digit",
+                day: "2-digit",
+              }),
+              item: expenseForm.item,
+              total: Number(expenseForm.total),
+              people: Number(expenseForm.people),
+              perPerson: Math.round(expenseForm.total / expenseForm.people),
+              payer: expenseForm.payer,
+            },
+            ...data.expenses,
+          ];
+          saveToFirebase("expenses", l);
+          setExpenseForm({ ...expenseForm, item: "", total: "" });
+        };
+        const delExp = (id) => {
+          if (confirm("刪除？"))
+            saveToFirebase(
+              "expenses",
+              data.expenses.filter((e) => e.id !== id)
+            );
+        };
+        const resetData = () => {
+          if (confirm("重置所有資料？此動作無法復原")) {
+            saveToFirebase("itinerary", DEFAULT_ITINERARY);
+            saveToFirebase("shopping", []);
+            saveToFirebase("mustBuy", DEFAULT_MUSTBUY);
+            saveToFirebase("expenses", []);
+          }
+        };
+
+        const DayCard = ({
+          day,
+          color,
+          isReordering,
+          toggleReorder,
+          onUpdateEvents,
+          onDeleteEvent,
+          onEditEvent,
+          editingEventId,
+          onSaveEvent,
+          updateItineraryLocal,
+        }) => {
+          const listRef = useRef(null);
+          const sortableInstance = useRef(null);
+          useEffect(() => {
+            if (isReordering && listRef.current) {
+              sortableInstance.current = new Sortable(listRef.current, {
+                handle: ".drag-handle",
+                animation: 150,
+                ghostClass: "sortable-ghost",
+                dragClass: "sortable-drag",
+                delay: 0,
+                onEnd: (evt) => {
+                  const newEvents = [...day.events];
+                  const [movedItem] = newEvents.splice(evt.oldIndex, 1);
+                  newEvents.splice(evt.newIndex, 0, movedItem);
+                  onUpdateEvents(day.id, newEvents);
+                },
+              });
+            } else if (sortableInstance.current) {
+              sortableInstance.current.destroy();
+              sortableInstance.current = null;
+            }
+            return () => {
+              if (sortableInstance.current) sortableInstance.current.destroy();
+            };
+          }, [isReordering, day.events, onUpdateEvents, day.id]);
+
+          return (
+            <div
+              className={`bg-white rounded-2xl shadow-sm border-2 ${
+                color.border
+              } overflow-hidden flex flex-col transition-all duration-300 relative ${
+                isReordering
+                  ? "ring-4 ring-jp-mikan/50 scale-[0.98]"
+                  : "hover:shadow-lg"
+              }`}
+            >
+              <div className="sakura-icon">
+                <Icon
+                  path={ICONS.sakura}
+                  size={40}
+                  className="text-jp-sakura"
+                />
+              </div>
+              <div
+                className={`${color.header} p-3 md:p-4 border-b-2 ${color.border} flex items-center justify-between gap-3`}
+              >
+                <div className="flex items-center gap-3 overflow-hidden">
+                  <span
+                    className={`${color.sub} text-xs font-bold px-3 py-1.5 rounded-full shadow-sm flex-shrink-0 tracking-wide font-sans`}
+                  >
+                    {day.date}
+                  </span>
+                  <h3 className="font-bold text-base md:text-lg truncate tracking-wider font-serif">
+                    {day.title.replace(/^Day \d+: /, "")}
+                  </h3>
+                </div>
+                <button
+                  onClick={toggleReorder}
+                  className={`p-2 rounded-full text-xs font-bold flex items-center justify-center transition-all active:scale-95 flex-shrink-0 ${
+                    isReordering
+                      ? "bg-jp-mikan text-white shadow-md rotate-180"
+                      : "bg-white/60 hover:bg-white text-jp-ink hover:text-jp-sakura-dark"
+                  }`}
+                >
+                  <Icon
+                    path={isReordering ? ICONS.check : ICONS.sort}
+                    size={18}
+                  />
+                </button>
+              </div>
+              <div
+                ref={listRef}
+                className={`divide-y divide-dashed ${color.border} ${
+                  color.body
+                } flex-1 ${isReordering ? "bg-orange-50/20" : ""}`}
+              >
+                {day.events.map((e) => {
+                  const isEditing = editingEventId === e.id;
+                  return (
+                    <div
+                      key={e.id}
+                      className={`event-item p-4 flex gap-3 relative group transition-all duration-300 ${
+                        isEditing
+                          ? "bg-white shadow-xl z-10 scale-[1.02] border-2 border-jp-sakura my-3 rounded-xl"
+                          : "hover:bg-white/80"
+                      }`}
+                    >
+                      {isReordering && (
+                        <div className="drag-handle w-10 -ml-2 flex items-center justify-center text-jp-mikan hover:text-orange-500 cursor-grab active:cursor-grabbing border-r border-gray-200/50 mr-2">
+                          <Icon path={ICONS.grip} size={20} />
+                        </div>
+                      )}
+                      <div className="w-14 flex-shrink-0 flex flex-col items-center pt-1">
+                        {isEditing ? (
+                          <select
+                            value={e.time}
+                            onChange={(ev) =>
+                              updateItineraryLocal(
+                                day.id,
+                                e.id,
+                                "time",
+                                ev.target.value
+                              )
+                            }
+                            className="w-full text-xs border-2 border-jp-sakura rounded-lg p-1 text-center bg-white shadow-sm font-bold text-jp-ink"
+                            style={{ textAlignLast: "center" }}
+                          >
+                            {!TIME_OPTIONS.includes(e.time) && (
+                              <option>{e.time}</option>
+                            )}
+                            {TIME_OPTIONS.map((t) => (
+                              <option key={t} value={t}>
+                                {t}
+                              </option>
+                            ))}
+                          </select>
+                        ) : (
+                          <span
+                            className={`text-sm font-black ${
+                              color.accent
+                            } font-sans tracking-wide bg-white/90 px-2 py-0.5 rounded-lg shadow-sm border border-white ${
+                              isReordering ? "opacity-50" : ""
+                            }`}
+                          >
+                            {e.time}
+                          </span>
+                        )}
+                        {!isEditing && !isReordering && (
+                          <div
+                            className={`h-full w-0.5 ${color.border.replace(
+                              "border",
+                              "bg"
+                            )} mt-2 mb-[-20px] opacity-40 rounded-full`}
+                          ></div>
+                        )}
+                      </div>
+                      <div className="flex-1 pb-1 space-y-1.5 min-w-0">
+                        {isEditing ? (
+                          <div className="space-y-3">
+                            <input
+                              value={e.location}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  day.id,
+                                  e.id,
+                                  "location",
+                                  ev.target.value
+                                )
+                              }
+                              className="w-full border-2 border-jp-sakura p-2 rounded-xl font-bold text-jp-ink text-sm bg-white focus:ring-2 focus:ring-jp-sakura/50 transition-all font-serif"
+                              placeholder="地點"
+                            />
+                            <div className="flex gap-2">
+                              <input
+                                value={e.transport}
+                                onChange={(ev) =>
+                                  updateItineraryLocal(
+                                    day.id,
+                                    e.id,
+                                    "transport",
+                                    ev.target.value
+                                  )
+                                }
+                                className="w-1/3 border-2 border-jp-sakura/50 p-2 rounded-xl text-xs bg-white focus:border-jp-sakura transition-colors"
+                                placeholder="交通"
+                              />
+                              <textarea
+                                value={e.note}
+                                onChange={(ev) =>
+                                  updateItineraryLocal(
+                                    day.id,
+                                    e.id,
+                                    "note",
+                                    ev.target.value
+                                  )
+                                }
+                                className="flex-1 border-2 border-jp-sakura/50 p-2 rounded-xl text-xs bg-white focus:border-jp-sakura transition-colors"
+                                rows="2"
+                                placeholder="備註"
+                              ></textarea>
+                            </div>
+                          </div>
+                        ) : (
+                          <div
+                            className={
+                              isReordering
+                                ? "opacity-70 pointer-events-none"
+                                : ""
+                            }
+                          >
+                            <div className="flex justify-between items-start">
+                              <h4 className="font-bold text-jp-ink text-base font-serif tracking-wide">
+                                {e.location}
+                              </h4>
+                            </div>
+                            {e.transport && (
+                              <div
+                                className={`inline-flex items-center gap-1.5 text-[11px] ${color.accent} bg-white/80 px-2 py-0.5 rounded-full border ${color.border} mt-1 font-medium`}
+                              >
+                                <Icon path={ICONS.train} size={11} />{" "}
+                                {e.transport}
+                              </div>
+                            )}
+                            {e.note && (
+                              <p className="text-sm text-jp-ink/70 whitespace-pre-line leading-relaxed mt-1 font-sans">
+                                <LinkifiedText text={e.note} />
+                              </p>
+                            )}
+                          </div>
+                        )}
+                      </div>
+                      {!isReordering && (
+                        <div className="flex flex-col items-center justify-start gap-2 pl-2 border-l-2 border-dashed border-gray-100">
+                          {isEditing ? (
+                            <>
+                              <button
+                                onClick={onSaveEvent}
+                                className="p-2 bg-jp-matcha text-white rounded-full shadow-lg hover:bg-green-400 active:scale-95 transition-all transform hover:rotate-12"
+                              >
+                                <Icon
+                                  path={ICONS.check}
+                                  size={16}
+                                  strokeWidth="3"
+                                />
+                              </button>
+                              <button
+                                onClick={() => onDeleteEvent(day.id, e.id)}
+                                className="p-2 bg-jp-red text-white rounded-full shadow-lg hover:bg-red-500 active:scale-95 transition-all transform hover:-rotate-12"
+                              >
+                                <Icon path={ICONS.trash} size={16} />
+                              </button>
+                            </>
+                          ) : (
+                            <button
+                              onClick={() => onEditEvent(e.id)}
+                              className="p-2 text-jp-sakura-dark hover:text-white hover:bg-jp-sakura rounded-full transition-all"
+                            >
+                              <Icon path={ICONS.edit} size={16} />
+                            </button>
+                          )}
+                          {!isEditing && (
+                            <a
+                              href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(
+                                e.location
+                              )}`}
+                              target="_blank"
+                              className="p-2 text-gray-300 hover:text-jp-fuji hover:bg-blue-50 rounded-full transition-all"
+                            >
+                              <Icon path={ICONS.mapPin} size={16} />
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+              {!isReordering && (
+                <button
+                  onClick={
+                    window.addItineraryEventLocal
+                      ? () => window.addItineraryEventLocal(day.id)
+                      : null
+                  }
+                  className={`w-full py-3 ${color.accent} text-sm font-bold flex justify-center items-center gap-2 hover:bg-white/60 transition-colors tracking-wide font-serif`}
+                >
+                  <Icon path={ICONS.plus} size={16} /> 新增活動
+                </button>
+              )}
+            </div>
+          );
+        };
+
+        const Sidebar = () => (
+          <aside className="hidden md:flex flex-col w-64 bg-jp-bg border-r border-stone-100 h-screen sticky top-0 shadow-[2px_0_15px_-3px_rgba(0,0,0,0.05)] z-50 bg-pattern-asanoha">
+            <div className="p-6 border-b-2 border-dashed border-jp-sakura/30 bg-jp-bg/95 backdrop-blur-sm">
+              <h1 className="text-2xl font-bold text-jp-ink tracking-widest flex items-center gap-2 font-serif">
+                KANSAI{" "}
+                <span className="text-jp-red text-sm bg-white px-2 rounded-full border border-jp-red shadow-sm">
+                  旅
+                </span>
+              </h1>
+              <div className="mt-3 flex items-center gap-2">
+                <div
+                  className={`w-2 h-2 rounded-full ${
+                    user ? "bg-jp-matcha animate-pulse" : "bg-red-400"
+                  }`}
+                ></div>
+                <span className="text-xs text-jp-ink/60 font-medium font-sans">
+                  {user ? "連線中" : "離線"}
+                </span>
+              </div>
+            </div>
+            <nav className="flex-1 p-4 space-y-3 bg-jp-bg/90">
+              {[
+                { id: "itinerary", icon: ICONS.torii, label: "行程表" },
+                { id: "shopping", icon: ICONS.fukubukuro, label: "購物清單" },
+                { id: "tools", icon: ICONS.yen, label: "記帳本" },
+                { id: "recommend", icon: ICONS.fuji, label: "推薦景點" },
+              ].map((t) => (
+                <button
+                  key={t.id}
+                  onClick={() => setActiveTab(t.id)}
+                  className={`w-full flex items-center gap-3 px-4 py-3 rounded-2xl transition-all font-bold tracking-wide border-2 ${
+                    activeTab === t.id
+                      ? "bg-white text-jp-red border-jp-sakura shadow-sm"
+                      : "border-transparent text-jp-ink/60 hover:bg-white hover:text-jp-ink"
+                  }`}
+                >
+                  <Icon
+                    path={t.icon}
+                    size={22}
+                    className={
+                      activeTab === t.id ? "text-jp-red" : "text-jp-ink/40"
+                    }
+                  />
+                  {t.label}
+                </button>
+              ))}
+            </nav>
+            <div className="p-4 border-t border-stone-100 bg-jp-bg/95">
+              <button
+                onClick={resetData}
+                className="w-full flex items-center justify-center gap-2 py-2 text-xs text-jp-ink/40 hover:text-jp-red transition-colors border border-dashed border-stone-200 rounded-full hover:border-jp-red"
+              >
+                <Icon path={ICONS.refresh} size={12} /> 資料庫重置
+              </button>
+            </div>
+          </aside>
+        );
+
+        if (authLoading)
+          return (
+            <div className="flex h-screen w-full items-center justify-center bg-jp-bg flex-col gap-4">
+              <div className="animate-spin rounded-full h-10 w-10 border-4 border-jp-sakura/30 border-t-jp-sakura"></div>
+              <div className="text-jp-sakura-dark font-medium text-sm tracking-widest font-serif">
+                讀取中...
+              </div>
+            </div>
+          );
+
+        return (
+          <div className="min-h-screen bg-jp-bg md:flex relative font-sans text-jp-ink bg-pattern-asanoha">
+            <Sidebar />
+            <div className="flex-1 flex flex-col h-screen overflow-hidden">
+              <div className="md:hidden bg-jp-bg/95 backdrop-blur-md px-4 py-3 sticky top-0 z-50 flex justify-between items-center border-b-2 border-dashed border-jp-sakura/30 shadow-sm">
+                <div className="flex flex-col">
+                  <h1 className="text-lg font-bold text-jp-ink tracking-widest flex items-center gap-2 font-serif">
+                    KANSAI{" "}
+                    <span className="text-jp-red text-xs bg-white px-1.5 rounded-full border border-jp-red">
+                      旅
+                    </span>
+                  </h1>
+                  <div className="flex items-center gap-1.5 mt-0.5">
+                    <div
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        user ? "bg-jp-matcha" : "bg-red-400"
+                      }`}
+                    ></div>
+                    <span className="text-[10px] text-jp-ink/50 font-medium">
+                      {user ? "連線中" : configError ? "設定錯誤" : "離線"}
+                    </span>
+                  </div>
+                </div>
+                <div className="bg-white text-jp-red text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border-2 border-jp-sakura shadow-sm">
+                  {activeTab === "tools"
+                    ? "記帳"
+                    : activeTab === "recommend"
+                    ? "推薦"
+                    : activeTab === "shopping"
+                    ? "購物"
+                    : "行程"}
+                </div>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 md:p-10 pb-24 md:pb-10 bg-jp-bg/50">
+                <div className="max-w-6xl mx-auto w-full">
+                  {configError && (
+                    <div
+                      className="bg-red-50 border-2 border-red-200 text-jp-red px-4 py-3 rounded-2xl relative mb-6 font-medium text-sm shadow-sm"
+                      role="alert"
+                    >
+                      <strong className="font-bold mr-2">設定錯誤</strong>
+                      <span className="block sm:inline">
+                        請填入您的 Firebase Config。
+                      </span>
+                    </div>
+                  )}
+
+                  {activeTab === "itinerary" && (
+                    <div className="space-y-6 animate-fade-in">
+                      <div className="flex justify-between items-center pb-2 border-b-2 border-jp-sakura/20 mb-4">
+                        <h2 className="font-bold text-jp-ink flex items-center gap-3 text-xl font-serif tracking-widest">
+                          <Icon
+                            path={ICONS.torii}
+                            size={28}
+                            className="text-jp-red"
+                          />
+                          行程總覽
+                        </h2>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
+                        {(data.itinerary || []).map((d, dIdx) => {
+                          const color = DAY_COLORS[dIdx % DAY_COLORS.length];
+                          return (
+                            <DayCard
+                              key={d.id}
+                              day={d}
+                              color={color}
+                              isReordering={reorderingDayId === d.id}
+                              toggleReorder={() =>
+                                setReorderingDayId(
+                                  reorderingDayId === d.id ? null : d.id
+                                )
+                              }
+                              onUpdateEvents={onUpdateEvents}
+                              onDeleteEvent={deleteItineraryEventLocal}
+                              onEditEvent={setEditingEventId}
+                              editingEventId={editingEventId}
+                              onSaveEvent={saveSingleEvent}
+                              updateItineraryLocal={updateItineraryLocal}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === "shopping" && (
+                    <div className="space-y-6 mt-2 animate-fade-in h-full flex flex-col">
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-sakura/30 space-y-4 sticky top-0 z-40 md:static md:max-w-2xl md:mx-auto w-full">
+                        <h2 className="hidden md:flex font-bold text-jp-ink items-center gap-3 mb-2 font-serif text-lg border-b-2 border-dashed border-jp-sakura/30 pb-3">
+                          <Icon
+                            path={ICONS.fukubukuro}
+                            size={24}
+                            className="text-jp-red"
+                          />
+                          新增購物項目
+                        </h2>
+                        <div className="flex gap-3">
+                          <input
+                            value={newItem.name}
+                            onChange={(e) =>
+                              setNewItem({ ...newItem, name: e.target.value })
+                            }
+                            placeholder="想買什麼？"
+                            className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-sakura text-sm focus:bg-white transition-colors"
+                          />
+                          <input
+                            type="number"
+                            value={newItem.qty}
+                            onChange={(e) =>
+                              setNewItem({ ...newItem, qty: e.target.value })
+                            }
+                            placeholder="數"
+                            className="w-20 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-sakura text-center text-sm focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <div className="flex gap-3">
+                          <input
+                            value={newItem.note}
+                            onChange={(e) =>
+                              setNewItem({ ...newItem, note: e.target.value })
+                            }
+                            placeholder="備註 (規格、顏色...)"
+                            className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-sakura text-xs focus:bg-white transition-colors"
+                          />
+                          <button
+                            onClick={addShop}
+                            className="bg-jp-red hover:bg-[#ff8fa3] text-white px-6 rounded-2xl font-bold shadow-md active:scale-95 transition-all flex items-center gap-2"
+                          >
+                            <Icon path={ICONS.plus} size={22} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
+                        {(data.shopping || []).map((i) => (
+                          <div
+                            key={i.id}
+                            className={`bg-white p-4 rounded-2xl shadow-sm border-2 border-transparent flex items-start gap-4 transition-all hover:shadow-md hover:border-jp-sakura/30 ${
+                              i.checked ? "bg-stone-50 opacity-60" : ""
+                            }`}
+                          >
+                            <button
+                              onClick={() => toggleShop(i.id)}
+                              className={`mt-1 w-6 h-6 rounded-full border-2 flex items-center justify-center transition-colors flex-shrink-0 ${
+                                i.checked
+                                  ? "bg-jp-matcha border-jp-matcha text-white"
+                                  : "border-gray-200 hover:border-jp-matcha text-transparent hover:text-jp-matcha"
+                              }`}
+                            >
+                              <Icon
+                                path={ICONS.check}
+                                size={14}
+                                strokeWidth="4"
+                              />
+                            </button>
+                            <div
+                              className="flex-1 min-w-0 cursor-pointer pt-0.5"
+                              onClick={() => toggleShop(i.id)}
+                            >
+                              <div
+                                className={`font-bold text-base text-jp-ink truncate font-serif ${
+                                  i.checked ? "line-through text-jp-ink/40" : ""
+                                }`}
+                              >
+                                {i.name}
+                              </div>
+                              <div className="text-sm text-jp-ink/60 mt-1.5 flex gap-2 items-center">
+                                <span className="font-mono bg-jp-sakura/20 px-2 py-0.5 rounded-lg text-jp-sakura-dark font-bold text-xs">
+                                  x{i.qty}
+                                </span>
+                                {i.note && (
+                                  <span className="truncate flex-1 text-xs">
+                                    {i.note}
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                            <button
+                              onClick={() => delShop(i.id)}
+                              className="text-gray-300 hover:text-jp-red p-2 active:bg-red-50 rounded-full transition-colors"
+                            >
+                              <Icon path={ICONS.trash} size={18} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === "tools" && (
+                    <div className="mt-2 animate-fade-in flex flex-col md:flex-row gap-8 items-start">
+                      <div className="w-full md:w-80 md:sticky md:top-6 space-y-6">
+                        <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-matcha/30 relative overflow-hidden">
+                          <div className="absolute top-0 right-0 w-24 h-24 bg-jp-matcha/10 rounded-bl-full -mr-6 -mt-6 z-0"></div>
+                          <div className="relative z-10">
+                            <div className="flex items-center gap-3 font-bold text-jp-ink mb-6 text-lg font-serif">
+                              <div className="p-2 bg-jp-matcha/20 rounded-xl text-jp-matcha-dark">
+                                <Icon path={ICONS.yen} size={24} />
+                              </div>
+                              新增記帳
+                            </div>
+                            <div className="space-y-4">
+                              <input
+                                placeholder="消費項目"
+                                value={expenseForm.item}
+                                onChange={(e) =>
+                                  setExpenseForm({
+                                    ...expenseForm,
+                                    item: e.target.value,
+                                  })
+                                }
+                                className="w-full border-2 border-stone-100 bg-stone-50 p-3 rounded-2xl text-sm focus:bg-white focus:border-jp-matcha transition-colors"
+                              />
+                              <div className="grid grid-cols-2 gap-3">
+                                <div className="relative">
+                                  <span className="absolute left-3 top-3 text-jp-ink/40 text-xs font-bold">
+                                    ¥
+                                  </span>
+                                  <input
+                                    type="number"
+                                    placeholder="金額"
+                                    value={expenseForm.total}
+                                    onChange={(e) =>
+                                      setExpenseForm({
+                                        ...expenseForm,
+                                        total: e.target.value,
+                                      })
+                                    }
+                                    className="border-2 border-stone-100 bg-stone-50 p-3 pl-6 rounded-2xl w-full text-sm font-mono focus:bg-white focus:border-jp-matcha transition-colors"
+                                  />
+                                </div>
+                                <div className="relative flex items-center">
+                                  <input
+                                    type="number"
+                                    placeholder="人數"
+                                    value={expenseForm.people}
+                                    onChange={(e) =>
+                                      setExpenseForm({
+                                        ...expenseForm,
+                                        people: e.target.value,
+                                      })
+                                    }
+                                    className="border-2 border-stone-100 bg-stone-50 p-3 rounded-2xl w-full text-center text-sm focus:bg-white focus:border-jp-matcha transition-colors"
+                                  />
+                                  <span className="absolute right-3 text-jp-ink/40 text-xs font-bold">
+                                    人
+                                  </span>
+                                </div>
+                              </div>
+                              <div className="bg-stone-50 p-4 rounded-2xl flex justify-between items-center border border-stone-100">
+                                <span className="text-jp-ink/60 text-xs font-bold">
+                                  每人分擔
+                                </span>
+                                <span className="text-xl font-bold text-jp-matcha font-mono">
+                                  ¥{" "}
+                                  {expenseForm.total && expenseForm.people
+                                    ? Math.round(
+                                        expenseForm.total / expenseForm.people
+                                      ).toLocaleString()
+                                    : 0}
+                                </span>
+                              </div>
+                              <button
+                                onClick={addExp}
+                                className="w-full bg-jp-matcha hover:bg-[#aed581] text-white py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-all font-serif tracking-widest text-lg"
+                              >
+                                登錄
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-3">
+                          <a
+                            href="https://weather.yahoo.co.jp/weather/jp/27/6200.html"
+                            target="_blank"
+                            className="bg-white p-3 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-center gap-2 text-jp-fuji font-bold text-xs hover:bg-jp-fuji/10 transition-colors"
+                          >
+                            <Icon path={ICONS.externalLink} size={14} />{" "}
+                            大阪天氣
+                          </a>
+                          <a
+                            href="https://translate.google.com/?sl=zh-TW&tl=ja"
+                            target="_blank"
+                            className="bg-white p-3 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-center gap-2 text-jp-ink/60 font-bold text-xs hover:bg-stone-50 transition-colors"
+                          >
+                            <Icon path={ICONS.globe} size={14} /> Google 翻譯
+                          </a>
+                        </div>
+                      </div>
+                      <div className="flex-1 w-full space-y-3">
+                        <div className="flex justify-between items-end border-b-2 border-dashed border-jp-matcha/30 pb-2 mb-4">
+                          <h3 className="font-bold text-jp-ink text-xl font-serif">
+                            <span className="text-jp-matcha mr-2">●</span>{" "}
+                            消費紀錄
+                          </h3>
+                          <div className="text-right">
+                            <span className="text-xs text-jp-ink/60 font-bold block">
+                              總支出
+                            </span>
+                            <span className="text-xl font-bold text-jp-red font-mono">
+                              ¥ {totalExpenses.toLocaleString()}
+                            </span>
+                          </div>
+                        </div>
+                        {(!data.expenses || data.expenses.length === 0) && (
+                          <div className="text-center py-12 text-jp-ink/30 text-sm bg-white rounded-3xl border-2 border-stone-100 border-dashed font-serif">
+                            尚無消費紀錄
+                          </div>
+                        )}
+                        {(data.expenses || []).map((ex) => (
+                          <div
+                            key={ex.id}
+                            className="flex justify-between items-center text-sm bg-white p-4 rounded-2xl border-2 border-transparent hover:border-jp-matcha/30 shadow-sm hover:shadow-md transition-all"
+                          >
+                            <div className="flex gap-4 items-center">
+                              <div className="bg-stone-100 text-jp-ink/50 text-[10px] font-bold px-3 py-2 rounded-xl text-center leading-tight font-sans">
+                                {ex.date.split("/")[0]}
+                                <br />
+                                <span className="text-lg text-jp-ink font-serif">
+                                  {ex.date.split("/")[1]}
+                                </span>
+                              </div>
+                              <div>
+                                <div className="font-bold text-jp-ink text-base font-serif">
+                                  {ex.item}
+                                </div>
+                                <div className="text-xs text-jp-ink/40 mt-1">
+                                  總計 ¥{ex.total.toLocaleString()} /{" "}
+                                  {ex.people}人
+                                </div>
+                              </div>
+                            </div>
+                            <div className="flex items-center gap-5">
+                              <div className="text-right">
+                                <div className="text-[10px] text-jp-matcha font-bold mb-0.5">
+                                  每人
+                                </div>
+                                <span className="font-bold text-jp-ink font-mono text-lg">
+                                  ¥{ex.perPerson.toLocaleString()}
+                                </span>
+                              </div>
+                              <button
+                                onClick={() => delExp(ex.id)}
+                                className="text-gray-300 hover:text-jp-red p-2 rounded-full hover:bg-stone-50 transition-colors"
+                              >
+                                <Icon path={ICONS.x} size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === "recommend" && (
+                    <div className="space-y-6 mt-2 animate-fade-in">
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-mikan/30 space-y-4 sticky top-0 z-40 md:static md:max-w-2xl md:mx-auto">
+                        <h2 className="hidden md:flex font-bold text-jp-ink items-center gap-3 mb-2 font-serif text-lg border-b-2 border-dashed border-jp-mikan/30 pb-3">
+                          <Icon
+                            path={ICONS.fuji}
+                            size={24}
+                            className="text-jp-mikan"
+                          />
+                          新增推薦
+                        </h2>
+                        <div className="flex gap-3">
+                          <input
+                            value={mustBuyForm.area}
+                            onChange={(e) =>
+                              setMustBuyForm({
+                                ...mustBuyForm,
+                                area: e.target.value,
+                              })
+                            }
+                            list="area-list"
+                            placeholder="區域 (例如: 梅田)"
+                            className="w-1/3 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-mikan text-sm focus:bg-white transition-colors"
+                          />
+                          <datalist id="area-list">
+                            {(data.mustBuy || []).map((z) => (
+                              <option key={z.area} value={z.area} />
+                            ))}
+                          </datalist>
+                          <input
+                            value={mustBuyForm.item}
+                            onChange={(e) =>
+                              setMustBuyForm({
+                                ...mustBuyForm,
+                                item: e.target.value,
+                              })
+                            }
+                            placeholder="必買商品 / 美食"
+                            className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-mikan text-sm focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <button
+                          onClick={addMustBuy}
+                          className="w-full bg-jp-mikan hover:bg-orange-400 text-white py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-transform flex justify-center items-center gap-2 font-serif tracking-widest text-lg"
+                        >
+                          <Icon path={ICONS.plus} size={22} />
+                        </button>
+                      </div>
+                      <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6 pb-10">
+                        {(data.mustBuy || []).map((z, zIdx) => (
+                          <div
+                            key={zIdx}
+                            className="break-inside-avoid bg-white rounded-2xl shadow-sm border-2 border-white hover:border-jp-mikan/30 overflow-hidden hover:shadow-md transition-all"
+                          >
+                            <div className="bg-stone-50 px-5 py-3 font-bold text-jp-ink flex gap-2 items-center text-sm border-b-2 border-dashed border-stone-100 font-serif tracking-wide">
+                              <Icon
+                                path={ICONS.mapPin}
+                                size={16}
+                                className="text-jp-mikan"
+                              />{" "}
+                              {z.area}
+                            </div>
+                            <div className="p-4 grid grid-cols-1 gap-2">
+                              {z.items.map((it, iIdx) => (
+                                <div
+                                  key={iIdx}
+                                  className="bg-white p-3 rounded-xl text-sm text-jp-ink/80 flex justify-between items-center border border-stone-100 shadow-sm hover:border-jp-mikan hover:text-jp-mikan transition-colors"
+                                >
+                                  <span className="truncate pl-1 font-medium font-serif">
+                                    {it}
+                                  </span>
+                                  <button
+                                    onClick={() => delMustBuy(zIdx, iIdx)}
+                                    className="text-gray-300 hover:text-jp-red p-1 rounded hover:bg-stone-50 transition-colors"
+                                  >
+                                    <Icon path={ICONS.x} size={14} />
+                                  </button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="md:hidden fixed bottom-0 w-full bg-jp-bg/95 backdrop-blur border-t-2 border-jp-sakura/20 pb-safe z-50 safe-bottom shadow-[0_-5px_15px_rgba(0,0,0,0.03)]">
+                <div className="flex justify-around items-center h-16">
+                  {[
+                    { id: "itinerary", icon: ICONS.torii, label: "行程" },
+                    { id: "shopping", icon: ICONS.fukubukuro, label: "購物" },
+                    { id: "tools", icon: ICONS.yen, label: "記帳" },
+                    { id: "recommend", icon: ICONS.fuji, label: "推薦" },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setActiveTab(t.id)}
+                      className={`flex flex-col items-center justify-center w-full h-full transition-colors active:scale-95 duration-200 ${
+                        activeTab === t.id
+                          ? "text-jp-red"
+                          : "text-gray-400 hover:text-jp-ink"
+                      }`}
+                    >
+                      <div
+                        className={`p-1.5 rounded-full ${
+                          activeTab === t.id ? "bg-jp-sakura/30" : ""
+                        }`}
+                      >
+                        <Icon
+                          path={t.icon}
+                          size={24}
+                          className={activeTab === t.id ? "stroke-2" : ""}
+                        />
+                      </div>
+                      <span className="text-[10px] mt-0.5 font-bold font-serif tracking-wide">
+                        {t.label}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
