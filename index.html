@@ -29,6 +29,7 @@
               "jp-matcha": "#c5e1a5",
               "jp-matcha-dark": "#7cb342",
               "jp-fuji": "#a0d8ef",
+              "jp-fuji-dark": "#0277bd",
               "jp-mikan": "#ffcc80",
               "jp-ink": "#4a4a4a",
               "jp-red": "#ff6b6b",
@@ -323,7 +324,7 @@
         train: "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H12c-.7 0-1.3.3-1.8.7-.9.9-2.2 2.3-2.2 2.3s-2.7.6-4.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2 M7 19h10 M9 10h6 M12 5v5",
         mapPin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6",
         externalLink: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
-        globe: "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
+        globe: "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
         refresh: "M23 4v6h-6 M1 20v-6h6",
         wifi: "M5 12.55a11 11 0 0 1 14.08 0 M1.42 9a16 16 0 0 1 21.16 0 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
         grip: "M3 12h18 M3 6h18 M3 18h18",
@@ -751,6 +752,7 @@
           payer: "",
           involved: [],
         });
+        const [editingExpenseId, setEditingExpenseId] = useState(null); // ID of expense being edited
         const [mustBuyForm, setMustBuyForm] = useState({ area: "", item: "" });
         const [db, setDb] = useState(null);
 
@@ -842,16 +844,16 @@
           return () => unsubs.forEach((u) => u());
         }, [user, db]);
 
-        // Effect to set default involved members when members load
+        // Effect to set default involved members when members load (only for new entry)
         useEffect(() => {
-          if (data.settings?.members && expenseForm.involved.length === 0 && !expenseForm.payer) {
+          if (data.settings?.members && expenseForm.involved.length === 0 && !expenseForm.payer && !editingExpenseId) {
              setExpenseForm(prev => ({
                  ...prev,
                  involved: [...data.settings.members],
                  payer: data.settings.members[0] || ""
              }))
           }
-        }, [data.settings]);
+        }, [data.settings, editingExpenseId]);
 
         const saveToFirebase = async (key, dataPayload) => {
           if (!user || !db) return;
@@ -981,7 +983,6 @@
         const addMember = () => {
              if(!newMemberName.trim()) return;
              if(data.settings?.members.includes(newMemberName.trim())) {
-                 // You could add a toast here, but for now just return
                  return;
              }
              const newMembers = [...(data.settings?.members || []), newMemberName.trim()];
@@ -1015,34 +1016,87 @@
             });
         };
 
-        const addExp = () => {
+        const handleExpenseSubmit = () => {
           if (!expenseForm.item || !expenseForm.total || expenseForm.involved.length === 0) return;
           const totalVal = Number(expenseForm.total);
-          const l = [
-            {
-              id: Date.now(),
-              date: new Date().toLocaleDateString("zh-TW", {
-                month: "2-digit",
-                day: "2-digit",
-              }),
-              item: expenseForm.item,
-              total: totalVal,
-              payer: expenseForm.payer,
-              involved: expenseForm.involved,
-              perPerson: Math.round(totalVal / expenseForm.involved.length),
-            },
-            ...data.expenses,
-          ];
-          saveToFirebase("expenses", l);
-          setExpenseForm({ ...expenseForm, item: "", total: "" }); // Keep members selected
+          
+          let newList;
+          if (editingExpenseId) {
+              // Update existing
+              newList = data.expenses.map(ex => {
+                  if (ex.id === editingExpenseId) {
+                      return {
+                          ...ex,
+                          item: expenseForm.item,
+                          total: totalVal,
+                          payer: expenseForm.payer,
+                          involved: expenseForm.involved,
+                          perPerson: Math.round(totalVal / expenseForm.involved.length)
+                      };
+                  }
+                  return ex;
+              });
+          } else {
+              // Add new
+              newList = [
+                {
+                  id: Date.now(),
+                  date: new Date().toLocaleDateString("zh-TW", {
+                    month: "2-digit",
+                    day: "2-digit",
+                  }),
+                  item: expenseForm.item,
+                  total: totalVal,
+                  payer: expenseForm.payer,
+                  involved: expenseForm.involved,
+                  perPerson: Math.round(totalVal / expenseForm.involved.length),
+                },
+                ...data.expenses,
+              ];
+          }
+          
+          saveToFirebase("expenses", newList);
+          // Reset form
+          setExpenseForm({ 
+              item: "", 
+              total: "", 
+              payer: data.settings.members[0] || "", // Reset to default first member
+              involved: [...data.settings.members] // Reset to all members
+          });
+          setEditingExpenseId(null);
         };
         
+        const startEditExpense = (ex) => {
+            setEditingExpenseId(ex.id);
+            setExpenseForm({
+                item: ex.item,
+                total: ex.total,
+                payer: ex.payer,
+                involved: ex.involved || []
+            });
+            // Scroll to top of tools section
+            document.getElementById('expense-form')?.scrollIntoView({ behavior: 'smooth' });
+        };
+
+        const cancelEditExpense = () => {
+            setEditingExpenseId(null);
+            setExpenseForm({ 
+                item: "", 
+                total: "", 
+                payer: data.settings.members[0] || "",
+                involved: [...data.settings.members]
+            });
+        };
+
         const delExp = (id) => {
           openConfirm("確定要刪除這筆消費紀錄嗎？", () => {
             saveToFirebase(
               "expenses",
               data.expenses.filter((e) => e.id !== id)
             );
+            if (editingExpenseId === id) {
+                cancelEditExpense();
+            }
           });
         };
 
@@ -1284,45 +1338,16 @@
                   {activeTab === "tools" && (
                     <div className="mt-2 animate-fade-in flex flex-col gap-8 items-start">
                       
-                      {/* --- Member Setup Section --- */}
-                      <div className="w-full bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-matcha/30 relative overflow-hidden">
-                           <div className="flex items-center gap-3 font-bold text-jp-ink mb-4 text-lg font-serif">
-                              <div className="p-2 bg-jp-matcha/20 rounded-xl text-jp-matcha-dark">
-                                <Icon path={ICONS.users} size={20} />
-                              </div>
-                              成員管理 <span className="text-xs font-sans text-jp-ink/40 font-normal mt-1">(設定成員以便分帳)</span>
-                           </div>
-                           <div className="flex flex-wrap gap-2 items-center mb-4">
-                               {(data.settings?.members || []).map(member => (
-                                   <div key={member} className="flex items-center gap-2 bg-jp-matcha/10 text-jp-matcha-dark px-3 py-1.5 rounded-full text-sm font-bold shadow-sm border border-jp-matcha/20 group">
-                                       <span className="font-serif">{member}</span>
-                                       <button onClick={() => removeMember(member)} className="hover:text-jp-red text-jp-matcha-dark/50 transition-colors"><Icon path={ICONS.x} size={14}/></button>
-                                   </div>
-                               ))}
-                           </div>
-                           <div className="flex gap-2 max-w-sm">
-                               <input 
-                                   value={newMemberName} 
-                                   onChange={e => setNewMemberName(e.target.value)}
-                                   placeholder="輸入名字" 
-                                   className="flex-1 px-3 py-2 bg-stone-50 rounded-xl border-2 border-transparent focus:border-jp-matcha text-sm focus:bg-white transition-colors"
-                               />
-                               <button onClick={addMember} className="bg-jp-matcha text-white px-4 py-2 rounded-xl font-bold shadow-sm active:scale-95 text-sm hover:bg-jp-matcha-dark transition-colors">
-                                   新增
-                               </button>
-                           </div>
-                      </div>
-
                       <div className="w-full flex flex-col md:flex-row gap-8 items-start">
                         <div className="w-full md:w-80 md:sticky md:top-6 space-y-6">
-                            <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-matcha/30 relative overflow-hidden">
-                            <div className="absolute top-0 right-0 w-24 h-24 bg-jp-matcha/10 rounded-bl-full -mr-6 -mt-6 z-0"></div>
+                            <div id="expense-form" className={`bg-white p-6 rounded-3xl shadow-sm border-2 ${editingExpenseId ? "border-jp-fuji ring-4 ring-jp-fuji/10" : "border-jp-matcha/30"} relative overflow-hidden transition-all duration-300`}>
+                            <div className={`absolute top-0 right-0 w-24 h-24 ${editingExpenseId ? "bg-jp-fuji/10" : "bg-jp-matcha/10"} rounded-bl-full -mr-6 -mt-6 z-0 transition-colors`}></div>
                             <div className="relative z-10">
                                 <div className="flex items-center gap-3 font-bold text-jp-ink mb-6 text-lg font-serif">
-                                <div className="p-2 bg-jp-matcha/20 rounded-xl text-jp-matcha-dark">
-                                    <Icon path={ICONS.yen} size={24} />
+                                <div className={`p-2 ${editingExpenseId ? "bg-jp-fuji/20 text-jp-fuji-dark" : "bg-jp-matcha/20 text-jp-matcha-dark"} rounded-xl transition-colors`}>
+                                    <Icon path={editingExpenseId ? ICONS.edit : ICONS.yen} size={24} />
                                 </div>
-                                新增記帳
+                                {editingExpenseId ? "編輯記帳" : "新增記帳"}
                                 </div>
                                 <div className="space-y-4">
                                 <input
@@ -1334,7 +1359,7 @@
                                         item: e.target.value,
                                     })
                                     }
-                                    className="w-full border-2 border-stone-100 bg-stone-50 p-3 rounded-2xl text-sm focus:bg-white focus:border-jp-matcha transition-colors"
+                                    className={`w-full border-2 border-stone-100 bg-stone-50 p-3 rounded-2xl text-sm focus:bg-white ${editingExpenseId ? "focus:border-jp-fuji" : "focus:border-jp-matcha"} transition-colors`}
                                 />
                                 
                                 <div className="relative">
@@ -1351,7 +1376,7 @@
                                             total: e.target.value,
                                         })
                                         }
-                                        className="border-2 border-stone-100 bg-stone-50 p-3 pl-6 rounded-2xl w-full text-sm font-mono focus:bg-white focus:border-jp-matcha transition-colors"
+                                        className={`border-2 border-stone-100 bg-stone-50 p-3 pl-6 rounded-2xl w-full text-sm font-mono focus:bg-white ${editingExpenseId ? "focus:border-jp-fuji" : "focus:border-jp-matcha"} transition-colors`}
                                     />
                                 </div>
 
@@ -1382,8 +1407,8 @@
                                                     onClick={() => toggleInvolved(m)}
                                                     className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
                                                         isSelected 
-                                                        ? "bg-jp-matcha text-white border-jp-matcha shadow-sm transform scale-105" 
-                                                        : "bg-white text-jp-ink/60 border-stone-200 hover:border-jp-matcha"
+                                                        ? `${editingExpenseId ? "bg-jp-fuji border-jp-fuji" : "bg-jp-matcha border-jp-matcha"} text-white shadow-sm transform scale-105` 
+                                                        : `bg-white text-jp-ink/60 border-stone-200 hover:border-${editingExpenseId ? "jp-fuji" : "jp-matcha"}`
                                                     }`}
                                                 >
                                                     {m}
@@ -1397,7 +1422,7 @@
                                     <span className="text-jp-ink/60 text-xs font-bold">
                                     每人分擔 ({expenseForm.involved.length}人)
                                     </span>
-                                    <span className="text-xl font-bold text-jp-matcha font-mono">
+                                    <span className={`text-xl font-bold ${editingExpenseId ? "text-jp-fuji-dark" : "text-jp-matcha"} font-mono`}>
                                     ¥{" "}
                                     {expenseForm.total && expenseForm.involved.length > 0
                                         ? Math.round(
@@ -1407,13 +1432,23 @@
                                         : 0}
                                     </span>
                                 </div>
-                                <button
-                                    onClick={addExp}
-                                    disabled={expenseForm.involved.length === 0}
-                                    className="w-full bg-jp-matcha hover:bg-[#aed581] disabled:bg-stone-200 disabled:text-stone-400 text-white py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-all font-serif tracking-widest text-lg"
-                                >
-                                    登錄
-                                </button>
+                                <div className="flex gap-2">
+                                    {editingExpenseId && (
+                                        <button
+                                            onClick={cancelEditExpense}
+                                            className="w-1/3 bg-stone-200 hover:bg-stone-300 text-stone-500 py-3 rounded-2xl font-bold shadow-sm active:scale-95 transition-all font-serif tracking-widest text-lg"
+                                        >
+                                            取消
+                                        </button>
+                                    )}
+                                    <button
+                                        onClick={handleExpenseSubmit}
+                                        disabled={expenseForm.involved.length === 0}
+                                        className={`flex-1 ${editingExpenseId ? "bg-jp-fuji hover:bg-sky-400" : "bg-jp-matcha hover:bg-[#aed581]"} disabled:bg-stone-200 disabled:text-stone-400 text-white py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-all font-serif tracking-widest text-lg`}
+                                    >
+                                        {editingExpenseId ? "確認修改" : "登錄"}
+                                    </button>
+                                </div>
                                 </div>
                             </div>
                             </div>
@@ -1453,7 +1488,7 @@
                             {(data.expenses || []).map((ex) => (
                             <div
                                 key={ex.id}
-                                className="flex justify-between items-center text-sm bg-white p-4 rounded-2xl border-2 border-transparent hover:border-jp-matcha/30 shadow-sm hover:shadow-md transition-all"
+                                className={`flex justify-between items-center text-sm bg-white p-4 rounded-2xl border-2 ${editingExpenseId === ex.id ? "border-jp-fuji bg-blue-50/50" : "border-transparent hover:border-jp-matcha/30"} shadow-sm hover:shadow-md transition-all`}
                             >
                                 <div className="flex gap-4 items-start">
                                 <div className="bg-stone-100 text-jp-ink/50 text-[10px] font-bold px-3 py-2 rounded-xl text-center leading-tight font-sans">
@@ -1470,7 +1505,7 @@
                                             {ex.payer || "公費"} 付款
                                         </span>
                                     </div>
-                                    <div className="text-xs text-jp-ink/40 mt-1">
+                                    <div className="text-base text-jp-ink mt-1 font-mono tracking-tight">
                                     總計 ¥{ex.total.toLocaleString()} 
                                     </div>
                                     <div className="flex flex-wrap gap-1 mt-1.5">
@@ -1482,8 +1517,8 @@
                                     </div>
                                 </div>
                                 </div>
-                                <div className="flex items-center gap-4 pl-2">
-                                <div className="text-right">
+                                <div className="flex items-center gap-3 pl-2">
+                                <div className="text-right mr-2 hidden sm:block">
                                     <div className="text-[10px] text-jp-matcha font-bold mb-0.5 whitespace-nowrap">
                                     每人 ({ex.involved ? ex.involved.length : ex.people})
                                     </div>
@@ -1491,6 +1526,12 @@
                                     ¥{ex.perPerson.toLocaleString()}
                                     </span>
                                 </div>
+                                <button
+                                    onClick={() => startEditExpense(ex)}
+                                    className={`p-2 rounded-full transition-colors ${editingExpenseId === ex.id ? "bg-jp-fuji text-white shadow-md" : "text-gray-300 hover:text-jp-fuji-dark hover:bg-blue-50"}`}
+                                >
+                                    <Icon path={ICONS.edit} size={16} />
+                                </button>
                                 <button
                                     onClick={() => delExp(ex.id)}
                                     className="text-gray-300 hover:text-jp-red p-2 rounded-full hover:bg-stone-50 transition-colors"
@@ -1501,6 +1542,35 @@
                             </div>
                             ))}
                         </div>
+                      </div>
+
+                      {/* --- Member Setup Section --- */}
+                      <div className="w-full bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-matcha/30 relative overflow-hidden">
+                           <div className="flex items-center gap-3 font-bold text-jp-ink mb-4 text-lg font-serif">
+                              <div className="p-2 bg-jp-matcha/20 rounded-xl text-jp-matcha-dark">
+                                <Icon path={ICONS.users} size={20} />
+                              </div>
+                              成員管理 <span className="text-xs font-sans text-jp-ink/40 font-normal mt-1">(設定成員以便分帳)</span>
+                           </div>
+                           <div className="flex flex-wrap gap-2 items-center mb-4">
+                               {(data.settings?.members || []).map(member => (
+                                   <div key={member} className="flex items-center gap-2 bg-jp-matcha/10 text-jp-matcha-dark px-3 py-1.5 rounded-full text-sm font-bold shadow-sm border border-jp-matcha/20 group">
+                                       <span className="font-serif">{member}</span>
+                                       <button onClick={() => removeMember(member)} className="hover:text-jp-red text-jp-matcha-dark/50 transition-colors"><Icon path={ICONS.x} size={14}/></button>
+                                   </div>
+                               ))}
+                           </div>
+                           <div className="flex gap-2 max-w-sm">
+                               <input 
+                                   value={newMemberName} 
+                                   onChange={e => setNewMemberName(e.target.value)}
+                                   placeholder="輸入名字" 
+                                   className="flex-1 px-3 py-2 bg-stone-50 rounded-xl border-2 border-transparent focus:border-jp-matcha text-sm focus:bg-white transition-colors"
+                               />
+                               <button onClick={addMember} className="bg-jp-matcha text-white px-4 py-2 rounded-xl font-bold shadow-sm active:scale-95 text-sm hover:bg-jp-matcha-dark transition-colors">
+                                   新增
+                               </button>
+                           </div>
                       </div>
                     </div>
                   )}
