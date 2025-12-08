@@ -28,12 +28,12 @@
               "app-blue-dark": "#357abd",
               "app-text": "#2d3436",
               "app-sub": "#636e72",
-              "theme-pink": "#ff9ebb",      
+              "theme-pink": "#ff9ebb",
               "theme-pink-dark": "#ff759d",
-              "theme-green": "#a6d685",     
-              "theme-yellow": "#ffe082",    
-              "theme-blue": "#8ecae6",      
-              "theme-text": "#5d5555",      
+              "theme-green": "#a6d685",
+              "theme-yellow": "#ffe082",
+              "theme-blue": "#8ecae6",
+              "theme-text": "#5d5555",
               "theme-bg": "#fffbf0",
             },
             fontFamily: {
@@ -41,13 +41,13 @@
               serif: ['"Zen Old Mincho"', "serif"],
             },
             boxShadow: {
-              'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.15)',
-              'float': '0 10px 40px -10px rgba(0,0,0,0.1)',
-              'soft': '0 8px 24px -6px rgba(255, 158, 187, 0.25)',
+              glass: "0 8px 32px 0 rgba(31, 38, 135, 0.15)",
+              float: "0 10px 40px -10px rgba(0,0,0,0.1)",
+              soft: "0 8px 24px -6px rgba(255, 158, 187, 0.25)",
             },
             animation: {
               "fade-in": "fadeIn 0.5s ease-out",
-              "pop": "pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              pop: "pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             },
             keyframes: {
               fadeIn: {
@@ -118,7 +118,7 @@
         font-family: "Zen Maru Gothic", sans-serif;
         color: #5d5555;
       }
-      
+
       #root {
         height: 100%;
         width: 100%;
@@ -134,10 +134,10 @@
         width: 100%;
         height: 100%;
         z-index: -2;
-        /* Fallback color */
-        background-color: #8ecae6;
-        /* New Osaka Castle Image URL */
-        background-image: url('https://images.unsplash.com/photo-1555400993-44af6492327e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80');
+        /* Fallback gradient if image fails */
+        background: linear-gradient(to bottom, #a1c4fd 0%, #c2e9fb 100%);
+        /* Stable Wikimedia Commons Image URL */
+        background-image: url("https://images.unsplash.com/photo-1580138051672-325eb98b2749?q=80&w=1974&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
@@ -162,21 +162,21 @@
         -ms-overflow-style: none;
         scrollbar-width: none;
       }
-      
+
       /* Desktop Scrollbar Styling */
       @media (min-width: 768px) {
         .custom-scrollbar::-webkit-scrollbar {
           width: 8px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-          background: rgba(255,255,255,0.1);
+          background: rgba(255, 255, 255, 0.1);
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-          background: rgba(255,255,255,0.4);
+          background: rgba(255, 255, 255, 0.4);
           border-radius: 4px;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-          background: rgba(255,255,255,0.6);
+          background: rgba(255, 255, 255, 0.6);
         }
       }
 
@@ -189,7 +189,9 @@
         border-radius: 1.5rem;
       }
 
-      input:focus, textarea:focus, select:focus {
+      input:focus,
+      textarea:focus,
+      select:focus {
         outline: none;
         border-color: #ff9ebb;
         box-shadow: 0 0 0 3px rgba(255, 158, 187, 0.2);
@@ -200,7 +202,7 @@
     <!-- Background Layers -->
     <div id="bg-layer"></div>
     <div id="bg-overlay"></div>
-    
+
     <div id="root"></div>
 
     <script type="text/babel" charset="utf-8">
@@ -215,17 +217,22 @@
         messagingSenderId: "813547420756",
         appId: "1:813547420756:web:f6f21c91b28556627741c1",
       };
-      
+
       const APP_ID = "my-kansai-trip-2025";
-      // Updated JS constant as well, though the CSS handles the visual
-      const BACKGROUND_IMAGE_URL = "https://images.unsplash.com/photo-1555400993-44af6492327e?ixlib=rb-4.0.3&auto=format&fit=crop&w=2000&q=80";
+      // Updated JS constant to match CSS
+      const BACKGROUND_IMAGE_URL =
+        "https://upload.wikimedia.org/wikipedia/commons/1/12/Osaka_Castle_02bs3200.jpg";
 
       // --- Data Constants ---
       const TIME_OPTIONS = (() => {
         const options = ["待定"];
         for (let h = 0; h < 24; h++) {
           for (let m = 0; m < 60; m += 15) {
-            options.push(`${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}`);
+            options.push(
+              `${h.toString().padStart(2, "0")}:${m
+                .toString()
+                .padStart(2, "0")}`
+            );
           }
         }
         return options;
@@ -239,8 +246,22 @@
           weather: "sun",
           temp: "5°C",
           events: [
-            { id: "e1", time: "10:55", location: "關西機場 (KIX)", transport: "入境", note: "航班：IT210\n抵達後前往二樓", type: "flight" },
-            { id: "e2", time: "12:00", location: "南海電鐵", transport: "Rapit 特急", note: "搭乘 Rapit 到難波", type: "transport" },
+            {
+              id: "e1",
+              time: "10:55",
+              location: "關西機場 (KIX)",
+              transport: "入境",
+              note: "航班：IT210\n抵達後前往二樓",
+              type: "flight",
+            },
+            {
+              id: "e2",
+              time: "12:00",
+              location: "南海電鐵",
+              transport: "Rapit 特急",
+              note: "搭乘 Rapit 到難波",
+              type: "transport",
+            },
           ],
         },
         {
@@ -252,7 +273,7 @@
           events: [],
         },
       ];
-      
+
       const DEFAULT_MUSTBUY = [
         { area: "梅田", items: ["Baton d'or", "Grand Calbee"] },
         { area: "京都", items: ["茶之菓", "京年輪蛋糕"] },
@@ -264,31 +285,50 @@
       const ICONS = {
         map: "M9 20l-5.447 2.724A1 1 0 012 21.832V4.168a1 1 0 011.447-.894L9 6m0 14l6-3m-6 3V6m6 14l5.447 2.724A1 1 0 0022 21.832V4.168a1 1 0 00-1.447-.894L15 6m0 14V6m0 0L9 3",
         shoppingBag: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z",
-        wallet: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+        wallet:
+          "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
         info: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
         mount: "M12 3l9 16H3l9-16z",
         plus: "M12 4v16m8-8H4",
         x: "M6 18L18 6M6 6l12 12",
         edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
-        trash: "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16",
+        trash:
+          "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16",
         check: "M5 13l4 4L19 7",
-        train: "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M2 22h20",
+        train:
+          "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M2 22h20",
         pin: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z",
         grip: "M3 12h18 M3 6h18 M3 18h18",
-        globe: "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
+        globe:
+          "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
         link: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
-        externalLink: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
+        externalLink:
+          "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
         sort: "M4 6h16 M4 12h16 M4 18h16",
         sun: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
-        cloud: "M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z",
+        cloud:
+          "M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z",
         rain: "M20 16.2A4.5 4.5 0 005.11 14.1 5.002 5.002 0 1017.3 8c.28 0 .55.02.81.07a4.5 4.5 0 001.89 8.13zM8 22l-2-4m6 4l-2-4m6 4l-2-4",
         snow: "M20 17.58A5 5 0 0018 8h-1.26A8 8 0 104 16.25M8 16h.01M8 20h.01M12 18h.01M12 22h.01M16 16h.01M16 20h.01",
-        chart: "M3 3v18h18 M18 17l-5-5-4 4-4-4"
+        chart: "M3 3v18h18 M18 17l-5-5-4 4-4-4",
       };
 
       // --- Components ---
       const Icon = ({ path, size = 20, className = "", onClick }) => (
-        <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className} onClick={onClick} style={{ cursor: onClick ? "pointer" : "default" }}>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+          onClick={onClick}
+          style={{ cursor: onClick ? "pointer" : "default" }}
+        >
           <path d={path} />
         </svg>
       );
@@ -301,10 +341,19 @@
           <>
             {parts.map((part, index) =>
               part.match(urlRegex) ? (
-                <a key={index} href={part} target="_blank" rel="noopener noreferrer" className="text-theme-pink-dark hover:underline break-all relative z-10 font-bold" onClick={(e) => e.stopPropagation()}>
+                <a
+                  key={index}
+                  href={part}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-theme-pink-dark hover:underline break-all relative z-10 font-bold"
+                  onClick={(e) => e.stopPropagation()}
+                >
                   {part}
                 </a>
-              ) : ( part )
+              ) : (
+                part
+              )
             )}
           </>
         );
@@ -314,108 +363,141 @@
         if (!isOpen) return null;
         return (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/30 backdrop-blur-sm" onClick={onCancel}></div>
+            <div
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+              onClick={onCancel}
+            ></div>
             <div className="bg-white rounded-[2rem] shadow-2xl p-6 max-w-xs w-full relative z-10 border-4 border-theme-pink/30 animate-[pop_0.3s_ease-out]">
-                <div className="text-center mb-6">
-                  <div className="inline-block p-3 bg-red-50 text-red-400 rounded-full mb-3"><Icon path={ICONS.trash} size={28} /></div>
-                  <h3 className="font-bold text-gray-700 text-lg font-serif tracking-wide">{message}</h3>
+              <div className="text-center mb-6">
+                <div className="inline-block p-3 bg-red-50 text-red-400 rounded-full mb-3">
+                  <Icon path={ICONS.trash} size={28} />
                 </div>
-                <div className="flex gap-3">
-                    <button onClick={onCancel} className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-2xl font-bold transition-colors">取消</button>
-                    <button onClick={onConfirm} className="flex-1 py-3 bg-theme-pink hover:bg-theme-pink-dark text-white rounded-2xl font-bold shadow-soft transition-colors">確定</button>
-                </div>
+                <h3 className="font-bold text-gray-700 text-lg font-serif tracking-wide">
+                  {message}
+                </h3>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={onCancel}
+                  className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-2xl font-bold transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={onConfirm}
+                  className="flex-1 py-3 bg-theme-pink hover:bg-theme-pink-dark text-white rounded-2xl font-bold shadow-soft transition-colors"
+                >
+                  確定
+                </button>
+              </div>
             </div>
           </div>
         );
       };
 
-      const SortableDayList = ({ day, isReordering, onUpdateEvents, className, children }) => {
-          const listRef = useRef(null);
-          const sortableRef = useRef(null);
-          
-          // Use refs to keep track of current props without triggering re-effects
-          const currentDayRef = useRef(day);
-          const onUpdateEventsRef = useRef(onUpdateEvents);
+      const SortableDayList = ({
+        day,
+        isReordering,
+        onUpdateEvents,
+        className,
+        children,
+      }) => {
+        const listRef = useRef(null);
+        const sortableRef = useRef(null);
 
-          useEffect(() => {
-              currentDayRef.current = day;
-              onUpdateEventsRef.current = onUpdateEvents;
-          }, [day, onUpdateEvents]);
+        // Use refs to keep track of current props without triggering re-effects
+        const currentDayRef = useRef(day);
+        const onUpdateEventsRef = useRef(onUpdateEvents);
 
-          useEffect(() => {
-              const el = listRef.current;
-              
-              // Cleanup old instance safely
-              if (sortableRef.current) { 
-                  try { sortableRef.current.destroy(); } catch(e) {}
-                  sortableRef.current = null; 
-              }
+        useEffect(() => {
+          currentDayRef.current = day;
+          onUpdateEventsRef.current = onUpdateEvents;
+        }, [day, onUpdateEvents]);
 
-              if (isReordering && el && window.Sortable) {
-                  sortableRef.current = new window.Sortable(el, {
-                      handle: ".drag-handle", 
-                      animation: 150, 
-                      ghostClass: "opacity-50", 
-                      onEnd: (evt) => {
-                          if (evt.oldIndex === evt.newIndex) return;
-                          // Use the ref data to avoid stale closures and re-initialization
-                          const currentDay = currentDayRef.current;
-                          const newEvents = [...currentDay.events];
-                          const [moved] = newEvents.splice(evt.oldIndex, 1);
-                          newEvents.splice(evt.newIndex, 0, moved);
-                          onUpdateEventsRef.current(currentDay.id, newEvents);
-                      }
-                  });
-              }
-              
-              return () => { 
-                  if (sortableRef.current) { 
-                      try { sortableRef.current.destroy(); } catch(e) {}
-                      sortableRef.current = null;
-                  } 
-              };
-          }, [isReordering]); // Only re-run when toggling reordering mode
+        useEffect(() => {
+          const el = listRef.current;
 
-          return <div ref={listRef} className={className}>{children}</div>;
+          // Cleanup old instance safely
+          if (sortableRef.current) {
+            try {
+              sortableRef.current.destroy();
+            } catch (e) {}
+            sortableRef.current = null;
+          }
+
+          if (isReordering && el && window.Sortable) {
+            sortableRef.current = new window.Sortable(el, {
+              handle: ".drag-handle",
+              animation: 150,
+              ghostClass: "opacity-50",
+              onEnd: (evt) => {
+                if (evt.oldIndex === evt.newIndex) return;
+                // Use the ref data to avoid stale closures and re-initialization
+                const currentDay = currentDayRef.current;
+                const newEvents = [...currentDay.events];
+                const [moved] = newEvents.splice(evt.oldIndex, 1);
+                newEvents.splice(evt.newIndex, 0, moved);
+                onUpdateEventsRef.current(currentDay.id, newEvents);
+              },
+            });
+          }
+
+          return () => {
+            if (sortableRef.current) {
+              try {
+                sortableRef.current.destroy();
+              } catch (e) {}
+              sortableRef.current = null;
+            }
+          };
+        }, [isReordering]); // Only re-run when toggling reordering mode
+
+        return (
+          <div ref={listRef} className={className}>
+            {children}
+          </div>
+        );
       };
 
       const WeatherWidget = ({ weather }) => {
-          if (!weather || !weather.current) return null;
-          const wCode = weather.current.weather_code;
-          const temp = Math.round(weather.current.temperature_2m);
-          const feelsLike = Math.round(weather.current.apparent_temperature);
-          
-          const getIcon = (c) => {
-              if (c <= 1) return 'sun';
-              if (c <= 3) return 'cloud';
-              if (c <= 48) return 'cloud';
-              if (c <= 67) return 'rain';
-              if (c <= 77) return 'snow';
-              if (c <= 86) return 'rain';
-              return 'rain';
-          };
-          
-          return (
-              <div className="kawaii-card p-4 mb-6 flex items-center justify-between bg-gradient-to-r from-blue-50/80 to-white/90 border-theme-blue/30 relative overflow-hidden">
-                  <div className="flex items-center gap-4 relative z-10">
-                      <div className="text-theme-blue p-2 bg-blue-100 rounded-full">
-                           <Icon path={ICONS[getIcon(wCode)]} size={32} />
-                      </div>
-                      <div>
-                          <div className="flex items-baseline gap-2">
-                              <span className="text-3xl font-black text-theme-text">{temp}°</span>
-                              <span className="text-xl font-bold text-gray-400">C</span>
-                          </div>
-                          <div className="text-xs font-bold text-gray-500 mt-1 flex gap-2">
-                              <span>體感 {feelsLike}°C</span>
-                          </div>
-                      </div>
-                  </div>
-                  <div className="bg-white/60 px-3 py-1.5 rounded-full text-xs font-bold text-theme-blue flex items-center gap-1 border border-white">
-                      <Icon path={ICONS.pin} size={12} /> 大阪
-                  </div>
+        if (!weather || !weather.current) return null;
+        const wCode = weather.current.weather_code;
+        const temp = Math.round(weather.current.temperature_2m);
+        const feelsLike = Math.round(weather.current.apparent_temperature);
+
+        const getIcon = (c) => {
+          if (c <= 1) return "sun";
+          if (c <= 3) return "cloud";
+          if (c <= 48) return "cloud";
+          if (c <= 67) return "rain";
+          if (c <= 77) return "snow";
+          if (c <= 86) return "rain";
+          return "rain";
+        };
+
+        return (
+          <div className="kawaii-card p-4 mb-6 flex items-center justify-between bg-gradient-to-r from-blue-50/80 to-white/90 border-theme-blue/30 relative overflow-hidden">
+            <div className="flex items-center gap-4 relative z-10">
+              <div className="text-theme-blue p-2 bg-blue-100 rounded-full">
+                <Icon path={ICONS[getIcon(wCode)]} size={32} />
               </div>
-          );
+              <div>
+                <div className="flex items-baseline gap-2">
+                  <span className="text-3xl font-black text-theme-text">
+                    {temp}°
+                  </span>
+                  <span className="text-xl font-bold text-gray-400">C</span>
+                </div>
+                <div className="text-xs font-bold text-gray-500 mt-1 flex gap-2">
+                  <span>體感 {feelsLike}°C</span>
+                </div>
+              </div>
+            </div>
+            <div className="bg-white/60 px-3 py-1.5 rounded-full text-xs font-bold text-theme-blue flex items-center gap-1 border border-white">
+              <Icon path={ICONS.pin} size={12} /> 大阪
+            </div>
+          </div>
+        );
       };
 
       // --- Main Application ---
@@ -426,507 +508,1252 @@
         const [weather, setWeather] = useState(null);
         const [exchangeRate, setExchangeRate] = useState(null); // 新增匯率狀態
         const [data, setData] = useState({
-          itinerary: [{id: 1, date: "2/6 (五)", title: "Day 1", events: []}],
-          shopping: [], mustBuy: [], expenses: [], info: [], settings: { members: ["我"] }
+          itinerary: [{ id: 1, date: "2/6 (五)", title: "Day 1", events: [] }],
+          shopping: [],
+          mustBuy: [],
+          expenses: [],
+          info: [],
+          settings: { members: ["我"] },
         });
         const [selectedDayId, setSelectedDayId] = useState(1);
         const [modalConfig, setModalConfig] = useState({ isOpen: false });
         const [reorderingDayId, setReorderingDayId] = useState(null);
-        
+
         // Form States
-        const [expenseForm, setExpenseForm] = useState({ item: "", total: "", payer: "", involved: [] });
+        const [expenseForm, setExpenseForm] = useState({
+          item: "",
+          total: "",
+          payer: "",
+          involved: [],
+        });
         const [editingExpenseId, setEditingExpenseId] = useState(null);
         const [editingEventId, setEditingEventId] = useState(null);
         const [editingInfoId, setEditingInfoId] = useState(null);
-        const [newItem, setNewItem] = useState({ name: "", qty: 1, note: "", link: "", image: "" });
+        const [newItem, setNewItem] = useState({
+          name: "",
+          qty: 1,
+          note: "",
+          link: "",
+          image: "",
+        });
         const [mustBuyForm, setMustBuyForm] = useState({ area: "", item: "" });
-        const [infoForm, setInfoForm] = useState({ title: "", link: "", note: "" });
+        const [infoForm, setInfoForm] = useState({
+          title: "",
+          link: "",
+          note: "",
+        });
         const [newMemberName, setNewMemberName] = useState("");
 
         // Initialize
         useEffect(() => {
-            const init = async () => {
-                if (!window.Firebase) return;
-                try {
-                    const app = window.Firebase.initializeApp(YOUR_FIREBASE_CONFIG);
-                    const auth = window.Firebase.getAuth(app);
-                    const firestore = window.Firebase.getFirestore(app);
-                    setDb(firestore);
-                    await window.Firebase.signInAnonymously(auth);
-                    window.Firebase.onAuthStateChanged(auth, u => setUser(u));
-                } catch(e) { console.error(e); }
-            };
-            const timer = setInterval(() => { if(window.Firebase) { clearInterval(timer); init(); } }, 500);
-            return () => clearInterval(timer);
+          const init = async () => {
+            if (!window.Firebase) return;
+            try {
+              const app = window.Firebase.initializeApp(YOUR_FIREBASE_CONFIG);
+              const auth = window.Firebase.getAuth(app);
+              const firestore = window.Firebase.getFirestore(app);
+              setDb(firestore);
+              await window.Firebase.signInAnonymously(auth);
+              window.Firebase.onAuthStateChanged(auth, (u) => setUser(u));
+            } catch (e) {
+              console.error(e);
+            }
+          };
+          const timer = setInterval(() => {
+            if (window.Firebase) {
+              clearInterval(timer);
+              init();
+            }
+          }, 500);
+          return () => clearInterval(timer);
         }, []);
 
         // Listeners
         useEffect(() => {
           if (!user || !db) return;
-          const listen = (key, def) => window.Firebase.onSnapshot(
-              window.Firebase.doc(window.Firebase.collection(db, `artifacts/${APP_ID}/public/data/trip_data`), key),
-              s => setData(p => ({ ...p, [key]: s.exists() ? (s.data().list || s.data()) : def }))
-          );
+          const listen = (key, def) =>
+            window.Firebase.onSnapshot(
+              window.Firebase.doc(
+                window.Firebase.collection(
+                  db,
+                  `artifacts/${APP_ID}/public/data/trip_data`
+                ),
+                key
+              ),
+              (s) =>
+                setData((p) => ({
+                  ...p,
+                  [key]: s.exists() ? s.data().list || s.data() : def,
+                }))
+            );
           const unsubs = [
-             listen("itinerary", data.itinerary), listen("shopping", []), listen("mustBuy", []), 
-             listen("expenses", []), listen("info", []), listen("settings", { members: ["我"] })
+            listen("itinerary", data.itinerary),
+            listen("shopping", []),
+            listen("mustBuy", []),
+            listen("expenses", []),
+            listen("info", []),
+            listen("settings", { members: ["我"] }),
           ];
-          return () => unsubs.forEach(u => u());
+          return () => unsubs.forEach((u) => u());
         }, [user, db]);
 
         // Fix: Moved useEffect for expense defaults to top level
         useEffect(() => {
-            if (data.settings?.members && !expenseForm.payer && !editingExpenseId && expenseForm.involved.length === 0) {
-                setExpenseForm(p => ({ ...p, payer: data.settings.members[0] || "", involved: [...data.settings.members] }));
-            }
+          if (
+            data.settings?.members &&
+            !expenseForm.payer &&
+            !editingExpenseId &&
+            expenseForm.involved.length === 0
+          ) {
+            setExpenseForm((p) => ({
+              ...p,
+              payer: data.settings.members[0] || "",
+              involved: [...data.settings.members],
+            }));
+          }
         }, [data.settings, editingExpenseId]);
 
         // Weather & Exchange Rate
         useEffect(() => {
-            // Weather
-            fetch("https://api.open-meteo.com/v1/forecast?latitude=34.6937&longitude=135.5023&current=temperature_2m,apparent_temperature,weather_code,is_day&timezone=Asia%2FTokyo")
-                .then(r => r.json()).then(d => setWeather(d)).catch(console.error);
+          // Weather
+          fetch(
+            "https://api.open-meteo.com/v1/forecast?latitude=34.6937&longitude=135.5023&current=temperature_2m,apparent_temperature,weather_code,is_day&timezone=Asia%2FTokyo"
+          )
+            .then((r) => r.json())
+            .then((d) => setWeather(d))
+            .catch(console.error);
 
-            // Exchange Rate (Using free API)
-            fetch("https://api.exchangerate-api.com/v4/latest/JPY")
-                .then(r => r.json())
-                .then(d => {
-                    // 若需要 HKD，將 d.rates.TWD 改為 d.rates.HKD，並修改下方的顯示文字
-                    if(d && d.rates) setExchangeRate(d.rates.TWD); 
-                })
-                .catch(console.error);
+          // Exchange Rate (Using free API)
+          fetch("https://api.exchangerate-api.com/v4/latest/JPY")
+            .then((r) => r.json())
+            .then((d) => {
+              // 若需要 HKD，將 d.rates.TWD 改為 d.rates.HKD，並修改下方的顯示文字
+              if (d && d.rates) setExchangeRate(d.rates.TWD);
+            })
+            .catch(console.error);
         }, []);
 
         const save = async (key, val) => {
-            if(!user || !db) return;
-            await window.Firebase.setDoc(window.Firebase.doc(window.Firebase.collection(db, `artifacts/${APP_ID}/public/data/trip_data`), key), key==='settings'? val : {list:val});
+          if (!user || !db) return;
+          await window.Firebase.setDoc(
+            window.Firebase.doc(
+              window.Firebase.collection(
+                db,
+                `artifacts/${APP_ID}/public/data/trip_data`
+              ),
+              key
+            ),
+            key === "settings" ? val : { list: val }
+          );
         };
-        
-        const openConfirm = (msg, cb) => setModalConfig({ isOpen: true, message: msg, onConfirm: () => { cb(); setModalConfig({isOpen:false}); }, onCancel: () => setModalConfig({isOpen:false}) });
+
+        const openConfirm = (msg, cb) =>
+          setModalConfig({
+            isOpen: true,
+            message: msg,
+            onConfirm: () => {
+              cb();
+              setModalConfig({ isOpen: false });
+            },
+            onCancel: () => setModalConfig({ isOpen: false }),
+          });
 
         // Logic
-        const updateItineraryLocal = (dId, eId, k, v) => setData(p => ({ ...p, itinerary: p.itinerary.map(d => d.id !== dId ? d : { ...d, events: d.events.map(e => e.id === eId ? { ...e, [k]: v } : e) }) }));
-        const saveSingleEvent = () => { save("itinerary", data.itinerary); setEditingEventId(null); };
+        const updateItineraryLocal = (dId, eId, k, v) =>
+          setData((p) => ({
+            ...p,
+            itinerary: p.itinerary.map((d) =>
+              d.id !== dId
+                ? d
+                : {
+                    ...d,
+                    events: d.events.map((e) =>
+                      e.id === eId ? { ...e, [k]: v } : e
+                    ),
+                  }
+            ),
+          }));
+        const saveSingleEvent = () => {
+          save("itinerary", data.itinerary);
+          setEditingEventId(null);
+        };
         const addItineraryEventLocal = (dId) => {
-            const newId = `new_${Date.now()}`;
-            const newData = data.itinerary.map((d) => d.id === dId ? { ...d, events: [...d.events, { id: newId, time: "待定", location: "新地點", transport: "", note: "" }] } : d);
-            setData((p) => ({ ...p, itinerary: newData }));
-            save("itinerary", newData);
-            setEditingEventId(newId);
+          const newId = `new_${Date.now()}`;
+          const newData = data.itinerary.map((d) =>
+            d.id === dId
+              ? {
+                  ...d,
+                  events: [
+                    ...d.events,
+                    {
+                      id: newId,
+                      time: "待定",
+                      location: "新地點",
+                      transport: "",
+                      note: "",
+                    },
+                  ],
+                }
+              : d
+          );
+          setData((p) => ({ ...p, itinerary: newData }));
+          save("itinerary", newData);
+          setEditingEventId(newId);
         };
         const deleteItineraryEventLocal = (dId, eId) => {
-            openConfirm("確定要刪除此行程活動嗎？", () => {
-                const newData = data.itinerary.map((d) => d.id === dId ? { ...d, events: d.events.filter((e) => e.id !== eId) } : d);
-                setData((p) => ({ ...p, itinerary: newData }));
-                save("itinerary", newData);
-                setEditingEventId(null);
-            });
+          openConfirm("確定要刪除此行程活動嗎？", () => {
+            const newData = data.itinerary.map((d) =>
+              d.id === dId
+                ? { ...d, events: d.events.filter((e) => e.id !== eId) }
+                : d
+            );
+            setData((p) => ({ ...p, itinerary: newData }));
+            save("itinerary", newData);
+            setEditingEventId(null);
+          });
         };
 
         // Views
         // UPDATED: Nav adapts to Desktop Side Bar
         const renderNav = () => (
-             <div className="
+          <div
+            className="
                 /* Mobile: Fixed Bottom */
                 fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-md h-16 
                 bg-white/95 backdrop-blur-xl rounded-full shadow-[0_8px_30px_rgb(0,0,0,0.12)] border border-white/50 flex items-center justify-around
                 
                 /* Desktop: Static Left Sidebar */
                 md:static md:translate-x-0 md:w-24 md:h-full md:max-w-none md:rounded-none md:border-0 md:border-r md:border-white/50 md:flex-col md:justify-start md:pt-10 md:gap-6 md:bg-white/80 md:backdrop-blur-xl
-             ">
-                {[
-                    { id: "itinerary", icon: ICONS.map, label: "行程" },
-                    { id: "shopping", icon: ICONS.shoppingBag, label: "購物" },
-                    { id: "tools", icon: ICONS.wallet, label: "記帳" },
-                    { id: "recommend", icon: ICONS.mount, label: "推薦" },
-                    { id: "info", icon: ICONS.info, label: "資訊" },
-                ].map(t => (
-                    <button key={t.id} onClick={() => setActiveTab(t.id)} className={`flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${activeTab === t.id ? "text-theme-pink bg-pink-50 transform -translate-y-2 shadow-sm border border-pink-100" : "text-gray-500 hover:text-gray-700 hover:bg-gray-100/50"}`}>
-                        <Icon path={t.icon} size={22} className={activeTab === t.id ? "stroke-[2.5px]" : ""} />
-                        {activeTab !== t.id && <span className="text-[9px] font-bold mt-0.5">{t.label}</span>}
-                    </button>
-                ))}
-            </div>
+             "
+          >
+            {[
+              { id: "itinerary", icon: ICONS.map, label: "行程" },
+              { id: "shopping", icon: ICONS.shoppingBag, label: "購物" },
+              { id: "tools", icon: ICONS.wallet, label: "記帳" },
+              { id: "recommend", icon: ICONS.mount, label: "推薦" },
+              { id: "info", icon: ICONS.info, label: "資訊" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
+                  activeTab === t.id
+                    ? "text-theme-pink bg-pink-50 transform -translate-y-2 shadow-sm border border-pink-100"
+                    : "text-gray-500 hover:text-gray-700 hover:bg-gray-100/50"
+                }`}
+              >
+                <Icon
+                  path={t.icon}
+                  size={22}
+                  className={activeTab === t.id ? "stroke-[2.5px]" : ""}
+                />
+                {activeTab !== t.id && (
+                  <span className="text-[9px] font-bold mt-0.5">{t.label}</span>
+                )}
+              </button>
+            ))}
+          </div>
         );
 
         const renderItinerary = () => {
-            const currentDay = (data.itinerary || []).find(d => d.id === selectedDayId) || data.itinerary[0] || {};
-            return (
-                <div className="flex-1 flex flex-col pb-32 md:pb-10 overflow-hidden h-full">
-                    {/* Day Selector */}
-                    <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
-                        {(data.itinerary || []).map((d, idx) => (
-                            <button key={d.id} onClick={() => setSelectedDayId(d.id)} className={`flex flex-col items-center justify-center min-w-[70px] h-[70px] rounded-[1.2rem] transition-all ${selectedDayId === d.id ? "bg-white shadow-soft scale-105 ring-4 ring-white/50" : "bg-white/40"}`}>
-                                <span className="text-[10px] font-bold mb-0.5 text-gray-500">Day {idx + 1}</span>
-                                <span className="text-lg font-black text-theme-text">{d.date ? d.date.split(" ")[0] : ""}</span>
+          const currentDay =
+            (data.itinerary || []).find((d) => d.id === selectedDayId) ||
+            data.itinerary[0] ||
+            {};
+          return (
+            <div className="flex-1 flex flex-col pb-32 md:pb-10 overflow-hidden h-full">
+              {/* Day Selector */}
+              <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
+                {(data.itinerary || []).map((d, idx) => (
+                  <button
+                    key={d.id}
+                    onClick={() => setSelectedDayId(d.id)}
+                    className={`flex flex-col items-center justify-center min-w-[70px] h-[70px] rounded-[1.2rem] transition-all ${
+                      selectedDayId === d.id
+                        ? "bg-white shadow-soft scale-105 ring-4 ring-white/50"
+                        : "bg-white/40"
+                    }`}
+                  >
+                    <span className="text-[10px] font-bold mb-0.5 text-gray-500">
+                      Day {idx + 1}
+                    </span>
+                    <span className="text-lg font-black text-theme-text">
+                      {d.date ? d.date.split(" ")[0] : ""}
+                    </span>
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-6 custom-scrollbar">
+                <div className="max-w-4xl mx-auto w-full">
+                  {" "}
+                  {/* Center content on desktop */}
+                  <WeatherWidget weather={weather} />
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-black text-theme-text font-serif bg-white/40 px-4 py-1 rounded-full">
+                      {currentDay.title}
+                    </h2>
+                    <button
+                      onClick={() =>
+                        setReorderingDayId(
+                          reorderingDayId === currentDay.id
+                            ? null
+                            : currentDay.id
+                        )
+                      }
+                      className="p-2 bg-white/50 rounded-xl"
+                    >
+                      <Icon
+                        path={reorderingDayId ? ICONS.check : ICONS.sort}
+                        size={20}
+                      />
+                    </button>
+                  </div>
+                  {/* Updated: Added grid layout for desktop events? Actually keeping it vertical but centered is better for itinerary flow. Let's make it grid-cols-2 if user wants "horizontal" feel on wide screens */}
+                  <SortableDayList
+                    day={currentDay}
+                    isReordering={reorderingDayId === currentDay.id}
+                    onUpdateEvents={(dId, evs) => {
+                      const newData = data.itinerary.map((d) =>
+                        d.id === dId ? { ...d, events: evs } : d
+                      );
+                      setData((p) => ({ ...p, itinerary: newData }));
+                      save("itinerary", newData);
+                    }}
+                    className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-2"
+                  >
+                    {(currentDay.events || []).map((e) => (
+                      <div
+                        key={e.id}
+                        className="kawaii-card p-5 relative group h-fit"
+                      >
+                        {reorderingDayId && (
+                          <div className="absolute top-2 right-2 text-theme-pink p-2 cursor-move z-10 drag-handle">
+                            <Icon path={ICONS.grip} size={20} />
+                          </div>
+                        )}
+                        <div className="flex justify-between items-start mb-3">
+                          <span className="font-mono text-xl font-black text-theme-text bg-theme-bg px-2 py-1 rounded-lg border border-white">
+                            {e.time}
+                          </span>
+                          {!reorderingDayId && (
+                            <button
+                              onClick={() => setEditingEventId(e.id)}
+                              className="text-gray-300 hover:text-theme-pink"
+                            >
+                              <Icon path={ICONS.edit} size={16} />
                             </button>
-                        ))}
-                    </div>
-                    
-                    <div className="flex-1 overflow-y-auto px-6 custom-scrollbar">
-                        <div className="max-w-4xl mx-auto w-full"> {/* Center content on desktop */}
-                            <WeatherWidget weather={weather} />
-                            <div className="flex justify-between items-center mb-6">
-                                <h2 className="text-2xl font-black text-theme-text font-serif bg-white/40 px-4 py-1 rounded-full">{currentDay.title}</h2>
-                                <button onClick={() => setReorderingDayId(reorderingDayId === currentDay.id ? null : currentDay.id)} className="p-2 bg-white/50 rounded-xl"><Icon path={reorderingDayId ? ICONS.check : ICONS.sort} size={20}/></button>
-                            </div>
-                            
-                            {/* Updated: Added grid layout for desktop events? Actually keeping it vertical but centered is better for itinerary flow. Let's make it grid-cols-2 if user wants "horizontal" feel on wide screens */}
-                            <SortableDayList day={currentDay} isReordering={reorderingDayId === currentDay.id} onUpdateEvents={(dId, evs) => {
-                                 const newData = data.itinerary.map(d => d.id === dId ? {...d, events: evs} : d);
-                                 setData(p => ({...p, itinerary: newData})); save("itinerary", newData);
-                            }} className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-2">
-                                {(currentDay.events || []).map(e => (
-                                    <div key={e.id} className="kawaii-card p-5 relative group h-fit">
-                                        {reorderingDayId && <div className="absolute top-2 right-2 text-theme-pink p-2 cursor-move z-10 drag-handle"><Icon path={ICONS.grip} size={20}/></div>}
-                                        <div className="flex justify-between items-start mb-3">
-                                            <span className="font-mono text-xl font-black text-theme-text bg-theme-bg px-2 py-1 rounded-lg border border-white">{e.time}</span>
-                                            {!reorderingDayId && <button onClick={() => setEditingEventId(e.id)} className="text-gray-300 hover:text-theme-pink"><Icon path={ICONS.edit} size={16}/></button>}
-                                        </div>
-                                        {editingEventId === e.id ? (
-                                            <div className="space-y-3">
-                                                <input value={e.location} onChange={ev => updateItineraryLocal(currentDay.id, e.id, "location", ev.target.value)} className="w-full bg-pink-50 rounded-xl px-3 py-2 text-sm font-bold"/>
-                                                <input value={e.time} onChange={ev => updateItineraryLocal(currentDay.id, e.id, "time", ev.target.value)} className="w-full bg-pink-50 rounded-xl px-3 py-2 text-sm"/>
-                                                <input value={e.transport} onChange={ev => updateItineraryLocal(currentDay.id, e.id, "transport", ev.target.value)} className="w-full bg-pink-50 rounded-xl px-3 py-2 text-xs" placeholder="交通"/>
-                                                <textarea value={e.note} onChange={ev => updateItineraryLocal(currentDay.id, e.id, "note", ev.target.value)} className="w-full bg-pink-50 rounded-xl px-3 py-2 text-xs" rows="2"></textarea>
-                                                <div className="flex gap-2">
-                                                    <button onClick={saveSingleEvent} className="flex-1 bg-theme-green text-white py-2 rounded-xl text-xs font-bold shadow-md">儲存</button>
-                                                    <button onClick={() => {
-                                                        openConfirm("刪除?", () => {
-                                                            const newData = data.itinerary.map(d => d.id === currentDay.id ? { ...d, events: d.events.filter(x => x.id !== e.id) } : d);
-                                                            setData(p => ({...p, itinerary: newData})); save("itinerary", newData); setEditingEventId(null);
-                                                        });
-                                                    }} className="px-3 bg-red-100 text-red-400 rounded-xl"><Icon path={ICONS.trash} size={16}/></button>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <h3 className="text-lg font-bold text-theme-text mb-2">{e.location}</h3>
-                                                {e.transport && <div className="inline-flex items-center gap-1.5 bg-theme-blue/10 text-theme-blue px-3 py-1 rounded-full text-xs font-bold mb-3 border border-theme-blue/20"><Icon path={ICONS.train} size={12} /> {e.transport}</div>}
-                                                {e.note && <div className="mt-2 pt-2 border-t-2 border-dashed border-gray-100 text-sm text-gray-500 whitespace-pre-line"><LinkifiedText text={e.note} /></div>}
-                                            </>
-                                        )}
-                                    </div>
-                                ))}
-                                {!reorderingDayId && (
-                                    <button onClick={() => addItineraryEventLocal(currentDay.id)} className="w-full border-3 border-dashed border-white/50 bg-white/20 hover:bg-white/40 rounded-[2rem] p-6 flex flex-col items-center justify-center text-gray-500 hover:text-theme-pink transition-all font-bold md:h-full min-h-[150px]">
-                                        <Icon path={ICONS.plus} size={24}/> 新增活動
-                                    </button>
-                                )}
-                            </SortableDayList>
+                          )}
                         </div>
-                    </div>
+                        {editingEventId === e.id ? (
+                          <div className="space-y-3">
+                            <input
+                              value={e.location}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  currentDay.id,
+                                  e.id,
+                                  "location",
+                                  ev.target.value
+                                )
+                              }
+                              className="w-full bg-pink-50 rounded-xl px-3 py-2 text-sm font-bold"
+                            />
+                            <input
+                              value={e.time}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  currentDay.id,
+                                  e.id,
+                                  "time",
+                                  ev.target.value
+                                )
+                              }
+                              className="w-full bg-pink-50 rounded-xl px-3 py-2 text-sm"
+                            />
+                            <input
+                              value={e.transport}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  currentDay.id,
+                                  e.id,
+                                  "transport",
+                                  ev.target.value
+                                )
+                              }
+                              className="w-full bg-pink-50 rounded-xl px-3 py-2 text-xs"
+                              placeholder="交通"
+                            />
+                            <textarea
+                              value={e.note}
+                              onChange={(ev) =>
+                                updateItineraryLocal(
+                                  currentDay.id,
+                                  e.id,
+                                  "note",
+                                  ev.target.value
+                                )
+                              }
+                              className="w-full bg-pink-50 rounded-xl px-3 py-2 text-xs"
+                              rows="2"
+                            ></textarea>
+                            <div className="flex gap-2">
+                              <button
+                                onClick={saveSingleEvent}
+                                className="flex-1 bg-theme-green text-white py-2 rounded-xl text-xs font-bold shadow-md"
+                              >
+                                儲存
+                              </button>
+                              <button
+                                onClick={() => {
+                                  openConfirm("刪除?", () => {
+                                    const newData = data.itinerary.map((d) =>
+                                      d.id === currentDay.id
+                                        ? {
+                                            ...d,
+                                            events: d.events.filter(
+                                              (x) => x.id !== e.id
+                                            ),
+                                          }
+                                        : d
+                                    );
+                                    setData((p) => ({
+                                      ...p,
+                                      itinerary: newData,
+                                    }));
+                                    save("itinerary", newData);
+                                    setEditingEventId(null);
+                                  });
+                                }}
+                                className="px-3 bg-red-100 text-red-400 rounded-xl"
+                              >
+                                <Icon path={ICONS.trash} size={16} />
+                              </button>
+                            </div>
+                          </div>
+                        ) : (
+                          <>
+                            <h3 className="text-lg font-bold text-theme-text mb-2">
+                              {e.location}
+                            </h3>
+                            {e.transport && (
+                              <div className="inline-flex items-center gap-1.5 bg-theme-blue/10 text-theme-blue px-3 py-1 rounded-full text-xs font-bold mb-3 border border-theme-blue/20">
+                                <Icon path={ICONS.train} size={12} />{" "}
+                                {e.transport}
+                              </div>
+                            )}
+                            {e.note && (
+                              <div className="mt-2 pt-2 border-t-2 border-dashed border-gray-100 text-sm text-gray-500 whitespace-pre-line">
+                                <LinkifiedText text={e.note} />
+                              </div>
+                            )}
+                          </>
+                        )}
+                      </div>
+                    ))}
+                    {!reorderingDayId && (
+                      <button
+                        onClick={() => addItineraryEventLocal(currentDay.id)}
+                        className="w-full border-3 border-dashed border-white/50 bg-white/20 hover:bg-white/40 rounded-[2rem] p-6 flex flex-col items-center justify-center text-gray-500 hover:text-theme-pink transition-all font-bold md:h-full min-h-[150px]"
+                      >
+                        <Icon path={ICONS.plus} size={24} /> 新增活動
+                      </button>
+                    )}
+                  </SortableDayList>
                 </div>
-            );
+              </div>
+            </div>
+          );
         };
 
         const renderExpenses = () => {
-            const handleExpense = () => {
-                if(!expenseForm.item || !expenseForm.total) return;
-                const total = Number(expenseForm.total);
-                const entry = {
-                    id: editingExpenseId || Date.now(), date: new Date().toLocaleDateString("zh-TW", {month:"2-digit", day:"2-digit"}),
-                    item: expenseForm.item, total, payer: expenseForm.payer, involved: expenseForm.involved,
-                    perPerson: Math.round(total / (expenseForm.involved.length||1))
-                };
-                save("expenses", editingExpenseId ? data.expenses.map(e=>e.id===editingExpenseId?entry:e) : [entry, ...data.expenses]);
-                setEditingExpenseId(null); setExpenseForm({item:"", total:"", payer:data.settings.members[0], involved:[...data.settings.members]});
+          const handleExpense = () => {
+            if (!expenseForm.item || !expenseForm.total) return;
+            const total = Number(expenseForm.total);
+            const entry = {
+              id: editingExpenseId || Date.now(),
+              date: new Date().toLocaleDateString("zh-TW", {
+                month: "2-digit",
+                day: "2-digit",
+              }),
+              item: expenseForm.item,
+              total,
+              payer: expenseForm.payer,
+              involved: expenseForm.involved,
+              perPerson: Math.round(total / (expenseForm.involved.length || 1)),
             };
-            
-            // Calculate Summary
-            const calculateSummary = () => {
-                const summary = {};
-                (data.settings.members || []).forEach(m => summary[m] = { pay: 0, own: 0 }); // pay: paid, own: cost share
-
-                (data.expenses || []).forEach(ex => {
-                   const split = ex.total / (ex.involved.length || 1);
-                   if(summary[ex.payer]) summary[ex.payer].pay += ex.total;
-                   ex.involved.forEach(m => {
-                       if(summary[m]) summary[m].own += split;
-                   });
-                });
-                return summary;
-            };
-            const summary = calculateSummary();
-
-            return (
-                /* Updated: Two-column layout for desktop */
-                <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
-                    <div className="md:flex md:gap-6 md:items-start md:max-w-6xl md:mx-auto">
-                        
-                        {/* Left Column: Summary + Form (Sticky on Desktop) */}
-                        <div className="md:w-96 md:shrink-0 md:sticky md:top-6">
-                            {/* Summary Card */}
-                            <div className="kawaii-card p-5 mb-6">
-                                <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2"><Icon path={ICONS.wallet} /> 費用統計</h3>
-                                <div className="space-y-3">
-                                    {Object.entries(summary).map(([name, stat]) => {
-                                        const balance = stat.pay - stat.own;
-                                        return (
-                                            <div key={name} className="flex justify-between items-center border-b border-dashed border-gray-100 pb-2 last:border-0 last:pb-0">
-                                                <span className="font-bold text-gray-600">{name}</span>
-                                                <div className="text-right">
-                                                    <div className="text-xs text-gray-400">應付 ¥{Math.round(stat.own).toLocaleString()}</div>
-                                                    <div className={`font-bold font-mono ${balance >= 0 ? "text-theme-green" : "text-red-400"}`}>
-                                                        {balance >= 0 ? "收" : "付"} ¥{Math.abs(Math.round(balance)).toLocaleString()}
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        );
-                                    })}
-                                </div>
-                            </div>
-
-                            {/* Add/Edit Form */}
-                            <div className="kawaii-card p-6 sticky top-0 z-20 mb-6 md:static">
-                                <div className="flex justify-between mb-4 items-center">
-                                     <h2 className="text-xl font-bold text-theme-text flex items-center gap-2"><div className="bg-theme-yellow p-1.5 rounded-lg text-white"><Icon path={ICONS.wallet}/></div> {editingExpenseId?"編輯":"新增"}</h2>
-                                     {editingExpenseId && <button onClick={()=>{setEditingExpenseId(null); setExpenseForm({item:"", total:"", payer:data.settings.members[0], involved:[...data.settings.members]})}} className="text-xs text-gray-400">取消</button>}
-                                </div>
-                                <input value={expenseForm.item} onChange={e=>setExpenseForm({...expenseForm, item:e.target.value})} placeholder="項目" className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold mb-3"/>
-                                <div className="flex flex-col md:flex-row gap-3 mb-3">
-                                    <input type="number" value={expenseForm.total} onChange={e=>setExpenseForm({...expenseForm, total:e.target.value})} placeholder="金額" className="w-full md:w-2/3 bg-theme-bg rounded-xl px-4 py-3 font-bold"/>
-                                    <select value={expenseForm.payer} onChange={e=>setExpenseForm({...expenseForm, payer:e.target.value})} className="w-full md:w-1/3 bg-theme-bg rounded-xl px-2 font-bold py-3 text-center">
-                                        {data.settings.members.map(m=><option key={m} value={m}>{m}付</option>)}
-                                    </select>
-                                </div>
-                                <div className="flex flex-wrap gap-2 mb-4">
-                                    {data.settings.members.map(m => (
-                                        <button key={m} onClick={()=>setExpenseForm(p=>({...p, involved: p.involved.includes(m)?p.involved.filter(x=>x!==m):[...p.involved,m]}))} 
-                                            className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${expenseForm.involved.includes(m)?"border-theme-text bg-theme-text text-white":"border-gray-200 text-gray-400"}`}>{m}</button>
-                                    ))}
-                                </div>
-                                <button onClick={handleExpense} className="w-full bg-theme-pink text-white py-3 rounded-xl font-bold shadow-soft">確認</button>
-                            </div>
-                            
-                            {/* Member Mgmt (Moved to left column on desktop) */}
-                            <div className="kawaii-card p-5 mt-6">
-                                <div className="flex justify-between mb-3"><span className="font-bold text-gray-600">成員管理</span>
-                                     <div className="flex gap-2"><input value={newMemberName} onChange={e=>setNewMemberName(e.target.value)} className="w-20 bg-theme-bg rounded px-2 text-xs"/><button onClick={()=>{if(newMemberName){save("settings", {members:[...data.settings.members, newMemberName]}); setNewMemberName("")}}} className="bg-theme-green text-white px-2 rounded text-xs">+</button></div>
-                                </div>
-                                <div className="flex flex-wrap gap-2">{data.settings.members.map(m=><span key={m} className="bg-white border-2 border-dashed border-gray-200 px-2 py-1 rounded text-xs font-bold text-gray-500 flex items-center gap-1">{m} <button onClick={()=>openConfirm("移除?", ()=>save("settings", {members:data.settings.members.filter(x=>x!==m)}))} className="hover:text-red-400">×</button></span>)}</div>
-                            </div>
-                        </div>
-
-                        {/* Right Column: List (Grid on Desktop) */}
-                        <div className="flex-1 space-y-4 md:space-y-0 md:grid md:grid-cols-1 lg:grid-cols-2 md:gap-4">
-                            {data.expenses.map(ex => {
-                                const [m,d] = ex.date.split("/");
-                                return (
-                                    <div key={ex.id} className={`kawaii-card p-4 flex items-center gap-4 ${editingExpenseId===ex.id?"border-theme-pink":""}`}>
-                                        <div className="bg-theme-bg border-2 border-white rounded-xl w-14 h-14 flex flex-col items-center justify-center flex-shrink-0 shadow-inner">
-                                            <span className="text-[10px] text-gray-400 font-bold">{m}月</span><span className="text-xl font-black text-theme-pink leading-none">{d}</span>
-                                        </div>
-                                        <div className="flex-1 min-w-0">
-                                            <div className="flex items-center gap-2 mb-1"><span className="font-bold text-theme-text truncate">{ex.item}</span><span className="bg-theme-green text-white text-[10px] px-2 rounded font-bold">{ex.payer}</span></div>
-                                            {/* SWAPPED: Per Person is now prominent */}
-                                            <div className="font-black text-theme-text text-lg">每人 ¥{ex.perPerson.toLocaleString()}</div>
-                                            <div className="text-xs text-gray-400 mt-1">總計 ¥{ex.total.toLocaleString()} ({ex.involved.length}人)</div>
-                                        </div>
-                                        <div className="flex flex-col gap-2">
-                                            <button onClick={()=> {setEditingExpenseId(ex.id); setExpenseForm({item:ex.item, total:ex.total, payer:ex.payer, involved:ex.involved})}} className="text-gray-300 hover:text-theme-blue"><Icon path={ICONS.edit}/></button>
-                                            <button onClick={()=> openConfirm("刪除?", ()=>save("expenses", data.expenses.filter(e=>e.id!==ex.id)))} className="text-gray-300 hover:text-red-400"><Icon path={ICONS.trash}/></button>
-                                        </div>
-                                    </div>
-                                )
-                            })}
-                        </div>
-                    </div>
-                </div>
+            save(
+              "expenses",
+              editingExpenseId
+                ? data.expenses.map((e) =>
+                    e.id === editingExpenseId ? entry : e
+                  )
+                : [entry, ...data.expenses]
             );
+            setEditingExpenseId(null);
+            setExpenseForm({
+              item: "",
+              total: "",
+              payer: data.settings.members[0],
+              involved: [...data.settings.members],
+            });
+          };
+
+          // Calculate Summary
+          const calculateSummary = () => {
+            const summary = {};
+            (data.settings.members || []).forEach(
+              (m) => (summary[m] = { pay: 0, own: 0 })
+            ); // pay: paid, own: cost share
+
+            (data.expenses || []).forEach((ex) => {
+              const split = ex.total / (ex.involved.length || 1);
+              if (summary[ex.payer]) summary[ex.payer].pay += ex.total;
+              ex.involved.forEach((m) => {
+                if (summary[m]) summary[m].own += split;
+              });
+            });
+            return summary;
+          };
+          const summary = calculateSummary();
+
+          return (
+            /* Updated: Two-column layout for desktop */
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
+              <div className="md:flex md:gap-6 md:items-start md:max-w-6xl md:mx-auto">
+                {/* Left Column: Summary + Form (Sticky on Desktop) */}
+                <div className="md:w-96 md:shrink-0 md:sticky md:top-6">
+                  {/* Summary Card */}
+                  <div className="kawaii-card p-5 mb-6">
+                    <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                      <Icon path={ICONS.wallet} /> 費用統計
+                    </h3>
+                    <div className="space-y-3">
+                      {Object.entries(summary).map(([name, stat]) => {
+                        const balance = stat.pay - stat.own;
+                        return (
+                          <div
+                            key={name}
+                            className="flex justify-between items-center border-b border-dashed border-gray-100 pb-2 last:border-0 last:pb-0"
+                          >
+                            <span className="font-bold text-gray-600">
+                              {name}
+                            </span>
+                            <div className="text-right">
+                              <div className="text-xs text-gray-400">
+                                應付 ¥{Math.round(stat.own).toLocaleString()}
+                              </div>
+                              <div
+                                className={`font-bold font-mono ${
+                                  balance >= 0
+                                    ? "text-theme-green"
+                                    : "text-red-400"
+                                }`}
+                              >
+                                {balance >= 0 ? "收" : "付"} ¥
+                                {Math.abs(Math.round(balance)).toLocaleString()}
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Add/Edit Form */}
+                  <div className="kawaii-card p-6 sticky top-0 z-20 mb-6 md:static">
+                    <div className="flex justify-between mb-4 items-center">
+                      <h2 className="text-xl font-bold text-theme-text flex items-center gap-2">
+                        <div className="bg-theme-yellow p-1.5 rounded-lg text-white">
+                          <Icon path={ICONS.wallet} />
+                        </div>{" "}
+                        {editingExpenseId ? "編輯" : "新增"}
+                      </h2>
+                      {editingExpenseId && (
+                        <button
+                          onClick={() => {
+                            setEditingExpenseId(null);
+                            setExpenseForm({
+                              item: "",
+                              total: "",
+                              payer: data.settings.members[0],
+                              involved: [...data.settings.members],
+                            });
+                          }}
+                          className="text-xs text-gray-400"
+                        >
+                          取消
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      value={expenseForm.item}
+                      onChange={(e) =>
+                        setExpenseForm({ ...expenseForm, item: e.target.value })
+                      }
+                      placeholder="項目"
+                      className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold mb-3"
+                    />
+                    <div className="flex flex-col md:flex-row gap-3 mb-3">
+                      <input
+                        type="number"
+                        value={expenseForm.total}
+                        onChange={(e) =>
+                          setExpenseForm({
+                            ...expenseForm,
+                            total: e.target.value,
+                          })
+                        }
+                        placeholder="金額"
+                        className="w-full md:w-2/3 bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <select
+                        value={expenseForm.payer}
+                        onChange={(e) =>
+                          setExpenseForm({
+                            ...expenseForm,
+                            payer: e.target.value,
+                          })
+                        }
+                        className="w-full md:w-1/3 bg-theme-bg rounded-xl px-2 font-bold py-3 text-center"
+                      >
+                        {data.settings.members.map((m) => (
+                          <option key={m} value={m}>
+                            {m}付
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {data.settings.members.map((m) => (
+                        <button
+                          key={m}
+                          onClick={() =>
+                            setExpenseForm((p) => ({
+                              ...p,
+                              involved: p.involved.includes(m)
+                                ? p.involved.filter((x) => x !== m)
+                                : [...p.involved, m],
+                            }))
+                          }
+                          className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
+                            expenseForm.involved.includes(m)
+                              ? "border-theme-text bg-theme-text text-white"
+                              : "border-gray-200 text-gray-400"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      onClick={handleExpense}
+                      className="w-full bg-theme-pink text-white py-3 rounded-xl font-bold shadow-soft"
+                    >
+                      確認
+                    </button>
+                  </div>
+
+                  {/* Member Mgmt (Moved to left column on desktop) */}
+                  <div className="kawaii-card p-5 mt-6">
+                    <div className="flex justify-between mb-3">
+                      <span className="font-bold text-gray-600">成員管理</span>
+                      <div className="flex gap-2">
+                        <input
+                          value={newMemberName}
+                          onChange={(e) => setNewMemberName(e.target.value)}
+                          className="w-20 bg-theme-bg rounded px-2 text-xs"
+                        />
+                        <button
+                          onClick={() => {
+                            if (newMemberName) {
+                              save("settings", {
+                                members: [
+                                  ...data.settings.members,
+                                  newMemberName,
+                                ],
+                              });
+                              setNewMemberName("");
+                            }
+                          }}
+                          className="bg-theme-green text-white px-2 rounded text-xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {data.settings.members.map((m) => (
+                        <span
+                          key={m}
+                          className="bg-white border-2 border-dashed border-gray-200 px-2 py-1 rounded text-xs font-bold text-gray-500 flex items-center gap-1"
+                        >
+                          {m}{" "}
+                          <button
+                            onClick={() =>
+                              openConfirm("移除?", () =>
+                                save("settings", {
+                                  members: data.settings.members.filter(
+                                    (x) => x !== m
+                                  ),
+                                })
+                              )
+                            }
+                            className="hover:text-red-400"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Right Column: List (Grid on Desktop) */}
+                <div className="flex-1 space-y-4 md:space-y-0 md:grid md:grid-cols-1 lg:grid-cols-2 md:gap-4">
+                  {data.expenses.map((ex) => {
+                    const [m, d] = ex.date.split("/");
+                    return (
+                      <div
+                        key={ex.id}
+                        className={`kawaii-card p-4 flex items-center gap-4 ${
+                          editingExpenseId === ex.id ? "border-theme-pink" : ""
+                        }`}
+                      >
+                        <div className="bg-theme-bg border-2 border-white rounded-xl w-14 h-14 flex flex-col items-center justify-center flex-shrink-0 shadow-inner">
+                          <span className="text-[10px] text-gray-400 font-bold">
+                            {m}月
+                          </span>
+                          <span className="text-xl font-black text-theme-pink leading-none">
+                            {d}
+                          </span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 mb-1">
+                            <span className="font-bold text-theme-text truncate">
+                              {ex.item}
+                            </span>
+                            <span className="bg-theme-green text-white text-[10px] px-2 rounded font-bold">
+                              {ex.payer}
+                            </span>
+                          </div>
+                          {/* SWAPPED: Per Person is now prominent */}
+                          <div className="font-black text-theme-text text-lg">
+                            每人 ¥{ex.perPerson.toLocaleString()}
+                          </div>
+                          <div className="text-xs text-gray-400 mt-1">
+                            總計 ¥{ex.total.toLocaleString()} (
+                            {ex.involved.length}人)
+                          </div>
+                        </div>
+                        <div className="flex flex-col gap-2">
+                          <button
+                            onClick={() => {
+                              setEditingExpenseId(ex.id);
+                              setExpenseForm({
+                                item: ex.item,
+                                total: ex.total,
+                                payer: ex.payer,
+                                involved: ex.involved,
+                              });
+                            }}
+                            className="text-gray-300 hover:text-theme-blue"
+                          >
+                            <Icon path={ICONS.edit} />
+                          </button>
+                          <button
+                            onClick={() =>
+                              openConfirm("刪除?", () =>
+                                save(
+                                  "expenses",
+                                  data.expenses.filter((e) => e.id !== ex.id)
+                                )
+                              )
+                            }
+                            className="text-gray-300 hover:text-red-400"
+                          >
+                            <Icon path={ICONS.trash} />
+                          </button>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          );
         };
 
         const renderShopping = () => {
-             // Logic
-             const add = () => { 
-                if(newItem.name){ 
-                    const item = { ...newItem, id:Date.now(), checked:false };
-                    if(item.link && !item.image) {
-                         try {
-                            const domain = new URL(item.link).hostname;
-                            item.image = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
-                         } catch(e){}
-                    }
-                    save("shopping", [...data.shopping, item]); 
-                    setNewItem({name:"", qty:1, note:"", link:"", image:""}); 
-                }
-             };
-             
-             return (
-             <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
-                {/* Updated: Container max-width and margin auto for desktop */}
-                <div className="md:max-w-6xl md:mx-auto">
-                    <div className="kawaii-card p-5 mb-6 sticky top-0 z-20 md:max-w-2xl md:mx-auto md:relative md:mb-10">
-                        <div className="flex flex-col gap-2">
-                            {/* Name Input */}
-                            <input 
-                                value={newItem.name} 
-                                onChange={e=>setNewItem({...newItem, name:e.target.value})} 
-                                placeholder="想買什麼？" 
-                                className="bg-theme-bg rounded-xl px-4 py-3 text-sm font-bold w-full"
-                            />
-                            
-                            {/* Links Input Row */}
-                            <div className="flex gap-2">
-                                 <input 
-                                    value={newItem.link} 
-                                    onChange={e=>setNewItem({...newItem, link:e.target.value})} 
-                                    placeholder="連結" 
-                                    className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0" 
-                                    onBlur={() => {
-                                     // Auto fill favicon
-                                     if(newItem.link && !newItem.image) {
-                                         try {
-                                              const domain = new URL(newItem.link).hostname;
-                                              setNewItem(prev => ({...prev, image: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`}));
-                                         } catch(e){}
-                                     }
-                                 }}/>
-                                 <input 
-                                    value={newItem.image} 
-                                    onChange={e=>setNewItem({...newItem, image:e.target.value})} 
-                                    placeholder="圖片" 
-                                    className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
-                                />
-                            </div>
-                            
-                            {/* Preview Image if valid */}
-                            {newItem.image && <div className="flex justify-center py-2"><img src={newItem.image} className="w-16 h-16 rounded-lg border border-gray-200 object-contain bg-white" onError={(e)=>e.target.style.display='none'}/></div>}
+          // Logic
+          const add = () => {
+            if (newItem.name) {
+              const item = { ...newItem, id: Date.now(), checked: false };
+              if (item.link && !item.image) {
+                try {
+                  const domain = new URL(item.link).hostname;
+                  item.image = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                } catch (e) {}
+              }
+              save("shopping", [...data.shopping, item]);
+              setNewItem({ name: "", qty: 1, note: "", link: "", image: "" });
+            }
+          };
 
-                            {/* Bottom Row */}
-                            <div className="flex gap-2 items-center">
-                                <input type="number" value={newItem.qty} onChange={e=>setNewItem({...newItem, qty:e.target.value})} className="w-16 bg-theme-bg rounded-xl px-2 py-2 text-center font-bold" placeholder="1"/>
-                                <input value={newItem.note} onChange={e=>setNewItem({...newItem, note:e.target.value})} placeholder="備註" className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"/>
-                                <button onClick={add} className="bg-theme-pink text-white w-12 h-10 rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all"><Icon path={ICONS.plus} size={24}/></button>
-                            </div>
-                        </div>
+          return (
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
+              {/* Updated: Container max-width and margin auto for desktop */}
+              <div className="md:max-w-6xl md:mx-auto">
+                <div className="kawaii-card p-5 mb-6 sticky top-0 z-20 md:max-w-2xl md:mx-auto md:relative md:mb-10">
+                  <div className="flex flex-col gap-2">
+                    {/* Name Input */}
+                    <input
+                      value={newItem.name}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, name: e.target.value })
+                      }
+                      placeholder="想買什麼？"
+                      className="bg-theme-bg rounded-xl px-4 py-3 text-sm font-bold w-full"
+                    />
+
+                    {/* Links Input Row */}
+                    <div className="flex gap-2">
+                      <input
+                        value={newItem.link}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, link: e.target.value })
+                        }
+                        placeholder="連結"
+                        className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                        onBlur={() => {
+                          // Auto fill favicon
+                          if (newItem.link && !newItem.image) {
+                            try {
+                              const domain = new URL(newItem.link).hostname;
+                              setNewItem((prev) => ({
+                                ...prev,
+                                image: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+                              }));
+                            } catch (e) {}
+                          }
+                        }}
+                      />
+                      <input
+                        value={newItem.image}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, image: e.target.value })
+                        }
+                        placeholder="圖片"
+                        className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                      />
                     </div>
-                    {/* Updated: Grid Layout for Desktop */}
-                    <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
-                        {(data.shopping||[]).map(i => (
-                            <div key={i.id} onClick={() => save("shopping", data.shopping.map(x => x.id===i.id ? {...x, checked:!x.checked} : x))} className={`kawaii-card p-3 flex items-start gap-3 cursor-pointer ${i.checked?"opacity-60":""}`}>
-                                <div className={`mt-1 w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${i.checked?"bg-theme-green border-theme-green text-white":"border-gray-300"}`}>{i.checked && <Icon path={ICONS.check} size={14} strokeWidth="3"/>}</div>
-                                
-                                {/* Image Preview in List */}
-                                {i.image ? <img src={i.image} className="w-16 h-16 rounded-lg object-contain border border-gray-100 bg-white flex-shrink-0" onError={(e) => e.target.style.display='none'}/> 
-                                 : (i.link && <div className="w-16 h-16 rounded-lg bg-theme-bg flex items-center justify-center text-theme-blue flex-shrink-0"><Icon path={ICONS.link} size={24}/></div>)}
-                                
-                                <div className="flex-1 min-w-0">
-                                    <div className="font-bold text-gray-700 truncate text-lg">{i.name}</div>
-                                    {i.link && <a href={i.link} target="_blank" onClick={e=>e.stopPropagation()} className="text-xs text-theme-blue flex items-center gap-1 hover:underline mt-1 bg-blue-50 w-fit px-2 py-0.5 rounded-full"><Icon path={ICONS.externalLink} size={10}/> 購買連結</a>}
-                                    {i.note && <div className="text-xs text-gray-400 mt-1 break-words bg-gray-50 p-1.5 rounded">{i.note}</div>}
-                                </div>
-                                <div className="flex flex-col items-end gap-2 flex-shrink-0">
-                                    <span className="bg-theme-bg text-theme-pink text-xs font-black px-2 py-1 rounded-lg border border-pink-100">x{i.qty}</span>
-                                    <button onClick={(e) => {e.stopPropagation(); openConfirm("刪除?", () => save("shopping", data.shopping.filter(x=>x.id!==i.id)))}} className="text-gray-300 hover:text-red-400 p-1"><Icon path={ICONS.trash} size={16}/></button>
-                                </div>
-                            </div>
-                        ))}
+
+                    {/* Preview Image if valid */}
+                    {newItem.image && (
+                      <div className="flex justify-center py-2">
+                        <img
+                          src={newItem.image}
+                          className="w-16 h-16 rounded-lg border border-gray-200 object-contain bg-white"
+                          onError={(e) => (e.target.style.display = "none")}
+                        />
+                      </div>
+                    )}
+
+                    {/* Bottom Row */}
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="number"
+                        value={newItem.qty}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, qty: e.target.value })
+                        }
+                        className="w-16 bg-theme-bg rounded-xl px-2 py-2 text-center font-bold"
+                        placeholder="1"
+                      />
+                      <input
+                        value={newItem.note}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, note: e.target.value })
+                        }
+                        placeholder="備註"
+                        className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                      />
+                      <button
+                        onClick={add}
+                        className="bg-theme-pink text-white w-12 h-10 rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all"
+                      >
+                        <Icon path={ICONS.plus} size={24} />
+                      </button>
                     </div>
+                  </div>
                 </div>
-             </div>
-             );
+                {/* Updated: Grid Layout for Desktop */}
+                <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
+                  {(data.shopping || []).map((i) => (
+                    <div
+                      key={i.id}
+                      onClick={() =>
+                        save(
+                          "shopping",
+                          data.shopping.map((x) =>
+                            x.id === i.id ? { ...x, checked: !x.checked } : x
+                          )
+                        )
+                      }
+                      className={`kawaii-card p-3 flex items-start gap-3 cursor-pointer ${
+                        i.checked ? "opacity-60" : ""
+                      }`}
+                    >
+                      <div
+                        className={`mt-1 w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                          i.checked
+                            ? "bg-theme-green border-theme-green text-white"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        {i.checked && (
+                          <Icon path={ICONS.check} size={14} strokeWidth="3" />
+                        )}
+                      </div>
+
+                      {/* Image Preview in List */}
+                      {i.image ? (
+                        <img
+                          src={i.image}
+                          className="w-16 h-16 rounded-lg object-contain border border-gray-100 bg-white flex-shrink-0"
+                          onError={(e) => (e.target.style.display = "none")}
+                        />
+                      ) : (
+                        i.link && (
+                          <div className="w-16 h-16 rounded-lg bg-theme-bg flex items-center justify-center text-theme-blue flex-shrink-0">
+                            <Icon path={ICONS.link} size={24} />
+                          </div>
+                        )
+                      )}
+
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-gray-700 truncate text-lg">
+                          {i.name}
+                        </div>
+                        {i.link && (
+                          <a
+                            href={i.link}
+                            target="_blank"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-theme-blue flex items-center gap-1 hover:underline mt-1 bg-blue-50 w-fit px-2 py-0.5 rounded-full"
+                          >
+                            <Icon path={ICONS.externalLink} size={10} />{" "}
+                            購買連結
+                          </a>
+                        )}
+                        {i.note && (
+                          <div className="text-xs text-gray-400 mt-1 break-words bg-gray-50 p-1.5 rounded">
+                            {i.note}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <span className="bg-theme-bg text-theme-pink text-xs font-black px-2 py-1 rounded-lg border border-pink-100">
+                          x{i.qty}
+                        </span>
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            openConfirm("刪除?", () =>
+                              save(
+                                "shopping",
+                                data.shopping.filter((x) => x.id !== i.id)
+                              )
+                            );
+                          }}
+                          className="text-gray-300 hover:text-red-400 p-1"
+                        >
+                          <Icon path={ICONS.trash} size={16} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
         };
 
         const renderList = (type) => {
-            const isRec = type === 'recommend';
-            const list = (isRec ? data.mustBuy : data.info) || []; // Safety Check
-            const add = () => {
-                if(isRec) { if(mustBuyForm.area && mustBuyForm.item) {
-                     const exist = list.find(z=>z.area===mustBuyForm.area);
-                     save("mustBuy", exist ? list.map(z=>z.area===mustBuyForm.area?{...z, items:[...z.items, mustBuyForm.item]}:z) : [...list, {area:mustBuyForm.area, items:[mustBuyForm.item]}]);
-                     setMustBuyForm({area:"", item:""});
-                }} else { if(infoForm.title) {
-                    const payload = editingInfoId ? list.map(i=>i.id===editingInfoId?{...infoForm, id:editingInfoId}:i) : [...list, {...infoForm, id:Date.now()}];
-                    save("info", payload); setInfoForm({title:"", link:"", note:""}); setEditingInfoId(null);
-                }}
-            };
+          const isRec = type === "recommend";
+          const list = (isRec ? data.mustBuy : data.info) || []; // Safety Check
+          const add = () => {
+            if (isRec) {
+              if (mustBuyForm.area && mustBuyForm.item) {
+                const exist = list.find((z) => z.area === mustBuyForm.area);
+                save(
+                  "mustBuy",
+                  exist
+                    ? list.map((z) =>
+                        z.area === mustBuyForm.area
+                          ? { ...z, items: [...z.items, mustBuyForm.item] }
+                          : z
+                      )
+                    : [
+                        ...list,
+                        { area: mustBuyForm.area, items: [mustBuyForm.item] },
+                      ]
+                );
+                setMustBuyForm({ area: "", item: "" });
+              }
+            } else {
+              if (infoForm.title) {
+                const payload = editingInfoId
+                  ? list.map((i) =>
+                      i.id === editingInfoId
+                        ? { ...infoForm, id: editingInfoId }
+                        : i
+                    )
+                  : [...list, { ...infoForm, id: Date.now() }];
+                save("info", payload);
+                setInfoForm({ title: "", link: "", note: "" });
+                setEditingInfoId(null);
+              }
+            }
+          };
 
-            return (
-                <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
-                     {/* Updated: Container max-width and margin auto for desktop */}
-                     <div className="md:max-w-6xl md:mx-auto">
-                        <div className="kawaii-card p-5 mb-6 sticky top-0 z-20 md:max-w-2xl md:mx-auto md:relative md:mb-10">
-                            {isRec ? (
-                                 // Layout Fix for Recommend: Vertical Stack
-                                <div className="flex flex-col gap-3">
-                                    <input 
-                                        value={mustBuyForm.area} 
-                                        onChange={e=>setMustBuyForm({...mustBuyForm, area:e.target.value})} 
-                                        list="areas" 
-                                        placeholder="區域 (例如: 京都)" 
-                                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
-                                    />
-                                    <datalist id="areas">{list.map(z => <option key={z.area} value={z.area}/>)}</datalist>
-                                    
-                                    <input 
-                                        value={mustBuyForm.item} 
-                                        onChange={e=>setMustBuyForm({...mustBuyForm, item:e.target.value})} 
-                                        placeholder="推薦項目 (必買/必吃)" 
-                                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
-                                    />
-                                    
-                                    <button onClick={add} className="w-full bg-theme-yellow text-white py-3 rounded-xl font-bold shadow-soft active:scale-95 transition-all text-shadow">新增推薦</button>
-                                </div>
-                            ) : (
-                                 // Layout Fix for Info: Vertical Stack
-                                <div className="flex flex-col gap-3">
-                                    <input value={infoForm.title} onChange={e=>setInfoForm({...infoForm, title:e.target.value})} placeholder="標題" className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"/>
-                                    <input value={infoForm.link} onChange={e=>setInfoForm({...infoForm, link:e.target.value})} placeholder="連結" className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"/>
-                                    <textarea value={infoForm.note} onChange={e=>setInfoForm({...infoForm, note:e.target.value})} placeholder="備註" className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold text-xs" rows="2"></textarea>
-                                    <div className="flex gap-2">{editingInfoId && <button onClick={()=>{setEditingInfoId(null); setInfoForm({title:"", link:"", note:""})}} className="w-1/3 bg-gray-200 rounded-lg text-xs font-bold">取消</button>}<button onClick={add} className="flex-1 bg-theme-blue text-white py-3 rounded-xl font-bold shadow-sm active:scale-95">{editingInfoId?"修改":"新增"}</button></div>
-                                </div>
-                            )}
-                        </div>
-                        {/* Updated: Grid Layout for Desktop */}
-                        <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
-                            {isRec ? list.map((z, i) => (
-                                <div key={i} className="kawaii-card overflow-hidden h-fit"><div className="bg-theme-yellow/20 px-4 py-2 font-bold text-gray-600 flex gap-2"><Icon path={ICONS.pin} size={16} className="text-theme-yellow"/>{z.area}</div>
-                                    <div className="p-2">{(z.items||[]).map((it, j) => <div key={j} className="flex justify-between p-2 hover:bg-pink-50 rounded group"><span className="font-bold text-gray-600">{it}</span><button onClick={()=>openConfirm("刪除?", ()=>{const l=[...list]; l[i].items.splice(j,1); save("mustBuy", l)})} className="text-gray-300 hover:text-red-400"><Icon path={ICONS.x} size={14}/></button></div>)}</div>
-                                </div>
-                            )) : list.map(item => (
-                                <div key={item.id} className="kawaii-card p-4 relative group h-fit">
-                                    <div className="absolute top-3 right-3 flex gap-2"><button onClick={()=>{setEditingInfoId(item.id); setInfoForm({title:item.title, link:item.link||"", note:item.note||""})}} className="text-gray-300 hover:text-theme-blue"><Icon path={ICONS.edit} size={16}/></button><button onClick={()=>openConfirm("刪除?", ()=>save("info", list.filter(x=>x.id!==item.id)))} className="text-gray-300 hover:text-red-400"><Icon path={ICONS.trash} size={16}/></button></div>
-                                    <h3 className="font-bold text-lg text-gray-700 mb-1">{item.title}</h3>
-                                    {item.link && <a href={item.link} target="_blank" className="text-xs bg-blue-50 text-theme-blue px-2 py-1 rounded flex items-center gap-1 w-fit mb-2"><Icon path={ICONS.globe} size={10}/> 開啟連結</a>}
-                                    {item.note && <div className="text-xs text-gray-500 whitespace-pre-line bg-gray-50 p-2 rounded"><LinkifiedText text={item.note}/></div>}
-                                </div>
-                            ))}
-                        </div>
-                     </div>
+          return (
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
+              {/* Updated: Container max-width and margin auto for desktop */}
+              <div className="md:max-w-6xl md:mx-auto">
+                <div className="kawaii-card p-5 mb-6 sticky top-0 z-20 md:max-w-2xl md:mx-auto md:relative md:mb-10">
+                  {isRec ? (
+                    // Layout Fix for Recommend: Vertical Stack
+                    <div className="flex flex-col gap-3">
+                      <input
+                        value={mustBuyForm.area}
+                        onChange={(e) =>
+                          setMustBuyForm({
+                            ...mustBuyForm,
+                            area: e.target.value,
+                          })
+                        }
+                        list="areas"
+                        placeholder="區域 (例如: 京都)"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <datalist id="areas">
+                        {list.map((z) => (
+                          <option key={z.area} value={z.area} />
+                        ))}
+                      </datalist>
+
+                      <input
+                        value={mustBuyForm.item}
+                        onChange={(e) =>
+                          setMustBuyForm({
+                            ...mustBuyForm,
+                            item: e.target.value,
+                          })
+                        }
+                        placeholder="推薦項目 (必買/必吃)"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+
+                      <button
+                        onClick={add}
+                        className="w-full bg-theme-yellow text-white py-3 rounded-xl font-bold shadow-soft active:scale-95 transition-all text-shadow"
+                      >
+                        新增推薦
+                      </button>
+                    </div>
+                  ) : (
+                    // Layout Fix for Info: Vertical Stack
+                    <div className="flex flex-col gap-3">
+                      <input
+                        value={infoForm.title}
+                        onChange={(e) =>
+                          setInfoForm({ ...infoForm, title: e.target.value })
+                        }
+                        placeholder="標題"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <input
+                        value={infoForm.link}
+                        onChange={(e) =>
+                          setInfoForm({ ...infoForm, link: e.target.value })
+                        }
+                        placeholder="連結"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <textarea
+                        value={infoForm.note}
+                        onChange={(e) =>
+                          setInfoForm({ ...infoForm, note: e.target.value })
+                        }
+                        placeholder="備註"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold text-xs"
+                        rows="2"
+                      ></textarea>
+                      <div className="flex gap-2">
+                        {editingInfoId && (
+                          <button
+                            onClick={() => {
+                              setEditingInfoId(null);
+                              setInfoForm({ title: "", link: "", note: "" });
+                            }}
+                            className="w-1/3 bg-gray-200 rounded-lg text-xs font-bold"
+                          >
+                            取消
+                          </button>
+                        )}
+                        <button
+                          onClick={add}
+                          className="flex-1 bg-theme-blue text-white py-3 rounded-xl font-bold shadow-sm active:scale-95"
+                        >
+                          {editingInfoId ? "修改" : "新增"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
                 </div>
-            );
+                {/* Updated: Grid Layout for Desktop */}
+                <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
+                  {isRec
+                    ? list.map((z, i) => (
+                        <div
+                          key={i}
+                          className="kawaii-card overflow-hidden h-fit"
+                        >
+                          <div className="bg-theme-yellow/20 px-4 py-2 font-bold text-gray-600 flex gap-2">
+                            <Icon
+                              path={ICONS.pin}
+                              size={16}
+                              className="text-theme-yellow"
+                            />
+                            {z.area}
+                          </div>
+                          <div className="p-2">
+                            {(z.items || []).map((it, j) => (
+                              <div
+                                key={j}
+                                className="flex justify-between p-2 hover:bg-pink-50 rounded group"
+                              >
+                                <span className="font-bold text-gray-600">
+                                  {it}
+                                </span>
+                                <button
+                                  onClick={() =>
+                                    openConfirm("刪除?", () => {
+                                      const l = [...list];
+                                      l[i].items.splice(j, 1);
+                                      save("mustBuy", l);
+                                    })
+                                  }
+                                  className="text-gray-300 hover:text-red-400"
+                                >
+                                  <Icon path={ICONS.x} size={14} />
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      ))
+                    : list.map((item) => (
+                        <div
+                          key={item.id}
+                          className="kawaii-card p-4 relative group h-fit"
+                        >
+                          <div className="absolute top-3 right-3 flex gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingInfoId(item.id);
+                                setInfoForm({
+                                  title: item.title,
+                                  link: item.link || "",
+                                  note: item.note || "",
+                                });
+                              }}
+                              className="text-gray-300 hover:text-theme-blue"
+                            >
+                              <Icon path={ICONS.edit} size={16} />
+                            </button>
+                            <button
+                              onClick={() =>
+                                openConfirm("刪除?", () =>
+                                  save(
+                                    "info",
+                                    list.filter((x) => x.id !== item.id)
+                                  )
+                                )
+                              }
+                              className="text-gray-300 hover:text-red-400"
+                            >
+                              <Icon path={ICONS.trash} size={16} />
+                            </button>
+                          </div>
+                          <h3 className="font-bold text-lg text-gray-700 mb-1">
+                            {item.title}
+                          </h3>
+                          {item.link && (
+                            <a
+                              href={item.link}
+                              target="_blank"
+                              className="text-xs bg-blue-50 text-theme-blue px-2 py-1 rounded flex items-center gap-1 w-fit mb-2"
+                            >
+                              <Icon path={ICONS.globe} size={10} /> 開啟連結
+                            </a>
+                          )}
+                          {item.note && (
+                            <div className="text-xs text-gray-500 whitespace-pre-line bg-gray-50 p-2 rounded">
+                              <LinkifiedText text={item.note} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                </div>
+              </div>
+            </div>
+          );
         };
 
         return (
           <div className="relative h-screen w-full overflow-hidden flex flex-col items-center justify-center text-theme-text">
             {/* Updated: Full width container, remove fixed max-width for phone frame on desktop */}
             <div className="w-full h-full relative flex flex-col md:flex-row bg-app-bg/50 md:bg-transparent transition-all duration-300">
-                
-                {/* Nav Bar - Updated: Conditional rendering for Desktop Sidebar / Mobile Bottom Bar */}
-                {renderNav()} 
+              {/* Nav Bar - Updated: Conditional rendering for Desktop Sidebar / Mobile Bottom Bar */}
+              {renderNav()}
 
-                {/* Header + Content Area */}
-                <div className="relative z-10 flex-1 overflow-hidden flex flex-col">
-                     <div className="pt-safe px-6 pb-2 flex justify-between items-end mt-4 md:mt-2">
-                        <h1 className="text-2xl font-black text-theme-text tracking-wider font-serif flex items-center gap-2">KANSAI <span className="text-xs bg-theme-pink text-white px-2 py-0.5 rounded-full">TRIP</span></h1>
-                        {/* Exchange Rate Display */}
-                        {exchangeRate && (
-                            <div className="flex flex-col items-end animate-fade-in bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-white/50">
-                                <span className="text-[10px] text-gray-500 font-bold">目前匯率</span>
-                                <span className="text-sm font-black text-app-blue">1 JPY ≈ {exchangeRate} TWD</span>
-                            </div>
-                        )}
+              {/* Header + Content Area */}
+              <div className="relative z-10 flex-1 overflow-hidden flex flex-col">
+                <div className="pt-safe px-6 pb-2 flex justify-between items-end mt-4 md:mt-2">
+                  <h1 className="text-2xl font-black text-theme-text tracking-wider font-serif flex items-center gap-2">
+                    KANSAI{" "}
+                    <span className="text-xs bg-theme-pink text-white px-2 py-0.5 rounded-full">
+                      TRIP
+                    </span>
+                  </h1>
+                  {/* Exchange Rate Display */}
+                  {exchangeRate && (
+                    <div className="flex flex-col items-end animate-fade-in bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-white/50">
+                      <span className="text-[10px] text-gray-500 font-bold">
+                        目前匯率
+                      </span>
+                      <span className="text-sm font-black text-app-blue">
+                        1 JPY ≈ {exchangeRate} TWD
+                      </span>
                     </div>
-                    {activeTab === 'itinerary' && renderItinerary()}
-                    {activeTab === 'shopping' && renderShopping()}
-                    {activeTab === 'tools' && renderExpenses()}
-                    {(activeTab === 'recommend' || activeTab === 'info') && renderList(activeTab)}
+                  )}
                 </div>
-                
-                {/* Confirm Modal */}
-                <ConfirmModal isOpen={modalConfig.isOpen} message={modalConfig.message} onConfirm={modalConfig.onConfirm} onCancel={modalConfig.onCancel} />
-                
+                {activeTab === "itinerary" && renderItinerary()}
+                {activeTab === "shopping" && renderShopping()}
+                {activeTab === "tools" && renderExpenses()}
+                {(activeTab === "recommend" || activeTab === "info") &&
+                  renderList(activeTab)}
+              </div>
+
+              {/* Confirm Modal */}
+              <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                message={modalConfig.message}
+                onConfirm={modalConfig.onConfirm}
+                onCancel={modalConfig.onCancel}
+              />
             </div>
           </div>
         );
