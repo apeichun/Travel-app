@@ -364,6 +364,7 @@
         });
         const [editingExpenseId, setEditingExpenseId] = useState(null);
         const [editingEventId, setEditingEventId] = useState(null);
+        const [editingInfoId, setEditingInfoId] = useState(null); // Added state for editing Info
         const [newItem, setNewItem] = useState({ name: "", qty: 1, note: "" });
         const [mustBuyForm, setMustBuyForm] = useState({ area: "", item: "" });
         const [infoForm, setInfoForm] = useState({
@@ -1376,19 +1377,42 @@
 
           const addInfo = () => {
             if (!infoForm.title) return;
-            saveToFirebase("info", [
-              ...data.info,
-              { ...infoForm, id: Date.now() },
-            ]);
+            let newList;
+            if (editingInfoId) {
+              newList = data.info.map((i) =>
+                i.id === editingInfoId ? { ...infoForm, id: editingInfoId } : i
+              );
+            } else {
+              newList = [...data.info, { ...infoForm, id: Date.now() }];
+            }
+            saveToFirebase("info", newList);
+            setInfoForm({ title: "", link: "", note: "" });
+            setEditingInfoId(null);
+          };
+
+          const startEditInfo = (item) => {
+            setEditingInfoId(item.id);
+            setInfoForm({
+              title: item.title,
+              link: item.link || "",
+              note: item.note || "",
+            });
+            document
+              .querySelector(".custom-scrollbar")
+              ?.scrollTo({ top: 0, behavior: "smooth" });
+          };
+
+          const cancelEditInfo = () => {
+            setEditingInfoId(null);
             setInfoForm({ title: "", link: "", note: "" });
           };
+
           const delInfo = (id) =>
-            openConfirm("刪除?", () =>
-              saveToFirebase(
-                "info",
-                data.info.filter((i) => i.id !== id)
-              )
-            );
+            openConfirm("刪除?", () => {
+              const newList = data.info.filter((i) => i.id !== id);
+              saveToFirebase("info", newList);
+              if (editingInfoId === id) cancelEditInfo();
+            });
 
           if (type === "recommend") {
             return (
@@ -1488,12 +1512,22 @@
                     placeholder="連結 (選填)"
                     className="w-full bg-gray-50 rounded-xl px-4 py-3 text-sm font-bold mb-3 focus:bg-white"
                   />
-                  <button
-                    onClick={addInfo}
-                    className="w-full bg-gray-800 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all"
-                  >
-                    新增資訊
-                  </button>
+                  <div className="flex gap-2">
+                    {editingInfoId && (
+                      <button
+                        onClick={cancelEditInfo}
+                        className="w-1/3 bg-gray-200 hover:bg-gray-300 text-gray-600 font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all"
+                      >
+                        取消
+                      </button>
+                    )}
+                    <button
+                      onClick={addInfo}
+                      className="flex-1 bg-gray-800 text-white font-bold py-3 rounded-xl shadow-md active:scale-95 transition-all"
+                    >
+                      {editingInfoId ? "確認修改" : "新增資訊"}
+                    </button>
+                  </div>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                   {data.info.map((i) => (
@@ -1520,16 +1554,26 @@
                           </p>
                         )}
                       </div>
-                      <button
-                        onClick={() => delInfo(i.id)}
-                        className="absolute top-4 right-4 text-gray-300 hover:text-red-400 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <Icon path={ICONS.trash} size={18} />
-                      </button>
+                      <div className="absolute top-4 right-4 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity md:flex md:opacity-0 md:group-hover:opacity-100 mobile-actions">
+                        <button
+                          onClick={() => startEditInfo(i)}
+                          className="text-gray-300 hover:text-app-blue p-1"
+                        >
+                          <Icon path={ICONS.edit} size={18} />
+                        </button>
+                        <button
+                          onClick={() => delInfo(i.id)}
+                          className="text-gray-300 hover:text-red-400 p-1"
+                        >
+                          <Icon path={ICONS.trash} size={18} />
+                        </button>
+                      </div>
                     </div>
                   ))}
                 </div>
               </div>
+              {/* Add styles for mobile visibility */}
+              <style>{`@media (max-width: 768px) { .mobile-actions { opacity: 1 !important; } }`}</style>
             </div>
           );
         };
