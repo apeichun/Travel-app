@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
     />
-    <title>Kansai Trip 2026 (Kawaii Style - Public Data)</title>
+    <title>Kansai Trip 2025 (Kawaii Style - Public Data)</title>
 
     <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -44,7 +44,7 @@
             },
             animation: {
               "fade-in": "fadeIn 0.3s ease-out",
-              "pop": "pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              pop: "pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
             },
             keyframes: {
               fadeIn: {
@@ -242,7 +242,7 @@
       const DEFAULT_MUSTBUY = [
         { area: "梅田", items: ["Baton d'or", "Grand Calbee"] },
       ];
-      
+
       const DEFAULT_MEMBERS = ["我", "旅伴"];
 
       // --- 日本可愛配色 ---
@@ -311,28 +311,39 @@
       );
 
       const ICONS = {
-        torii: "M4 10h16 M4 6h16 M6 10v12 M18 10v12 M2 6l2-4h16l2 4 M6 6v4 M18 6v4",
-        fukubukuro: "M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0 M12 14v2",
+        torii:
+          "M4 10h16 M4 6h16 M6 10v12 M18 10v12 M2 6l2-4h16l2 4 M6 6v4 M18 6v4",
+        fukubukuro:
+          "M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z M3 6h18 M16 10a4 4 0 0 1-8 0 M12 14v2",
         yen: "M12 1a11 11 0 1 0 11 11 A11 11 0 0 0 12 1zm0 4v14 M8 7l4 6 4-6 M8 13h8 M8 16h8",
         fuji: "M12 2L2 22h20L12 2zm0 4l3 6H9l3-6z",
-        sakura: "M12 2c0 5-5 5-5 10s5 10 5 10 5-5 5-10-5-5-5-10z M12 12m-3 3a3 3 0 1 0 6 0 3 3 0 1 0-6 0",
+        sakura:
+          "M12 2c0 5-5 5-5 10s5 10 5 10 5-5 5-10-5-5-5-10z M12 12m-3 3a3 3 0 1 0 6 0 3 3 0 1 0-6 0",
         edit: "M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7 M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z",
         save: "M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z M17 21v-8H7v8 M7 3v5h8",
-        trash: "M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
+        trash:
+          "M3 6h18 M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2",
         plus: "M12 5v14M5 12h14",
         check: "M20 6L9 17l-5-5",
-        train: "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H12c-.7 0-1.3.3-1.8.7-.9.9-2.2 2.3-2.2 2.3s-2.7.6-4.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2 M7 19h10 M9 10h6 M12 5v5",
-        mapPin: "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6",
-        externalLink: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
-        globe: "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
+        train:
+          "M19 17h2c.6 0 1-.4 1-1v-3c0-.9-.7-1.7-1.5-1.9C18.7 10.6 16 10 16 10s-1.3-1.4-2.2-2.3c-.5-.4-1.1-.7-1.8-.7H12c-.7 0-1.3.3-1.8.7-.9.9-2.2 2.3-2.2 2.3s-2.7.6-4.5 1.1C2.7 11.3 2 12.1 2 13v3c0 .6.4 1 1 1h2 M7 19h10 M9 10h6 M12 5v5",
+        mapPin:
+          "M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z M12 10a3 3 0 1 0 0-6 3 3 0 0 0 0 6",
+        externalLink:
+          "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
+        globe:
+          "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z",
         refresh: "M23 4v6h-6 M1 20v-6h6",
         wifi: "M5 12.55a11 11 0 0 1 14.08 0 M1.42 9a16 16 0 0 1 21.16 0 M8.53 16.11a6 6 0 0 1 6.95 0 M12 20h.01",
         grip: "M3 12h18 M3 6h18 M3 18h18",
         sort: "M4 6h16 M4 12h16 M4 18h16",
         x: "M18 6L6 18M6 6l12 12",
-        user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z", 
-        users: "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75",
-        alertCircle: "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 8v4 M12 16h.01"
+        user: "M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2 M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
+        users:
+          "M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2 M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M23 21v-2a4 4 0 0 0-3-3.87 M16 3.13a4 4 0 0 1 0 7.75",
+        alertCircle:
+          "M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20z M12 8v4 M12 16h.01",
+        info: "M12 9h.01M11 12h1v4h1M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2z", // New Info Icon
       };
 
       const LinkifiedText = ({ text }) => {
@@ -366,31 +377,34 @@
         if (!isOpen) return null;
         return (
           <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-            <div className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-fade-in" onClick={onCancel}></div>
+            <div
+              className="absolute inset-0 bg-black/20 backdrop-blur-sm animate-fade-in"
+              onClick={onCancel}
+            ></div>
             <div className="bg-white rounded-3xl shadow-xl p-6 max-w-sm w-full border-4 border-jp-sakura relative overflow-hidden animate-pop z-10">
-                <div className="absolute -right-6 -top-6 w-20 h-20 bg-jp-sakura/20 rounded-full"></div>
-                <div className="flex flex-col items-center text-center gap-4">
-                    <div className="p-3 bg-jp-red/10 text-jp-red rounded-full">
-                        <Icon path={ICONS.trash} size={32} />
-                    </div>
-                    <h3 className="font-bold text-jp-ink text-lg font-serif tracking-wide">
-                        {message}
-                    </h3>
-                    <div className="flex gap-3 w-full mt-2">
-                        <button 
-                            onClick={onCancel}
-                            className="flex-1 py-3 bg-stone-100 hover:bg-stone-200 text-stone-500 rounded-2xl font-bold transition-colors"
-                        >
-                            取消
-                        </button>
-                        <button 
-                            onClick={onConfirm}
-                            className="flex-1 py-3 bg-jp-red hover:bg-[#ff5252] text-white rounded-2xl font-bold shadow-md transition-colors"
-                        >
-                            確定刪除
-                        </button>
-                    </div>
+              <div className="absolute -right-6 -top-6 w-20 h-20 bg-jp-sakura/20 rounded-full"></div>
+              <div className="flex flex-col items-center text-center gap-4">
+                <div className="p-3 bg-jp-red/10 text-jp-red rounded-full">
+                  <Icon path={ICONS.trash} size={32} />
                 </div>
+                <h3 className="font-bold text-jp-ink text-lg font-serif tracking-wide">
+                  {message}
+                </h3>
+                <div className="flex gap-3 w-full mt-2">
+                  <button
+                    onClick={onCancel}
+                    className="flex-1 py-3 bg-stone-100 hover:bg-stone-200 text-stone-500 rounded-2xl font-bold transition-colors"
+                  >
+                    取消
+                  </button>
+                  <button
+                    onClick={onConfirm}
+                    className="flex-1 py-3 bg-jp-red hover:bg-[#ff5252] text-white rounded-2xl font-bold shadow-md transition-colors"
+                  >
+                    確定刪除
+                  </button>
+                </div>
+              </div>
             </div>
           </div>
         );
@@ -422,6 +436,7 @@
               { id: "shopping", icon: ICONS.fukubukuro, label: "購物清單" },
               { id: "tools", icon: ICONS.yen, label: "記帳本" },
               { id: "recommend", icon: ICONS.fuji, label: "推薦景點" },
+              { id: "info", icon: ICONS.info, label: "資訊" },
             ].map((t) => (
               <button
                 key={t.id}
@@ -740,7 +755,8 @@
           shopping: [],
           mustBuy: [],
           expenses: [],
-          settings: { members: DEFAULT_MEMBERS }
+          info: [],
+          settings: { members: DEFAULT_MEMBERS },
         });
         const [editingEventId, setEditingEventId] = useState(null);
         const [reorderingDayId, setReorderingDayId] = useState(null);
@@ -752,28 +768,34 @@
           payer: "",
           involved: [],
         });
+        const [infoForm, setInfoForm] = useState({
+          title: "",
+          link: "",
+          note: "",
+        });
         const [editingExpenseId, setEditingExpenseId] = useState(null); // ID of expense being edited
         const [mustBuyForm, setMustBuyForm] = useState({ area: "", item: "" });
         const [db, setDb] = useState(null);
 
         // State for Custom Modal
         const [modalConfig, setModalConfig] = useState({
-            isOpen: false,
-            message: "",
-            onConfirm: () => {},
-            onCancel: () => {},
+          isOpen: false,
+          message: "",
+          onConfirm: () => {},
+          onCancel: () => {},
         });
 
         const openConfirm = (message, onConfirm) => {
-            setModalConfig({
-                isOpen: true,
-                message,
-                onConfirm: () => {
-                    onConfirm();
-                    setModalConfig(prev => ({ ...prev, isOpen: false }));
-                },
-                onCancel: () => setModalConfig(prev => ({ ...prev, isOpen: false })),
-            });
+          setModalConfig({
+            isOpen: true,
+            message,
+            onConfirm: () => {
+              onConfirm();
+              setModalConfig((prev) => ({ ...prev, isOpen: false }));
+            },
+            onCancel: () =>
+              setModalConfig((prev) => ({ ...prev, isOpen: false })),
+          });
         };
 
         // --- Firebase Init ---
@@ -817,20 +839,17 @@
               docRef,
               (docSnap) => {
                 if (docSnap.exists()) {
-                   setData((prev) => ({
+                  setData((prev) => ({
                     ...prev,
                     [dataKey]: docSnap.data().list || docSnap.data(), // Handle both wrapper list and direct obj
                   }));
-                }
-                else if (defaultVal) {
-                   setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
+                } else if (defaultVal) {
+                  setData((prev) => ({ ...prev, [dataKey]: defaultVal }));
                 }
               },
               (err) => {
                 if (err.code === "permission-denied")
-                  console.error(
-                    "Permission Denied"
-                  );
+                  console.error("Permission Denied");
               }
             );
           };
@@ -839,6 +858,7 @@
             setupListener("shopping", "shopping", []),
             setupListener("mustBuy", "mustBuy", DEFAULT_MUSTBUY),
             setupListener("expenses", "expenses", []),
+            setupListener("info", "info", []),
             setupListener("settings", "settings", { members: DEFAULT_MEMBERS }),
           ];
           return () => unsubs.forEach((u) => u());
@@ -846,12 +866,17 @@
 
         // Effect to set default involved members when members load (only for new entry)
         useEffect(() => {
-          if (data.settings?.members && expenseForm.involved.length === 0 && !expenseForm.payer && !editingExpenseId) {
-             setExpenseForm(prev => ({
-                 ...prev,
-                 involved: [...data.settings.members],
-                 payer: data.settings.members[0] || ""
-             }))
+          if (
+            data.settings?.members &&
+            expenseForm.involved.length === 0 &&
+            !expenseForm.payer &&
+            !editingExpenseId
+          ) {
+            setExpenseForm((prev) => ({
+              ...prev,
+              involved: [...data.settings.members],
+              payer: data.settings.members[0] || "",
+            }));
           }
         }, [data.settings, editingExpenseId]);
 
@@ -863,8 +888,9 @@
             key
           );
           try {
-             // If key is settings, don't wrap in list
-            const payload = key === 'settings' ? dataPayload : { list: dataPayload };
+            // If key is settings, don't wrap in list
+            const payload =
+              key === "settings" ? dataPayload : { list: dataPayload };
             await window.Firebase.setDoc(docRef, payload);
           } catch (e) {
             console.error("Save failed:", e);
@@ -978,114 +1004,147 @@
             saveToFirebase("mustBuy", l);
           });
         };
-        
+
+        // --- Info Management ---
+        const addInfo = () => {
+          if (!infoForm.title) return;
+          const newList = [
+            ...(data.info || []),
+            { ...infoForm, id: Date.now() },
+          ];
+          saveToFirebase("info", newList);
+          setInfoForm({ title: "", link: "", note: "" });
+        };
+        const delInfo = (id) => {
+          openConfirm("刪除此資訊？", () => {
+            saveToFirebase(
+              "info",
+              data.info.filter((i) => i.id !== id)
+            );
+          });
+        };
+
         // --- Member Management ---
         const addMember = () => {
-             if(!newMemberName.trim()) return;
-             if(data.settings?.members?.includes(newMemberName.trim())) {
-                 return;
-             }
-             const newMembers = [...(data.settings?.members || []), newMemberName.trim()];
-             const newSettings = { ...data.settings, members: newMembers };
-             saveToFirebase("settings", newSettings);
-             setNewMemberName("");
-             setExpenseForm(prev => ({...prev, involved: [...prev.involved, newMemberName.trim()]}));
+          if (!newMemberName.trim()) return;
+          if (data.settings?.members?.includes(newMemberName.trim())) {
+            return;
+          }
+          const newMembers = [
+            ...(data.settings?.members || []),
+            newMemberName.trim(),
+          ];
+          const newSettings = { ...data.settings, members: newMembers };
+          saveToFirebase("settings", newSettings);
+          setNewMemberName("");
+          setExpenseForm((prev) => ({
+            ...prev,
+            involved: [...prev.involved, newMemberName.trim()],
+          }));
         };
-        
+
         const removeMember = (name) => {
-            openConfirm(`確定要移除成員 ${name} 嗎？`, () => {
-                const newMembers = data.settings?.members?.filter(m => m !== name) || [];
-                const newSettings = { ...data.settings, members: newMembers };
-                saveToFirebase("settings", newSettings);
-                
-                // Clean up expense form selection
-                setExpenseForm(prev => ({
-                    ...prev,
-                    involved: prev.involved.filter(m => m !== name),
-                    payer: prev.payer === name ? (newMembers[0] || "") : prev.payer
-                }));
-            });
+          openConfirm(`確定要移除成員 ${name} 嗎？`, () => {
+            const newMembers =
+              data.settings?.members?.filter((m) => m !== name) || [];
+            const newSettings = { ...data.settings, members: newMembers };
+            saveToFirebase("settings", newSettings);
+
+            // Clean up expense form selection
+            setExpenseForm((prev) => ({
+              ...prev,
+              involved: prev.involved.filter((m) => m !== name),
+              payer: prev.payer === name ? newMembers[0] || "" : prev.payer,
+            }));
+          });
         };
 
         const toggleInvolved = (name) => {
-            setExpenseForm(prev => {
-                const involved = prev.involved.includes(name)
-                    ? prev.involved.filter(m => m !== name)
-                    : [...prev.involved, name];
-                return { ...prev, involved };
-            });
+          setExpenseForm((prev) => {
+            const involved = prev.involved.includes(name)
+              ? prev.involved.filter((m) => m !== name)
+              : [...prev.involved, name];
+            return { ...prev, involved };
+          });
         };
 
         const handleExpenseSubmit = () => {
-          if (!expenseForm.item || !expenseForm.total || expenseForm.involved.length === 0) return;
+          if (
+            !expenseForm.item ||
+            !expenseForm.total ||
+            expenseForm.involved.length === 0
+          )
+            return;
           const totalVal = Number(expenseForm.total);
-          
+
           let newList;
           if (editingExpenseId) {
-              // Update existing
-              newList = data.expenses.map(ex => {
-                  if (ex.id === editingExpenseId) {
-                      return {
-                          ...ex,
-                          item: expenseForm.item,
-                          total: totalVal,
-                          payer: expenseForm.payer,
-                          involved: expenseForm.involved,
-                          perPerson: Math.round(totalVal / expenseForm.involved.length)
-                      };
-                  }
-                  return ex;
-              });
-          } else {
-              // Add new
-              newList = [
-                {
-                  id: Date.now(),
-                  date: new Date().toLocaleDateString("zh-TW", {
-                    month: "2-digit",
-                    day: "2-digit",
-                  }),
+            // Update existing
+            newList = data.expenses.map((ex) => {
+              if (ex.id === editingExpenseId) {
+                return {
+                  ...ex,
                   item: expenseForm.item,
                   total: totalVal,
                   payer: expenseForm.payer,
                   involved: expenseForm.involved,
                   perPerson: Math.round(totalVal / expenseForm.involved.length),
-                },
-                ...data.expenses,
-              ];
+                };
+              }
+              return ex;
+            });
+          } else {
+            // Add new
+            newList = [
+              {
+                id: Date.now(),
+                date: new Date().toLocaleDateString("zh-TW", {
+                  month: "2-digit",
+                  day: "2-digit",
+                }),
+                item: expenseForm.item,
+                total: totalVal,
+                payer: expenseForm.payer,
+                involved: expenseForm.involved,
+                perPerson: Math.round(totalVal / expenseForm.involved.length),
+              },
+              ...data.expenses,
+            ];
           }
-          
+
           saveToFirebase("expenses", newList);
           // Reset form
-          setExpenseForm({ 
-              item: "", 
-              total: "", 
-              payer: data.settings?.members?.[0] || "", // Reset to default first member
-              involved: [...(data.settings?.members || [])] // Reset to all members
+          setExpenseForm({
+            item: "",
+            total: "",
+            payer: data.settings?.members?.[0] || "", // Reset to default first member
+            involved: [...(data.settings?.members || [])], // Reset to all members
           });
           setEditingExpenseId(null);
         };
-        
+
         const startEditExpense = (ex) => {
-            setEditingExpenseId(ex.id);
-            setExpenseForm({
-                item: ex.item,
-                total: ex.total,
-                payer: ex.payer,
-                involved: ex.involved || []
-            });
-            // Scroll to top of tools section
-            document.getElementById('expense-form')?.scrollIntoView({ behavior: 'smooth' });
+          setEditingExpenseId(ex.id);
+          setExpenseForm({
+            item: ex.item,
+            total: ex.total,
+            payer: ex.payer,
+            involved: ex.involved || [],
+          });
+          // Scroll to top of tools section
+          document
+            .getElementById("expense-form")
+            ?.scrollIntoView({ behavior: "smooth" });
         };
 
         const cancelEditExpense = () => {
-            setEditingExpenseId(null);
-            setExpenseForm({ 
-                item: "", 
-                total: "", 
-                payer: data.settings?.members?.[0] || "",
-                involved: [...(data.settings?.members || [])]
-            });
+          setEditingExpenseId(null);
+          setExpenseForm({
+            item: "",
+            total: "",
+            payer: data.settings?.members?.[0] || "",
+            involved: [...(data.settings?.members || [])],
+          });
         };
 
         const delExp = (id) => {
@@ -1095,7 +1154,7 @@
               data.expenses.filter((e) => e.id !== id)
             );
             if (editingExpenseId === id) {
-                cancelEditExpense();
+              cancelEditExpense();
             }
           });
         };
@@ -1120,13 +1179,13 @@
 
         return (
           <div className="min-h-screen bg-jp-bg md:flex relative font-sans text-jp-ink bg-pattern-asanoha">
-            <ConfirmModal 
-                isOpen={modalConfig.isOpen}
-                message={modalConfig.message}
-                onConfirm={modalConfig.onConfirm}
-                onCancel={modalConfig.onCancel}
+            <ConfirmModal
+              isOpen={modalConfig.isOpen}
+              message={modalConfig.message}
+              onConfirm={modalConfig.onConfirm}
+              onCancel={modalConfig.onCancel}
             />
-            
+
             <Sidebar
               user={user}
               configError={configError}
@@ -1149,22 +1208,30 @@
                       }`}
                     ></div>
                     <span className="text-[10px] text-jp-ink/50 font-medium">
-                      {user
-                        ? "連線中"
-                        : configError
-                        ? "設定錯誤"
-                        : "離線"}
+                      {user ? "連線中" : configError ? "設定錯誤" : "離線"}
                     </span>
                   </div>
                 </div>
-                <div className="bg-white text-jp-red text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border-2 border-jp-sakura shadow-sm">
-                  {activeTab === "tools"
-                    ? "記帳"
-                    : activeTab === "recommend"
-                    ? "推薦"
-                    : activeTab === "shopping"
-                    ? "購物"
-                    : "行程"}
+                <div className="bg-white text-jp-red text-xs font-bold px-4 py-1.5 rounded-full uppercase tracking-wider border-2 border-jp-sakura shadow-sm w-full overflow-x-auto whitespace-nowrap scrollbar-hide flex gap-2">
+                  {[
+                    { id: "itinerary", label: "行程" },
+                    { id: "shopping", label: "購物" },
+                    { id: "tools", label: "記帳" },
+                    { id: "recommend", label: "推薦" },
+                    { id: "info", label: "資訊" },
+                  ].map((t) => (
+                    <button
+                      key={t.id}
+                      onClick={() => setActiveTab(t.id)}
+                      className={`px-3 py-1 rounded-full transition-colors ${
+                        activeTab === t.id
+                          ? "bg-jp-red text-white"
+                          : "text-jp-ink/60 hover:bg-white"
+                      }`}
+                    >
+                      {t.label}
+                    </button>
+                  ))}
                 </div>
               </div>
 
@@ -1196,17 +1263,14 @@
                       </div>
                       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6 items-start">
                         {(data.itinerary || []).map((d, dIdx) => {
-                          const color =
-                            DAY_COLORS[dIdx % DAY_COLORS.length];
+                          const color = DAY_COLORS[dIdx % DAY_COLORS.length];
                           return (
                             <DayCard
                               key={d.id}
                               day={d}
                               color={color}
                               isReordering={reorderingDayId === d.id}
-                              toggleReorder={() =>
-                                handleToggleReorder(d.id)
-                              }
+                              toggleReorder={() => handleToggleReorder(d.id)}
                               onUpdateEvents={onUpdateEvents}
                               onDeleteEvent={deleteItineraryEventLocal}
                               onEditEvent={setEditingEventId}
@@ -1305,9 +1369,7 @@
                             >
                               <div
                                 className={`font-bold text-base text-jp-ink truncate font-serif ${
-                                  i.checked
-                                    ? "line-through text-jp-ink/40"
-                                    : ""
+                                  i.checked ? "line-through text-jp-ink/40" : ""
                                 }`}
                               >
                                 {i.name}
@@ -1337,240 +1399,328 @@
 
                   {activeTab === "tools" && (
                     <div className="mt-2 animate-fade-in flex flex-col gap-8 items-start">
-                      
                       <div className="w-full flex flex-col md:flex-row gap-8 items-start">
                         <div className="w-full md:w-80 md:sticky md:top-6 space-y-6">
-                            <div id="expense-form" className={`bg-white p-6 rounded-3xl shadow-sm border-2 ${editingExpenseId ? "border-jp-fuji ring-4 ring-jp-fuji/10" : "border-jp-matcha/30"} relative overflow-hidden transition-all duration-300`}>
-                            <div className={`absolute top-0 right-0 w-24 h-24 ${editingExpenseId ? "bg-jp-fuji/10" : "bg-jp-matcha/10"} rounded-bl-full -mr-6 -mt-6 z-0 transition-colors`}></div>
+                          <div
+                            id="expense-form"
+                            className={`bg-white p-6 rounded-3xl shadow-sm border-2 ${
+                              editingExpenseId
+                                ? "border-jp-fuji ring-4 ring-jp-fuji/10"
+                                : "border-jp-matcha/30"
+                            } relative overflow-hidden transition-all duration-300`}
+                          >
+                            <div
+                              className={`absolute top-0 right-0 w-24 h-24 ${
+                                editingExpenseId
+                                  ? "bg-jp-fuji/10"
+                                  : "bg-jp-matcha/10"
+                              } rounded-bl-full -mr-6 -mt-6 z-0 transition-colors`}
+                            ></div>
                             <div className="relative z-10">
-                                <div className="flex items-center gap-3 font-bold text-jp-ink mb-6 text-lg font-serif">
-                                <div className={`p-2 ${editingExpenseId ? "bg-jp-fuji/20 text-jp-fuji-dark" : "bg-jp-matcha/20 text-jp-matcha-dark"} rounded-xl transition-colors`}>
-                                    <Icon path={editingExpenseId ? ICONS.edit : ICONS.yen} size={24} />
+                              <div className="flex items-center gap-3 font-bold text-jp-ink mb-6 text-lg font-serif">
+                                <div
+                                  className={`p-2 ${
+                                    editingExpenseId
+                                      ? "bg-jp-fuji/20 text-jp-fuji-dark"
+                                      : "bg-jp-matcha/20 text-jp-matcha-dark"
+                                  } rounded-xl transition-colors`}
+                                >
+                                  <Icon
+                                    path={
+                                      editingExpenseId ? ICONS.edit : ICONS.yen
+                                    }
+                                    size={24}
+                                  />
                                 </div>
                                 {editingExpenseId ? "編輯記帳" : "新增記帳"}
-                                </div>
-                                <div className="space-y-4">
+                              </div>
+                              <div className="space-y-4">
                                 <input
-                                    placeholder="消費項目"
-                                    value={expenseForm.item}
-                                    onChange={(e) =>
+                                  placeholder="消費項目"
+                                  value={expenseForm.item}
+                                  onChange={(e) =>
                                     setExpenseForm({
-                                        ...expenseForm,
-                                        item: e.target.value,
+                                      ...expenseForm,
+                                      item: e.target.value,
                                     })
-                                    }
-                                    className={`w-full border-2 border-stone-100 bg-stone-50 p-3 rounded-2xl text-sm focus:bg-white ${editingExpenseId ? "focus:border-jp-fuji" : "focus:border-jp-matcha"} transition-colors`}
+                                  }
+                                  className={`w-full border-2 border-stone-100 bg-stone-50 p-3 rounded-2xl text-sm focus:bg-white ${
+                                    editingExpenseId
+                                      ? "focus:border-jp-fuji"
+                                      : "focus:border-jp-matcha"
+                                  } transition-colors`}
                                 />
-                                
+
                                 <div className="relative">
-                                    <span className="absolute left-3 top-3 text-jp-ink/40 text-xs font-bold">
-                                        ¥
-                                    </span>
-                                    <input
-                                        type="number"
-                                        placeholder="金額"
-                                        value={expenseForm.total}
-                                        onChange={(e) =>
-                                        setExpenseForm({
-                                            ...expenseForm,
-                                            total: e.target.value,
-                                        })
-                                        }
-                                        className={`border-2 border-stone-100 bg-stone-50 p-3 pl-6 rounded-2xl w-full text-sm font-mono focus:bg-white ${editingExpenseId ? "focus:border-jp-fuji" : "focus:border-jp-matcha"} transition-colors`}
-                                    />
+                                  <span className="absolute left-3 top-3 text-jp-ink/40 text-xs font-bold">
+                                    ¥
+                                  </span>
+                                  <input
+                                    type="number"
+                                    placeholder="金額"
+                                    value={expenseForm.total}
+                                    onChange={(e) =>
+                                      setExpenseForm({
+                                        ...expenseForm,
+                                        total: e.target.value,
+                                      })
+                                    }
+                                    className={`border-2 border-stone-100 bg-stone-50 p-3 pl-6 rounded-2xl w-full text-sm font-mono focus:bg-white ${
+                                      editingExpenseId
+                                        ? "focus:border-jp-fuji"
+                                        : "focus:border-jp-matcha"
+                                    } transition-colors`}
+                                  />
                                 </div>
 
                                 {/* Payer Selection */}
                                 <div className="flex items-center gap-2 bg-stone-50 p-2 rounded-2xl border border-stone-100">
-                                    <span className="text-xs font-bold text-jp-ink/50 pl-2 whitespace-nowrap">付款人</span>
-                                    <select 
-                                        value={expenseForm.payer} 
-                                        onChange={(e) => setExpenseForm({...expenseForm, payer: e.target.value})}
-                                        className="flex-1 bg-transparent text-sm font-bold text-jp-ink outline-none border-none cursor-pointer"
-                                    >
-                                        <option value="" disabled>誰付錢?</option>
-                                        {(data.settings?.members || []).map(m => (
-                                            <option key={m} value={m}>{m}</option>
-                                        ))}
-                                    </select>
+                                  <span className="text-xs font-bold text-jp-ink/50 pl-2 whitespace-nowrap">
+                                    付款人
+                                  </span>
+                                  <select
+                                    value={expenseForm.payer}
+                                    onChange={(e) =>
+                                      setExpenseForm({
+                                        ...expenseForm,
+                                        payer: e.target.value,
+                                      })
+                                    }
+                                    className="flex-1 bg-transparent text-sm font-bold text-jp-ink outline-none border-none cursor-pointer"
+                                  >
+                                    <option value="" disabled>
+                                      誰付錢?
+                                    </option>
+                                    {(data.settings?.members || []).map((m) => (
+                                      <option key={m} value={m}>
+                                        {m}
+                                      </option>
+                                    ))}
+                                  </select>
                                 </div>
 
                                 {/* Involved Selection */}
                                 <div className="space-y-2">
-                                    <label className="text-xs font-bold text-jp-ink/50 pl-1">分擔者</label>
-                                    <div className="flex flex-wrap gap-2">
-                                        {(data.settings?.members || []).map(m => {
-                                            const isSelected = expenseForm.involved.includes(m);
-                                            return (
-                                                <button 
-                                                    key={m}
-                                                    onClick={() => toggleInvolved(m)}
-                                                    className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
-                                                        isSelected 
-                                                        ? `${editingExpenseId ? "bg-jp-fuji border-jp-fuji" : "bg-jp-matcha border-jp-matcha"} text-white shadow-sm transform scale-105` 
-                                                        : `bg-white text-jp-ink/60 border-stone-200 hover:border-${editingExpenseId ? "jp-fuji" : "jp-matcha"}`
-                                                    }`}
-                                                >
-                                                    {m}
-                                                </button>
-                                            )
-                                        })}
-                                    </div>
+                                  <label className="text-xs font-bold text-jp-ink/50 pl-1">
+                                    分擔者
+                                  </label>
+                                  <div className="flex flex-wrap gap-2">
+                                    {(data.settings?.members || []).map((m) => {
+                                      const isSelected =
+                                        expenseForm.involved.includes(m);
+                                      return (
+                                        <button
+                                          key={m}
+                                          onClick={() => toggleInvolved(m)}
+                                          className={`px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
+                                            isSelected
+                                              ? `${
+                                                  editingExpenseId
+                                                    ? "bg-jp-fuji border-jp-fuji"
+                                                    : "bg-jp-matcha border-jp-matcha"
+                                                } text-white shadow-sm transform scale-105`
+                                              : `bg-white text-jp-ink/60 border-stone-200 hover:border-${
+                                                  editingExpenseId
+                                                    ? "jp-fuji"
+                                                    : "jp-matcha"
+                                                }`
+                                          }`}
+                                        >
+                                          {m}
+                                        </button>
+                                      );
+                                    })}
+                                  </div>
                                 </div>
 
                                 <div className="bg-stone-50 p-4 rounded-2xl flex justify-between items-center border border-stone-100">
-                                    <span className="text-jp-ink/60 text-xs font-bold">
+                                  <span className="text-jp-ink/60 text-xs font-bold">
                                     每人分擔 ({expenseForm.involved.length}人)
-                                    </span>
-                                    <span className={`text-xl ${editingExpenseId ? "text-jp-fuji-dark" : "text-jp-matcha"} font-mono`}>
+                                  </span>
+                                  <span
+                                    className={`text-xl font-bold ${
+                                      editingExpenseId
+                                        ? "text-jp-fuji-dark"
+                                        : "text-jp-matcha"
+                                    } font-mono`}
+                                  >
                                     ¥{" "}
-                                    {expenseForm.total && expenseForm.involved.length > 0
-                                        ? Math.round(
-                                            expenseForm.total /
+                                    {expenseForm.total &&
+                                    expenseForm.involved.length > 0
+                                      ? Math.round(
+                                          expenseForm.total /
                                             expenseForm.involved.length
                                         ).toLocaleString()
-                                        : 0}
-                                    </span>
+                                      : 0}
+                                  </span>
                                 </div>
                                 <div className="flex gap-2">
-                                    {editingExpenseId && (
-                                        <button
-                                            onClick={cancelEditExpense}
-                                            className="w-1/3 bg-stone-200 hover:bg-stone-300 text-stone-500 py-3 rounded-2xl font-bold shadow-sm active:scale-95 transition-all font-serif tracking-widest text-lg"
-                                        >
-                                            取消
-                                        </button>
-                                    )}
+                                  {editingExpenseId && (
                                     <button
-                                        onClick={handleExpenseSubmit}
-                                        disabled={expenseForm.involved.length === 0}
-                                        className={`flex-1 ${editingExpenseId ? "bg-jp-fuji hover:bg-sky-400" : "bg-jp-matcha hover:bg-[#aed581]"} disabled:bg-stone-200 disabled:text-stone-400 text-white py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-all font-serif tracking-widest text-lg`}
+                                      onClick={cancelEditExpense}
+                                      className="w-1/3 bg-stone-200 hover:bg-stone-300 text-stone-500 py-3 rounded-2xl font-bold shadow-sm active:scale-95 transition-all font-serif tracking-widest text-lg"
                                     >
-                                        {editingExpenseId ? "確認修改" : "登錄"}
+                                      取消
                                     </button>
+                                  )}
+                                  <button
+                                    onClick={handleExpenseSubmit}
+                                    disabled={expenseForm.involved.length === 0}
+                                    className={`flex-1 ${
+                                      editingExpenseId
+                                        ? "bg-jp-fuji hover:bg-sky-400"
+                                        : "bg-jp-matcha hover:bg-[#aed581]"
+                                    } disabled:bg-stone-200 disabled:text-stone-400 text-white py-3 rounded-2xl font-bold shadow-md active:scale-95 transition-all font-serif tracking-widest text-lg`}
+                                  >
+                                    {editingExpenseId ? "確認修改" : "登錄"}
+                                  </button>
                                 </div>
-                                </div>
+                              </div>
                             </div>
-                            </div>
-                            <div className="grid grid-cols-2 gap-3">
+                          </div>
+                          <div className="grid grid-cols-2 gap-3">
                             <a
-                                href="https://weather.yahoo.co.jp/weather/jp/27/6200.html"
-                                target="_blank"
-                                className="bg-white p-3 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-center gap-2 text-jp-fuji font-bold text-xs hover:bg-jp-fuji/10 transition-colors"
+                              href="https://weather.yahoo.co.jp/weather/jp/27/6200.html"
+                              target="_blank"
+                              className="bg-white p-3 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-center gap-2 text-jp-fuji font-bold text-xs hover:bg-jp-fuji/10 transition-colors"
                             >
-                                <Icon
-                                path={ICONS.externalLink}
-                                size={14}
-                                />{" "}
-                                大阪天氣
+                              <Icon path={ICONS.externalLink} size={14} />{" "}
+                              大阪天氣
                             </a>
                             <a
-                                href="https://translate.google.com/?sl=zh-TW&tl=ja"
-                                target="_blank"
-                                className="bg-white p-3 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-center gap-2 text-jp-ink/60 font-bold text-xs hover:bg-stone-50 transition-colors"
+                              href="https://translate.google.com/?sl=zh-TW&tl=ja"
+                              target="_blank"
+                              className="bg-white p-3 rounded-2xl shadow-sm border border-stone-100 flex items-center justify-center gap-2 text-jp-ink/60 font-bold text-xs hover:bg-stone-50 transition-colors"
                             >
-                                <Icon path={ICONS.globe} size={14} /> Google
-                                翻譯
+                              <Icon path={ICONS.globe} size={14} /> Google 翻譯
                             </a>
-                            </div>
+                          </div>
                         </div>
                         <div className="flex-1 w-full space-y-3">
-                            <h3 className="hidden md:block font-bold text-jp-ink text-xl font-serif mb-4 pb-2 border-b-2 border-dashed border-jp-matcha/30">
+                          <h3 className="hidden md:block font-bold text-jp-ink text-xl font-serif mb-4 pb-2 border-b-2 border-dashed border-jp-matcha/30">
                             <span className="text-jp-matcha mr-2">●</span>{" "}
                             消費紀錄
-                            </h3>
-                            {(!data.expenses ||
-                            data.expenses.length === 0) && (
+                          </h3>
+                          {(!data.expenses || data.expenses.length === 0) && (
                             <div className="text-center py-12 text-jp-ink/30 text-sm bg-white rounded-3xl border-2 border-stone-100 border-dashed font-serif">
-                                尚無消費紀錄
+                              尚無消費紀錄
                             </div>
-                            )}
-                            {(data.expenses || []).map((ex) => (
+                          )}
+                          {(data.expenses || []).map((ex) => (
                             <div
-                                key={ex.id}
-                                className={`flex justify-between items-center text-sm bg-white p-4 rounded-2xl border-2 ${editingExpenseId === ex.id ? "border-jp-fuji bg-blue-50/50" : "border-transparent hover:border-jp-matcha/30"} shadow-sm hover:shadow-md transition-all`}
+                              key={ex.id}
+                              className={`flex justify-between items-center text-sm bg-white p-4 rounded-2xl border-2 ${
+                                editingExpenseId === ex.id
+                                  ? "border-jp-fuji bg-blue-50/50"
+                                  : "border-transparent hover:border-jp-matcha/30"
+                              } shadow-sm hover:shadow-md transition-all`}
                             >
-                                <div className="flex gap-4 items-start">
+                              <div className="flex gap-4 items-start">
                                 <div className="bg-stone-100 text-jp-ink/50 text-[10px] font-bold px-3 py-2 rounded-xl text-center leading-tight font-sans">
-                                    {ex.date.split("/")[0]}
-                                    <br />
-                                    <span className="text-lg text-jp-ink font-serif">
+                                  {ex.date.split("/")[0]}
+                                  <br />
+                                  <span className="text-lg text-jp-ink font-serif">
                                     {ex.date.split("/")[1]}
-                                    </span>
+                                  </span>
                                 </div>
                                 <div>
-                                    <div className="font-bold text-jp-ink text-base font-serif flex items-center gap-2">
-                                        {ex.item}
-                                        <span className="text-[10px] bg-jp-matcha/10 text-jp-matcha-dark px-1.5 py-0.5 rounded border border-jp-matcha/20 whitespace-nowrap">
-                                            {ex.payer || "公費"} 付款
-                                        </span>
-                                    </div>
-                                    <div className="text-base text-jp-ink mt-1 font-mono tracking-tight">
-                                    總計 ¥{ex.total.toLocaleString()} 
-                                    </div>
-                                    <div className="flex flex-wrap gap-1 mt-1.5">
-                                        {(ex.involved || []).map(p => (
-                                            <span key={p} className="text-[10px] bg-stone-50 text-jp-ink/60 px-1.5 rounded">
-                                                {p}
-                                            </span>
-                                        ))}
-                                    </div>
-                                </div>
-                                </div>
-                                <div className="flex items-center gap-3 pl-2">
-                                <div className="text-right mr-2 flex-shrink-0">
-                                    <div className="text-[10px] text-jp-matcha font-bold mb-0.5 whitespace-nowrap">
-                                    每人 ({ex.involved ? ex.involved.length : ex.people})
-                                    </div>
-                                    <span className="font-bold text-jp-ink font-mono text-lg">
-                                    ¥{ex.perPerson.toLocaleString()}
+                                  <div className="font-bold text-jp-ink text-base font-serif flex items-center gap-2">
+                                    {ex.item}
+                                    <span className="text-[10px] bg-jp-matcha/10 text-jp-matcha-dark px-1.5 py-0.5 rounded border border-jp-matcha/20 whitespace-nowrap">
+                                      {ex.payer || "公費"} 付款
                                     </span>
+                                  </div>
+                                  <div className="text-base font-bold text-jp-ink mt-1 font-mono tracking-tight">
+                                    總計 ¥{ex.total.toLocaleString()}
+                                  </div>
+                                  <div className="flex flex-wrap gap-1 mt-1.5">
+                                    {(ex.involved || []).map((p) => (
+                                      <span
+                                        key={p}
+                                        className="text-[10px] bg-stone-50 text-jp-ink/60 px-1.5 rounded"
+                                      >
+                                        {p}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              </div>
+                              <div className="flex items-center gap-3 pl-2 flex-shrink-0">
+                                <div className="text-right mr-2 flex-shrink-0">
+                                  <div className="text-[10px] text-jp-matcha font-bold mb-0.5 whitespace-nowrap">
+                                    每人 (
+                                    {ex.involved
+                                      ? ex.involved.length
+                                      : ex.people}
+                                    )
+                                  </div>
+                                  <span className="font-bold text-jp-ink font-mono text-lg">
+                                    ¥{ex.perPerson.toLocaleString()}
+                                  </span>
                                 </div>
                                 <button
-                                    onClick={() => startEditExpense(ex)}
-                                    className={`p-2 rounded-full transition-colors ${editingExpenseId === ex.id ? "bg-jp-fuji text-white shadow-md" : "text-gray-300 hover:text-jp-fuji-dark hover:bg-blue-50"}`}
+                                  onClick={() => startEditExpense(ex)}
+                                  className={`p-2 rounded-full transition-colors ${
+                                    editingExpenseId === ex.id
+                                      ? "bg-jp-fuji text-white shadow-md"
+                                      : "text-gray-300 hover:text-jp-fuji-dark hover:bg-blue-50"
+                                  }`}
                                 >
-                                    <Icon path={ICONS.edit} size={16} />
+                                  <Icon path={ICONS.edit} size={16} />
                                 </button>
                                 <button
-                                    onClick={() => delExp(ex.id)}
-                                    className="text-gray-300 hover:text-jp-red p-2 rounded-full hover:bg-stone-50 transition-colors"
+                                  onClick={() => delExp(ex.id)}
+                                  className="text-gray-300 hover:text-jp-red p-2 rounded-full hover:bg-stone-50 transition-colors"
                                 >
-                                    <Icon path={ICONS.x} size={16} />
+                                  <Icon path={ICONS.x} size={16} />
                                 </button>
-                                </div>
+                              </div>
                             </div>
-                            ))}
+                          ))}
                         </div>
                       </div>
 
                       {/* --- Member Setup Section --- */}
                       <div className="w-full bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-matcha/30 relative overflow-hidden">
-                           <div className="flex items-center gap-3 font-bold text-jp-ink mb-4 text-lg font-serif">
-                              <div className="p-2 bg-jp-matcha/20 rounded-xl text-jp-matcha-dark">
-                                <Icon path={ICONS.users} size={20} />
-                              </div>
-                              成員管理 <span className="text-xs font-sans text-jp-ink/40 font-normal mt-1">(設定成員以便分帳)</span>
-                           </div>
-                           <div className="flex flex-wrap gap-2 items-center mb-4">
-                               {(data.settings?.members || []).map(member => (
-                                   <div key={member} className="flex items-center gap-2 bg-jp-matcha/10 text-jp-matcha-dark px-3 py-1.5 rounded-full text-sm font-bold shadow-sm border border-jp-matcha/20 group">
-                                       <span className="font-serif">{member}</span>
-                                       <button onClick={() => removeMember(member)} className="hover:text-jp-red text-jp-matcha-dark/50 transition-colors"><Icon path={ICONS.x} size={14}/></button>
-                                   </div>
-                               ))}
-                           </div>
-                           <div className="flex gap-2 max-w-sm">
-                               <input 
-                                   value={newMemberName} 
-                                   onChange={e => setNewMemberName(e.target.value)}
-                                   placeholder="輸入名字" 
-                                   className="flex-1 px-3 py-2 bg-stone-50 rounded-xl border-2 border-transparent focus:border-jp-matcha text-sm focus:bg-white transition-colors"
-                               />
-                               <button onClick={addMember} className="bg-jp-matcha text-white px-4 py-2 rounded-xl font-bold shadow-sm active:scale-95 text-sm hover:bg-jp-matcha-dark transition-colors">
-                                   新增
-                               </button>
-                           </div>
+                        <div className="flex items-center gap-3 font-bold text-jp-ink mb-4 text-lg font-serif">
+                          <div className="p-2 bg-jp-matcha/20 rounded-xl text-jp-matcha-dark">
+                            <Icon path={ICONS.users} size={20} />
+                          </div>
+                          成員管理{" "}
+                          <span className="text-xs font-sans text-jp-ink/40 font-normal mt-1">
+                            (設定成員以便分帳)
+                          </span>
+                        </div>
+                        <div className="flex flex-wrap gap-2 items-center mb-4">
+                          {(data.settings?.members || []).map((member) => (
+                            <div
+                              key={member}
+                              className="flex items-center gap-2 bg-jp-matcha/10 text-jp-matcha-dark px-3 py-1.5 rounded-full text-sm font-bold shadow-sm border border-jp-matcha/20 group"
+                            >
+                              <span className="font-serif">{member}</span>
+                              <button
+                                onClick={() => removeMember(member)}
+                                className="hover:text-jp-red text-jp-matcha-dark/50 transition-colors"
+                              >
+                                <Icon path={ICONS.x} size={14} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                        <div className="flex gap-2 max-w-sm">
+                          <input
+                            value={newMemberName}
+                            onChange={(e) => setNewMemberName(e.target.value)}
+                            placeholder="輸入名字"
+                            className="flex-1 px-3 py-2 bg-stone-50 rounded-xl border-2 border-transparent focus:border-jp-matcha text-sm focus:bg-white transition-colors"
+                          />
+                          <button
+                            onClick={addMember}
+                            className="bg-jp-matcha text-white px-4 py-2 rounded-xl font-bold shadow-sm active:scale-95 text-sm hover:bg-jp-matcha-dark transition-colors"
+                          >
+                            新增
+                          </button>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -1647,9 +1797,7 @@
                                     {it}
                                   </span>
                                   <button
-                                    onClick={() =>
-                                      delMustBuy(zIdx, iIdx)
-                                    }
+                                    onClick={() => delMustBuy(zIdx, iIdx)}
                                     className="text-gray-300 hover:text-jp-red p-1 rounded hover:bg-stone-50 transition-colors"
                                   >
                                     <Icon path={ICONS.x} size={14} />
@@ -1657,6 +1805,104 @@
                                 </div>
                               ))}
                             </div>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {activeTab === "info" && (
+                    <div className="space-y-6 mt-2 animate-fade-in h-full flex flex-col">
+                      <div className="bg-white p-6 rounded-3xl shadow-sm border-2 border-jp-fuji/30 space-y-4 sticky top-0 z-40 md:static md:max-w-2xl md:mx-auto w-full">
+                        <h2 className="hidden md:flex font-bold text-jp-ink items-center gap-3 mb-2 font-serif text-lg border-b-2 border-dashed border-jp-fuji/30 pb-3">
+                          <Icon
+                            path={ICONS.info}
+                            size={24}
+                            className="text-jp-fuji-dark"
+                          />
+                          新增資訊
+                        </h2>
+                        <div className="flex flex-col md:flex-row gap-3">
+                          <input
+                            value={infoForm.title}
+                            onChange={(e) =>
+                              setInfoForm({
+                                ...infoForm,
+                                title: e.target.value,
+                              })
+                            }
+                            placeholder="標題 (例如: 飯店地址、航班資訊)"
+                            className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-fuji text-sm focus:bg-white transition-colors"
+                          />
+                          <input
+                            type="url"
+                            value={infoForm.link}
+                            onChange={(e) =>
+                              setInfoForm({
+                                ...infoForm,
+                                link: e.target.value,
+                              })
+                            }
+                            placeholder="連結 (選填)"
+                            className="w-full md:w-1/3 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-fuji text-sm focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <div className="flex flex-col md:flex-row gap-3">
+                          <textarea
+                            value={infoForm.note}
+                            onChange={(e) =>
+                              setInfoForm({
+                                ...infoForm,
+                                note: e.target.value,
+                              })
+                            }
+                            rows="2"
+                            placeholder="備註內容..."
+                            className="flex-1 p-3 bg-stone-50 rounded-2xl border-2 border-transparent focus:border-jp-fuji text-xs focus:bg-white transition-colors"
+                          />
+                          <button
+                            onClick={addInfo}
+                            className="w-full md:w-auto bg-jp-fuji hover:bg-sky-400 text-white px-6 py-3 md:py-0 rounded-2xl font-bold shadow-md active:scale-95 transition-all flex justify-center items-center gap-2"
+                          >
+                            <Icon path={ICONS.plus} size={22} />
+                          </button>
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 pb-10">
+                        {(data.info || []).map((item) => (
+                          <div
+                            key={item.id}
+                            className="bg-white p-5 rounded-2xl shadow-sm border-2 border-transparent hover:border-jp-fuji/30 hover:shadow-md transition-all flex flex-col gap-2 relative group"
+                          >
+                            <button
+                              onClick={() => delInfo(item.id)}
+                              className="absolute top-2 right-2 text-gray-300 hover:text-jp-red p-2 rounded-full hover:bg-stone-50 transition-colors opacity-0 group-hover:opacity-100"
+                            >
+                              <Icon path={ICONS.trash} size={16} />
+                            </button>
+
+                            <div className="pr-8">
+                              <h3 className="font-bold text-jp-ink text-lg font-serif truncate">
+                                {item.title}
+                              </h3>
+                              {item.link && (
+                                <a
+                                  href={item.link}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="inline-flex items-center gap-1 text-xs font-bold text-jp-fuji-dark bg-jp-fuji/10 px-2 py-1 rounded-full mt-1 hover:bg-jp-fuji/20 transition-colors"
+                                >
+                                  <Icon path={ICONS.externalLink} size={10} />
+                                  開啟連結
+                                </a>
+                              )}
+                            </div>
+
+                            {item.note && (
+                              <div className="mt-2 text-sm text-jp-ink/70 bg-stone-50 p-3 rounded-xl whitespace-pre-line leading-relaxed font-sans border border-stone-100">
+                                <LinkifiedText text={item.note} />
+                              </div>
+                            )}
                           </div>
                         ))}
                       </div>
@@ -1684,6 +1930,11 @@
                       icon: ICONS.fuji,
                       label: "推薦",
                     },
+                    {
+                      id: "info",
+                      icon: ICONS.info,
+                      label: "資訊",
+                    },
                   ].map((t) => (
                     <button
                       key={t.id}
@@ -1702,9 +1953,7 @@
                         <Icon
                           path={t.icon}
                           size={24}
-                          className={
-                            activeTab === t.id ? "stroke-2" : ""
-                          }
+                          className={activeTab === t.id ? "stroke-2" : ""}
                         />
                       </div>
                       <span className="text-[10px] mt-0.5 font-bold font-serif tracking-wide">
@@ -1719,9 +1968,7 @@
         );
       };
 
-      const root = ReactDOM.createRoot(
-        document.getElementById("root")
-      );
+      const root = ReactDOM.createRoot(document.getElementById("root"));
       root.render(<App />);
     </script>
   </body>
