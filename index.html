@@ -273,8 +273,7 @@
         rain: "M20 16.2A4.5 4.5 0 005.11 14.1 5.002 5.002 0 1017.3 8c.28 0 .55.02.81.07a4.5 4.5 0 001.89 8.13zM8 22l-2-4m6 4l-2-4m6 4l-2-4",
         snow: "M20 17.58A5 5 0 0018 8h-1.26A8 8 0 104 16.25M8 16h.01M8 20h.01M12 18h.01M12 22h.01M16 16h.01M16 20h.01",
         chart: "M3 3v18h18 M18 17l-5-5-4 4-4-4",
-        clipboard:
-          "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01",
+        clipboard: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01",
       };
 
       // --- Components ---
@@ -492,17 +491,14 @@
         const [editingInfoId, setEditingInfoId] = useState(null);
         const [editingShoppingId, setEditingShoppingId] = useState(null);
         const [editingRec, setEditingRec] = useState(null);
-
+        
         // Preparation Edit State
         const [editingPrepId, setEditingPrepId] = useState(null);
         const [prepForm, setPrepForm] = useState({ task: "", link: "" });
-
+        
         // Member Management State
         const [newMemberName, setNewMemberName] = useState("");
-        const [editMemberData, setEditMemberData] = useState({
-          oldName: null,
-          newName: "",
-        });
+        const [editMemberData, setEditMemberData] = useState({ oldName: null, newName: '' });
 
         const [newItem, setNewItem] = useState({
           name: "",
@@ -688,34 +684,31 @@
             setEditingEventId(null);
           });
         };
-
+        
         // NEW: Member Update Logic
         const handleUpdateMember = async () => {
-          const { oldName, newName } = editMemberData;
-          if (!newName || newName === oldName) {
-            setEditMemberData({ oldName: null, newName: "" });
-            return;
-          }
+            const { oldName, newName } = editMemberData;
+            if (!newName || newName === oldName) {
+                setEditMemberData({ oldName: null, newName: '' });
+                return;
+            }
 
-          // 1. Update Settings
-          const newMembers = data.settings.members.map((m) =>
-            m === oldName ? newName : m
-          );
+            // 1. Update Settings
+            const newMembers = data.settings.members.map(m => m === oldName ? newName : m);
+            
+            // 2. Update Expenses (Historical data fix)
+            const newExpenses = data.expenses.map(ex => ({
+                ...ex,
+                payer: ex.payer === oldName ? newName : ex.payer,
+                involved: ex.involved.map(inv => inv === oldName ? newName : inv)
+            }));
 
-          // 2. Update Expenses (Historical data fix)
-          const newExpenses = data.expenses.map((ex) => ({
-            ...ex,
-            payer: ex.payer === oldName ? newName : ex.payer,
-            involved: ex.involved.map((inv) =>
-              inv === oldName ? newName : inv
-            ),
-          }));
+            await save("settings", { members: newMembers });
+            await save("expenses", newExpenses);
 
-          await save("settings", { members: newMembers });
-          await save("expenses", newExpenses);
-
-          setEditMemberData({ oldName: null, newName: "" });
+            setEditMemberData({ oldName: null, newName: '' });
         };
+
 
         // Views
         const renderNav = () => (
@@ -781,15 +774,11 @@
                 <div className="kawaii-card p-5 mb-6 sticky top-0 z-20">
                   <div className="flex flex-col gap-2">
                     <div className="flex justify-between items-center">
-                      <h3 className="font-bold text-gray-600 flex items-center gap-2">
-                        <Icon
-                          path={ICONS.clipboard}
-                          size={20}
-                          className="text-theme-green"
-                        />
-                        行前準備清單
-                      </h3>
-                      {editingPrepId && (
+                       <h3 className="font-bold text-gray-600 flex items-center gap-2">
+                         <Icon path={ICONS.clipboard} size={20} className="text-theme-green" />
+                         行前準備清單
+                       </h3>
+                       {editingPrepId && (
                         <button
                           onClick={() => {
                             setEditingPrepId(null);
@@ -804,106 +793,59 @@
                     <div className="flex gap-2">
                       <input
                         value={prepForm.task}
-                        onChange={(e) =>
-                          setPrepForm({ ...prepForm, task: e.target.value })
-                        }
+                        onChange={(e) => setPrepForm({ ...prepForm, task: e.target.value })}
                         placeholder="待辦事項 (如: 買網卡)"
                         className="flex-1 bg-theme-bg rounded-xl px-4 py-3 font-bold text-sm w-full"
                       />
                       <button
                         onClick={handlePrepSave}
-                        className={`w-12 h-auto rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all text-white ${
-                          editingPrepId ? "bg-theme-green" : "bg-app-blue"
-                        }`}
+                        className={`w-12 h-auto rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all text-white ${editingPrepId ? "bg-theme-green" : "bg-app-blue"}`}
                       >
-                        {editingPrepId ? (
-                          <Icon path={ICONS.check} size={24} />
-                        ) : (
-                          <Icon path={ICONS.plus} size={24} />
-                        )}
+                         {editingPrepId ? <Icon path={ICONS.check} size={24} /> : <Icon path={ICONS.plus} size={24} />}
                       </button>
                     </div>
                     <input
-                      value={prepForm.link}
-                      onChange={(e) =>
-                        setPrepForm({ ...prepForm, link: e.target.value })
-                      }
-                      placeholder="相關連結 (選填)"
-                      className="w-full bg-theme-bg rounded-xl px-4 py-2 text-xs"
-                    />
+                        value={prepForm.link}
+                        onChange={(e) => setPrepForm({ ...prepForm, link: e.target.value })}
+                        placeholder="相關連結 (選填)"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-2 text-xs"
+                      />
                   </div>
                 </div>
 
                 <div className="space-y-3">
                   {(data.preparation || []).map((item) => (
-                    <div
-                      key={item.id}
-                      className="kawaii-card p-4 flex items-center gap-3 group"
-                    >
-                      <div
-                        onClick={() =>
-                          save(
-                            "preparation",
-                            data.preparation.map((x) =>
-                              x.id === item.id
-                                ? { ...x, checked: !x.checked }
-                                : x
-                            )
-                          )
-                        }
-                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors ${
-                          item.checked
-                            ? "bg-theme-green border-theme-green text-white"
-                            : "border-gray-300"
-                        }`}
+                    <div key={item.id} className="kawaii-card p-4 flex items-center gap-3 group">
+                       <div
+                        onClick={() => save("preparation", data.preparation.map(x => x.id === item.id ? { ...x, checked: !x.checked } : x))}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors ${item.checked ? "bg-theme-green border-theme-green text-white" : "border-gray-300"}`}
                       >
-                        {item.checked && (
-                          <Icon path={ICONS.check} size={14} strokeWidth="3" />
-                        )}
+                        {item.checked && <Icon path={ICONS.check} size={14} strokeWidth="3" />}
                       </div>
-
+                      
                       <div className="flex-1 min-w-0">
-                        <div
-                          className={`font-bold text-gray-700 ${
-                            item.checked ? "line-through text-gray-400" : ""
-                          }`}
-                        >
-                          {item.task}
-                        </div>
-                        {item.link && (
-                          <a
-                            href={ensureUrlProtocol(item.link)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-xs text-app-blue flex items-center gap-1 mt-1 hover:underline"
-                          >
-                            <Icon path={ICONS.link} size={12} /> 開啟連結
-                          </a>
-                        )}
+                         <div className={`font-bold text-gray-700 ${item.checked ? "line-through text-gray-400" : ""}`}>
+                           {item.task}
+                         </div>
+                         {item.link && (
+                           <a href={ensureUrlProtocol(item.link)} target="_blank" rel="noopener noreferrer" className="text-xs text-app-blue flex items-center gap-1 mt-1 hover:underline">
+                             <Icon path={ICONS.link} size={12} /> 開啟連結
+                           </a>
+                         )}
                       </div>
 
                       <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                        <button
+                        <button 
                           onClick={() => {
                             setEditingPrepId(item.id);
-                            setPrepForm({
-                              task: item.task,
-                              link: item.link || "",
-                            });
+                            setPrepForm({ task: item.task, link: item.link || "" });
                           }}
                           className="text-gray-300 hover:text-app-blue"
                         >
                           <Icon path={ICONS.edit} size={18} />
                         </button>
-                        <button
-                          onClick={() =>
-                            openConfirm("刪除此項目?", () =>
-                              save(
-                                "preparation",
-                                data.preparation.filter((x) => x.id !== item.id)
-                              )
-                            )
-                          }
+                        <button 
+                          onClick={() => openConfirm("刪除此項目?", () => save("preparation", data.preparation.filter(x => x.id !== item.id)))}
                           className="text-gray-300 hover:text-red-400"
                         >
                           <Icon path={ICONS.trash} size={18} />
@@ -911,7 +853,7 @@
                       </div>
                     </div>
                   ))}
-
+                  
                   {(!data.preparation || data.preparation.length === 0) && (
                     <div className="text-center text-gray-400 py-10 text-sm">
                       還沒有行前準備項目，新增一個吧！
@@ -921,69 +863,57 @@
               </div>
             </div>
           );
-        };
+        }
 
         const renderItinerary = () => {
           const currentDay =
             (data.itinerary || []).find((d) => d.id === selectedDayId) ||
             data.itinerary[0] ||
             {};
-
+            
           // Special View for Preparation
-          if (selectedDayId === "prep") {
-            return (
-              <div className="flex-1 flex flex-col overflow-hidden h-full">
-                <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
-                  <button
-                    onClick={() => setSelectedDayId("prep")}
-                    className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-[#fffdf7] shadow-soft scale-105 ring-4 ring-white/50 text-app-blue"
-                  >
-                    <Icon path={ICONS.clipboard} size={24} className="mb-1" />
-                    <span className="text-xs font-bold">行前</span>
-                  </button>
-
-                  {(data.itinerary || []).map((d, idx) => {
-                    const parts = d.date ? d.date.split(" ") : [];
-                    return (
-                      <button
-                        key={d.id}
-                        onClick={() => setSelectedDayId(d.id)}
-                        className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500"
-                      >
-                        <span className="text-[10px] font-bold mb-0.5 opacity-70">
-                          Day {idx + 1}
-                        </span>
-                        <span className="text-lg font-black leading-none">
-                          {parts[0]}
-                        </span>
-                        {parts[1] && (
-                          <span className="text-xs font-bold mt-0.5 opacity-80">
-                            {parts[1]}
-                          </span>
-                        )}
-                      </button>
-                    );
-                  })}
-                </div>
-                {renderPreparation()}
-              </div>
-            );
+          if (selectedDayId === 'prep') {
+             return (
+               <div className="flex-1 flex flex-col overflow-hidden h-full">
+                  <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
+                    <button
+                      onClick={() => setSelectedDayId('prep')}
+                      className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-[#fffdf7] shadow-soft scale-105 ring-4 ring-white/50 text-app-blue"
+                    >
+                      <Icon path={ICONS.clipboard} size={24} className="mb-1" />
+                      <span className="text-xs font-bold">行前</span>
+                    </button>
+                    
+                    {(data.itinerary || []).map((d, idx) => {
+                       const parts = d.date ? d.date.split(" ") : [];
+                       return (
+                        <button
+                          key={d.id}
+                          onClick={() => setSelectedDayId(d.id)}
+                          className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500"
+                        >
+                          <span className="text-[10px] font-bold mb-0.5 opacity-70">Day {idx + 1}</span>
+                          <span className="text-lg font-black leading-none">{parts[0]}</span>
+                          {parts[1] && <span className="text-xs font-bold mt-0.5 opacity-80">{parts[1]}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {renderPreparation()}
+               </div>
+             )
           }
 
           return (
             <div className="flex-1 flex flex-col overflow-hidden h-full">
               <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
-                <button
-                  onClick={() => setSelectedDayId("prep")}
-                  className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500 hover:bg-white/60"
-                >
-                  <Icon
-                    path={ICONS.clipboard}
-                    size={24}
-                    className="mb-1 opacity-70"
-                  />
-                  <span className="text-xs font-bold">行前</span>
-                </button>
+                 <button
+                    onClick={() => setSelectedDayId('prep')}
+                    className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500 hover:bg-white/60"
+                  >
+                    <Icon path={ICONS.clipboard} size={24} className="mb-1 opacity-70" />
+                    <span className="text-xs font-bold">行前</span>
+                 </button>
 
                 {(data.itinerary || []).map((d, idx) => {
                   const parts = d.date ? d.date.split(" ") : [];
@@ -1240,14 +1170,14 @@
               // Convert to JPY base for summary calculation if needed
               // exchangeRate is JPY -> TWD (e.g. 0.2). So 100 JPY = 20 TWD.
               // TWD -> JPY: amount / rate.
-
+              
               let amountInJpy = Number(ex.total);
-              if (ex.currency === "TWD" && exchangeRate) {
-                amountInJpy = amountInJpy / exchangeRate;
+              if (ex.currency === 'TWD' && exchangeRate) {
+                  amountInJpy = amountInJpy / exchangeRate;
               }
-
+              
               const split = amountInJpy / (ex.involved.length || 1);
-
+              
               if (summary[ex.payer]) summary[ex.payer].pay += amountInJpy;
               ex.involved.forEach((m) => {
                 if (summary[m]) summary[m].own += split;
@@ -1346,9 +1276,9 @@
                         placeholder="金額"
                         className="w-full md:w-1/3 bg-theme-bg rounded-xl px-4 py-3 font-bold"
                       />
-
+                      
                       {/* Currency Selector */}
-                      <select
+                       <select
                         value={expenseForm.currency}
                         onChange={(e) =>
                           setExpenseForm({
@@ -1413,8 +1343,8 @@
                 <div className="flex-1 space-y-4 md:space-y-0 md:grid md:grid-cols-1 lg:grid-cols-2 md:gap-4">
                   {data.expenses.map((ex) => {
                     const [m, d] = ex.date.split("/");
-                    const symbol = ex.currency === "TWD" ? "NT$" : "¥";
-
+                    const symbol = ex.currency === 'TWD' ? 'NT$' : '¥';
+                    
                     return (
                       <div
                         key={ex.id}
@@ -1440,12 +1370,10 @@
                             </span>
                           </div>
                           <div className="font-black text-theme-text text-lg">
-                            每人 {symbol}
-                            {ex.perPerson.toLocaleString()}
+                            每人 {symbol}{ex.perPerson.toLocaleString()}
                           </div>
                           <div className="text-xs text-gray-400 mt-1">
-                            總計 {symbol}
-                            {Number(ex.total).toLocaleString()} (
+                            總計 {symbol}{Number(ex.total).toLocaleString()} (
                             {ex.involved.length}人)
                           </div>
                         </div>
@@ -1458,7 +1386,7 @@
                                 total: ex.total,
                                 payer: ex.payer,
                                 involved: ex.involved,
-                                currency: ex.currency || "JPY",
+                                currency: ex.currency || 'JPY',
                               });
                             }}
                             className="text-gray-300 hover:text-app-blue"
@@ -1484,103 +1412,82 @@
                   })}
                 </div>
               </div>
-
+              
               {/* Member Mgmt - Moved to Bottom */}
               <div className="md:max-w-6xl md:mx-auto mt-6">
                 <div className="kawaii-card p-5">
-                  <div className="flex justify-between mb-3">
-                    <span className="font-bold text-gray-600">成員管理</span>
-                    <div className="flex gap-2">
-                      <input
-                        value={newMemberName}
-                        onChange={(e) => setNewMemberName(e.target.value)}
-                        className="w-20 bg-theme-bg rounded px-2 text-xs"
-                      />
-                      <button
-                        onClick={() => {
-                          if (newMemberName) {
-                            save("settings", {
-                              members: [
-                                ...data.settings.members,
-                                newMemberName,
-                              ],
-                            });
-                            setNewMemberName("");
-                          }
-                        }}
-                        className="bg-theme-green text-white px-2 rounded text-xs"
-                      >
-                        +
-                      </button>
+                    <div className="flex justify-between mb-3">
+                      <span className="font-bold text-gray-600">成員管理</span>
+                      <div className="flex gap-2">
+                        <input
+                          value={newMemberName}
+                          onChange={(e) => setNewMemberName(e.target.value)}
+                          className="w-20 bg-theme-bg rounded px-2 text-xs"
+                        />
+                        <button
+                          onClick={() => {
+                            if (newMemberName) {
+                              save("settings", {
+                                members: [
+                                  ...data.settings.members,
+                                  newMemberName,
+                                ],
+                              });
+                              setNewMemberName("");
+                            }
+                          }}
+                          className="bg-theme-green text-white px-2 rounded text-xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {data.settings.members.map((m) => {
+                          const isEditing = editMemberData.oldName === m;
+                          
+                          return isEditing ? (
+                              <div key={m} className="flex items-center gap-1">
+                                  <input 
+                                    className="border rounded px-1 py-0.5 text-xs w-20"
+                                    value={editMemberData.newName}
+                                    onChange={(e) => setEditMemberData({...editMemberData, newName: e.target.value})}
+                                  />
+                                  <button onClick={handleUpdateMember} className="text-green-500 text-xs">OK</button>
+                                  <button onClick={() => setEditMemberData({ oldName: null, newName: '' })} className="text-gray-400 text-xs">X</button>
+                              </div>
+                          ) : (
+                            <span
+                              key={m}
+                              className="bg-white border-2 border-dashed border-gray-200 px-2 py-1 rounded text-xs font-bold text-gray-500 flex items-center gap-1 group"
+                            >
+                              {m}{" "}
+                              <div className="flex gap-1 ml-1 opacity-60 group-hover:opacity-100">
+                                 <button onClick={() => setEditMemberData({ oldName: m, newName: m })} className="hover:text-app-blue">
+                                     <Icon path={ICONS.edit} size={12} />
+                                 </button>
+                                  <button
+                                    onClick={() =>
+                                      openConfirm("移除?", () =>
+                                        save("settings", {
+                                          members: data.settings.members.filter(
+                                            (x) => x !== m
+                                          ),
+                                        })
+                                      )
+                                    }
+                                    className="hover:text-red-400"
+                                  >
+                                    <Icon path={ICONS.x} size={12} />
+                                  </button>
+                              </div>
+                            </span>
+                          )
+                      })}
                     </div>
                   </div>
-                  <div className="flex flex-wrap gap-2">
-                    {data.settings.members.map((m) => {
-                      const isEditing = editMemberData.oldName === m;
-
-                      return isEditing ? (
-                        <div key={m} className="flex items-center gap-1">
-                          <input
-                            className="border rounded px-1 py-0.5 text-xs w-20"
-                            value={editMemberData.newName}
-                            onChange={(e) =>
-                              setEditMemberData({
-                                ...editMemberData,
-                                newName: e.target.value,
-                              })
-                            }
-                          />
-                          <button
-                            onClick={handleUpdateMember}
-                            className="text-green-500 text-xs"
-                          >
-                            OK
-                          </button>
-                          <button
-                            onClick={() =>
-                              setEditMemberData({ oldName: null, newName: "" })
-                            }
-                            className="text-gray-400 text-xs"
-                          >
-                            X
-                          </button>
-                        </div>
-                      ) : (
-                        <span
-                          key={m}
-                          className="bg-white border-2 border-dashed border-gray-200 px-2 py-1 rounded text-xs font-bold text-gray-500 flex items-center gap-1 group"
-                        >
-                          {m}{" "}
-                          <div className="flex gap-1 ml-1 opacity-60 group-hover:opacity-100">
-                            <button
-                              onClick={() =>
-                                setEditMemberData({ oldName: m, newName: m })
-                              }
-                              className="hover:text-app-blue"
-                            >
-                              <Icon path={ICONS.edit} size={12} />
-                            </button>
-                            <button
-                              onClick={() =>
-                                openConfirm("移除?", () =>
-                                  save("settings", {
-                                    members: data.settings.members.filter(
-                                      (x) => x !== m
-                                    ),
-                                  })
-                                )
-                              }
-                              className="hover:text-red-400"
-                            >
-                              <Icon path={ICONS.x} size={12} />
-                            </button>
-                          </div>
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
               </div>
+
             </div>
           );
         };
@@ -1713,7 +1620,9 @@
                       <button
                         onClick={handleShoppingSave}
                         className={`w-12 h-10 rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all text-white ${
-                          editingShoppingId ? "bg-theme-green" : "bg-app-blue"
+                          editingShoppingId
+                            ? "bg-theme-green"
+                            : "bg-app-blue"
                         }`}
                       >
                         {editingShoppingId ? (
@@ -2000,9 +1909,7 @@
                           <img
                             src={mustBuyForm.image}
                             className="w-24 h-24 rounded-xl border border-gray-200 object-cover bg-white shadow-sm"
-                            onError={(e) =>
-                              handleImageError(e, mustBuyForm.link)
-                            }
+                            onError={(e) => handleImageError(e, mustBuyForm.link)}
                           />
                         </div>
                       )}
