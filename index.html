@@ -248,6 +248,47 @@
           return dateString;
       };
 
+      // NEW: Location Helper
+      const getLocationFromDay = (day) => {
+        if (!day) return { name: "大阪", lat: 34.6937, lon: 135.5023 };
+        const text = (day.title || "") + (day.location || "");
+        if (text.includes("京都")) return { name: "京都", lat: 35.0116, lon: 135.7681 };
+        if (text.includes("奈良")) return { name: "奈良", lat: 34.6851, lon: 135.8048 };
+        if (text.includes("神戶")) return { name: "神戶", lat: 34.6901, lon: 135.1955 };
+        // Default to Osaka
+        return { name: "大阪", lat: 34.6937, lon: 135.5023 };
+      };
+
+      const DEFAULT_ITINERARY = [
+        {
+          id: 1,
+          date: "2/6 (五)",
+          title: "Day 1: 抵達大阪",
+          events: [
+            {
+              id: "e1",
+              time: "10:55",
+              location: "關西機場 (KIX)",
+              transport: "入境",
+              note: "航班：IT210\n抵達後前往二樓",
+            },
+          ],
+        },
+        {
+          id: 2,
+          date: "2/7 (六)",
+          title: "Day 2: 大阪城",
+          events: [],
+        },
+        // NEW: Added Day 3 for Kyoto
+        {
+          id: 3,
+          date: "2/8 (日)",
+          title: "Day 3: 京都漫遊", 
+          events: [],
+        }
+      ];
+
       // --- Icons ---
       const ICONS = {
         map: "M9 20l-5.447 2.724A1 1 0 012 21.832V4.168a1 1 0 011.447-.894L9 6m0 14l6-3m-6 3V6m6 14l5.447 2.724A1 1 0 0022 21.832V4.168a1 1 0 00-1.447-.894L15 6m0 14V6m0 0L9 3",
@@ -424,7 +465,8 @@
         );
       };
 
-      const WeatherWidget = ({ weather }) => {
+      // UPDATED: Accepts locationName prop
+      const WeatherWidget = ({ weather, locationName }) => {
         if (!weather || !weather.current) return null;
         const wCode = weather.current.weather_code;
         const temp = Math.round(weather.current.temperature_2m);
@@ -459,7 +501,7 @@
               </div>
             </div>
             <div className="bg-white/60 px-3 py-1.5 rounded-full text-xs font-bold text-app-blue flex items-center gap-1 border border-white">
-              <Icon path={ICONS.pin} size={12} /> 大阪
+              <Icon path={ICONS.pin} size={12} /> {locationName}
             </div>
           </div>
         );
@@ -473,7 +515,7 @@
         const [weather, setWeather] = useState(null);
         const [exchangeRate, setExchangeRate] = useState(null);
         const [data, setData] = useState({
-          itinerary: [{ id: 1, date: "2/6 (五)", title: "Day 1", events: [] }],
+          itinerary: DEFAULT_ITINERARY, // Use DEFAULT with Kyoto day
           shopping: [],
           mustBuy: [],
           expenses: [],
@@ -484,6 +526,8 @@
         const [selectedDayId, setSelectedDayId] = useState(1);
         const [modalConfig, setModalConfig] = useState({ isOpen: false });
         const [reorderingDayId, setReorderingDayId] = useState(null);
+        const [weatherLocation, setWeatherLocation] = useState({ name: "大阪", lat: 34.6937, lon: 135.5023 });
+
 
         // Form States
         const [expenseForm, setExpenseForm] = useState({
@@ -570,7 +614,7 @@
                 }))
             );
           const unsubs = [
-            listen("itinerary", data.itinerary),
+            listen("itinerary", DEFAULT_ITINERARY), // Fallback to new default with Kyoto
             listen("shopping", []),
             listen("mustBuy", []),
             listen("expenses", []),
@@ -599,10 +643,17 @@
         }, [data.settings, editingExpenseId]);
 
         // Weather & Exchange Rate
+        // UPDATED: Logic to switch weather based on selected day title
         useEffect(() => {
-          fetch(
-            "https://api.open-meteo.com/v1/forecast?latitude=34.6937&longitude=135.5023&current=temperature_2m,apparent_temperature,weather_code,is_day&timezone=Asia%2FTokyo"
-          )
+            // Find current day data
+            const currentDay = data.itinerary.find(d => d.id === selectedDayId) || data.itinerary[0];
+            const loc = getLocationFromDay(currentDay);
+            setWeatherLocation(loc); // Update UI state
+
+            // Fetch weather for determined location
+            fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&current=temperature_2m,apparent_temperature,weather_code,is_day&timezone=Asia%2FTokyo`
+            )
             .then((r) => r.json())
             .then((d) => setWeather(d))
             .catch(console.error);
@@ -613,7 +664,7 @@
               if (d && d.rates) setExchangeRate(d.rates.TWD);
             })
             .catch(console.error);
-        }, []);
+        }, [selectedDayId, data.itinerary]); // Dependency on selectedDayId
 
         const save = async (key, val) => {
           if (!user || !db) return;
@@ -958,7 +1009,7 @@
 
               <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar">
                 <div className="max-w-4xl mx-auto w-full">
-                  <WeatherWidget weather={weather} />
+                  <WeatherWidget weather={weather} locationName={weatherLocation.name} />
                   <div className="flex justify-between items-center mb-6">
                     <h2 className="text-2xl font-black text-theme-text font-serif bg-white/40 px-4 py-1 rounded-full">
                       {currentDay.title}
@@ -1165,17 +1216,12 @@
           const handleExpense = () => {
             if (!expenseForm.item || !expenseForm.total) return;
             const total = Number(expenseForm.total);
-            
-            // Format Date for display grouping (MM/DD)
-            const dateObj = new Date(expenseForm.date);
-            const m = (dateObj.getMonth() + 1).toString().padStart(2, '0');
-            const d = dateObj.getDate().toString().padStart(2, '0');
-            const displayDate = `${m}/${d}`;
-
             const entry = {
               id: editingExpenseId || Date.now(),
-              date: displayDate, // for grouping
-              fullDate: expenseForm.date, // for editing YYYY-MM-DD
+              date: new Date().toLocaleDateString("zh-TW", {
+                month: "2-digit",
+                day: "2-digit",
+              }),
               item: expenseForm.item,
               total,
               payer: expenseForm.payer,
@@ -1197,8 +1243,7 @@
               total: "",
               payer: data.settings.members[0],
               involved: [...data.settings.members],
-              currency: "JPY",
-              date: getFormattedDate(), // Reset to today
+              currency: "JPY", // Reset to default
             });
           };
 
@@ -1349,7 +1394,6 @@
                               payer: data.settings.members[0],
                               involved: [...data.settings.members],
                               currency: "JPY",
-                              date: getFormattedDate(), // Reset date
                             });
                           }}
                           className="text-xs text-gray-400"
@@ -1358,17 +1402,6 @@
                         </button>
                       )}
                     </div>
-                    
-                    {/* Date Input */}
-                    <input
-                      type="date"
-                      value={expenseForm.date}
-                      onChange={(e) =>
-                        setExpenseForm({ ...expenseForm, date: e.target.value })
-                      }
-                      className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold mb-3 text-gray-600"
-                    />
-
                     <input
                       value={expenseForm.item}
                       onChange={(e) =>
@@ -1505,21 +1538,12 @@
                                         <button
                                             onClick={() => {
                                             setEditingExpenseId(ex.id);
-                                            // Recover Date
-                                            let editDate = ex.fullDate;
-                                            if (!editDate) {
-                                                const [m, d] = ex.date.split('/');
-                                                const year = new Date().getFullYear();
-                                                editDate = `${year}-${m}-${d}`;
-                                            }
-
                                             setExpenseForm({
                                                 item: ex.item,
                                                 total: ex.total,
                                                 payer: ex.payer,
                                                 involved: ex.involved,
                                                 currency: ex.currency || 'JPY',
-                                                date: editDate
                                             });
                                             }}
                                             className="text-gray-300 hover:text-app-blue"
