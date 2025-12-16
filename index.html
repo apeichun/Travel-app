@@ -1,0 +1,2486 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+    <title>Kansai Trip 2026</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Zen+Maru+Gothic:wght@400;500;700;900&family=Zen+Old+Mincho:wght@400;700;900&family=Inter:wght@400;600;800&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              "app-bg": "#fff8f0",
+              "app-blue": "#e76f51",
+              "app-blue-dark": "#cd5d40",
+              "app-text": "#4a403a",
+              "app-sub": "#8d8178",
+              "theme-pink": "#f4a261",
+              "theme-pink-dark": "#e98a4d",
+              "theme-green": "#a3b18a",
+              "theme-yellow": "#e9c46a",
+              "theme-blue": "#8ecae6",
+              "theme-text": "#5d4d4a",
+              "theme-bg": "#fffbf2",
+            },
+            fontFamily: {
+              sans: ['"Zen Maru Gothic"', '"Inter"', "sans-serif"],
+              serif: ['"Zen Old Mincho"', "serif"],
+            },
+            boxShadow: {
+              glass: "0 8px 32px 0 rgba(231, 111, 81, 0.15)",
+              float: "0 10px 40px -10px rgba(74, 64, 58, 0.1)",
+              soft: "0 8px 24px -6px rgba(244, 162, 97, 0.25)",
+              nav: "0 10px 30px -5px rgba(139, 94, 60, 0.15)",
+            },
+            animation: {
+              "fade-in": "fadeIn 0.5s ease-out",
+              pop: "pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+            },
+            keyframes: {
+              fadeIn: {
+                "0%": { opacity: "0", transform: "translateY(10px)" },
+                "100%": { opacity: "1", transform: "translateY(0)" },
+              },
+              pop: {
+                "0%": { opacity: "0", transform: "scale(0.9)" },
+                "100%": { opacity: "1", transform: "scale(1)" },
+              },
+            },
+          },
+        },
+      };
+    </script>
+
+    <!-- SortableJS -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <!-- React & ReactDOM -->
+    <script
+      crossorigin
+      src="https://unpkg.com/react@18/umd/react.production.min.js"
+    ></script>
+    <script
+      crossorigin
+      src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"
+    ></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+    <!-- Firebase SDKs -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-app.js";
+      import {
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-auth.js";
+      import {
+        getFirestore,
+        doc,
+        onSnapshot,
+        setDoc,
+        collection,
+      } from "https://www.gstatic.com/firebasejs/11.6.1/firebase-firestore.js";
+
+      window.Firebase = {
+        initializeApp,
+        getAuth,
+        signInAnonymously,
+        onAuthStateChanged,
+        getFirestore,
+        doc,
+        onSnapshot,
+        setDoc,
+        collection,
+      };
+    </script>
+
+    <style>
+      body {
+        margin: 0;
+        padding: 0;
+        width: 100vw;
+        height: 100dvh;
+        overflow: hidden;
+        background-color: #fff8f0;
+        font-family: "Zen Maru Gothic", sans-serif;
+        color: #5d4d4a;
+      }
+
+      #root {
+        height: 100%;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+      }
+
+      /* Fixed Background Layer */
+      #bg-layer {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -2;
+        background: linear-gradient(to bottom, #ffecd2 0%, #fcb69f 100%);
+        background-image: url("https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?q=80&w=2070&auto=format&fit=crop");
+        background-size: cover;
+        background-position: center;
+        background-repeat: no-repeat;
+      }
+
+      #bg-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+        background-color: rgba(255, 253, 247, 0.4);
+        backdrop-filter: blur(4px);
+        -webkit-backdrop-filter: blur(4px);
+      }
+
+      .no-scrollbar::-webkit-scrollbar {
+        display: none;
+      }
+      .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+
+      @media (min-width: 768px) {
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.1);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(231, 111, 81, 0.3);
+          border-radius: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(231, 111, 81, 0.5);
+        }
+      }
+
+      .kawaii-card {
+        background: rgba(255, 251, 242, 0.92);
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        box-shadow: 0 4px 15px rgba(233, 196, 106, 0.15);
+        border: 2px solid #fff;
+        border-radius: 1.5rem;
+      }
+
+      input:focus,
+      textarea:focus,
+      select:focus {
+        outline: none;
+        border-color: #f4a261;
+        box-shadow: 0 0 0 3px rgba(244, 162, 97, 0.2);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="bg-layer"></div>
+    <div id="bg-overlay"></div>
+    <div id="root"></div>
+
+    <script type="text/babel" charset="utf-8">
+      const { useState, useEffect, useRef, useCallback, memo, useMemo } = React;
+
+      // --- Configuration ---
+      const YOUR_FIREBASE_CONFIG = {
+        apiKey: "AIzaSyCH2awCY1eWCKO03nCc3ixJiOGtoz1u5tg",
+        authDomain: "travel-app-4560d.firebaseapp.com",
+        projectId: "travel-app-4560d",
+        storageBucket: "travel-app-4560d.firebasestorage.app",
+        messagingSenderId: "813547420756",
+        appId: "1:813547420756:web:f6f21c91b28556627741c1",
+      };
+
+      const APP_ID = "my-kansai-trip-2025";
+
+      // --- Helper Functions ---
+      const ensureUrlProtocol = (url) => {
+        if (!url) return "";
+        if (!/^https?:\/\//i.test(url)) {
+          return `https://${url}`;
+        }
+        return url;
+      };
+
+      const handleImageError = (e, link) => {
+        const currentSrc = e.target.src;
+        if (currentSrc.includes("google.com/s2/favicons")) {
+          e.target.style.display = "none";
+          return;
+        }
+        if (link) {
+          try {
+            const domain = new URL(ensureUrlProtocol(link)).hostname;
+            e.target.src = `https://www.google.com/s2/favicons?domain=${domain}&sz=128`;
+          } catch (err) {
+            e.target.style.display = "none";
+          }
+        } else {
+          e.target.style.display = "none";
+        }
+      };
+      
+      const getFormattedDate = (dateString) => {
+          if (!dateString) return new Date().toISOString().split('T')[0];
+          return dateString;
+      };
+
+      // NEW: Location Helper with Coordinate Mapping
+      const COORDINATES = {
+        "大阪": { lat: 34.6937, lon: 135.5023 },
+        "京都": { lat: 35.0116, lon: 135.7681 },
+        "奈良": { lat: 34.6851, lon: 135.8048 },
+        "神戶": { lat: 34.6901, lon: 135.1955 },
+        "環球影城": { lat: 34.6654, lon: 135.4323 }, // USJ
+        "關西機場": { lat: 34.4320, lon: 135.2304 }, // KIX
+      };
+
+      const getLocationFromDay = (day) => {
+        if (!day) return { name: "大阪", ...COORDINATES["大阪"] };
+        const text = ((day.title || "") + (day.events || []).map(e => e.location).join(" ")).toLowerCase();
+        
+        if (text.includes("京都") || text.includes("清水寺") || text.includes("嵐山")) return { name: "京都", ...COORDINATES["京都"] };
+        if (text.includes("奈良") || text.includes("小鹿")) return { name: "奈良", ...COORDINATES["奈良"] };
+        if (text.includes("神戶")) return { name: "神戶", ...COORDINATES["神戶"] };
+        if (text.includes("環球") || text.includes("usj")) return { name: "環球影城", ...COORDINATES["環球影城"] };
+        if (text.includes("機場") || text.includes("kix")) return { name: "關西機場", ...COORDINATES["關西機場"] };
+        
+        // Default to Osaka
+        return { name: "大阪", ...COORDINATES["大阪"] };
+      };
+
+      const DEFAULT_ITINERARY = [
+        {
+          id: 1,
+          date: "2/6 (五)",
+          title: "Day 1: 抵達大阪",
+          events: [
+            {
+              id: "e1",
+              time: "10:55",
+              location: "關西機場 (KIX)",
+              transport: "入境",
+              note: "航班：IT210\n抵達後前往二樓",
+            },
+          ],
+        },
+        {
+          id: 2,
+          date: "2/7 (六)",
+          title: "Day 2: 大阪城",
+          events: [],
+        },
+        {
+          id: 3,
+          date: "2/8 (日)",
+          title: "Day 3: 京都漫遊", 
+          events: [],
+        }
+      ];
+
+      // --- Icons (UPDATED: Clean Outline Paths for Weather) ---
+      const ICONS = {
+        map: "M9 20l-5.447 2.724A1 1 0 012 21.832V4.168a1 1 0 011.447-.894L9 6m0 14l6-3m-6 3V6m6 14l5.447 2.724A1 1 0 0022 21.832V4.168a1 1 0 00-1.447-.894L15 6m0 14V6m0 0L9 3",
+        shoppingBag: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z",
+        wallet:
+          "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
+        info: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
+        mount: "M12 3l9 16H3l9-16z",
+        plus: "M12 4v16m8-8H4",
+        x: "M6 18L18 6M6 6l12 12",
+        edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
+        trash:
+          "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16",
+        check: "M5 13l4 4L19 7",
+        train:
+          "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M2 22h20",
+        pin: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z",
+        grip: "M3 12h18 M3 6h18 M3 18h18",
+        globe:
+          "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1 4-10z",
+        link: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
+        externalLink:
+          "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
+        sort: "M4 6h16 M4 12h16 M4 18h16",
+        
+        // REPLACED WEATHER ICONS with Clean Outlines
+        sun: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
+        cloud: "M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z",
+        rain: "M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9 M13 11l-4 4 m0 -4v4 M9 11l4 4 m0 -4v4", // Adjusted rain
+        snow: "M12 3v18 M5 10l14 4 M5 14l14-4", // Simple snowflake
+        
+        chart: "M3 3v18h18 M18 17l-5-5-4 4-4-4",
+        clipboard: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01",
+        settings: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
+        copy: "M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3",
+        drop: "M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z",
+        shirt: "M20.38 3.46L16 2l-4 6-4-6-4.38 1.46a2 2 0 00-1.17 1.14l-1.38 4.38A2 2 0 002.3 11.5l3.22 10.42a2 2 0 001.9 1.41h9.16a2 2 0 001.9-1.41l3.22-10.42a2 2 0 00-1.23-2.52l-1.38-4.38a2 2 0 00-1.17-1.14z",
+      };
+
+      // --- Components ---
+      const Icon = ({ path, size = 20, className = "", onClick }) => (
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width={size}
+          height={size}
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className={className}
+          onClick={onClick}
+          style={{ cursor: onClick ? "pointer" : "default" }}
+        >
+          <path d={path} />
+        </svg>
+      );
+
+      const LinkifiedText = ({ text }) => {
+        if (!text) return null;
+        const urlRegex = /(https?:\/\/[^\s]+)/g;
+        const parts = text.split(urlRegex);
+        return (
+          <>
+            {parts.map((part, index) =>
+              part.match(urlRegex) ? (
+                <a
+                  key={index}
+                  href={ensureUrlProtocol(part)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-app-blue hover:underline break-all relative z-10 font-bold"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  {part}
+                </a>
+              ) : (
+                part
+              )
+            )}
+          </>
+        );
+      };
+
+      const ConfirmModal = ({ isOpen, message, onConfirm, onCancel }) => {
+        if (!isOpen) return null;
+        return (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+            <div
+              className="absolute inset-0 bg-black/30 backdrop-blur-sm"
+              onClick={onCancel}
+            ></div>
+            <div className="bg-[#fffdf7] rounded-[2rem] shadow-2xl p-6 max-w-xs w-full relative z-10 border-4 border-theme-pink/30 animate-[pop_0.3s_ease-out]">
+              <div className="text-center mb-6">
+                <div className="inline-block p-3 bg-red-50 text-red-400 rounded-full mb-3">
+                  <Icon path={ICONS.trash} size={28} />
+                </div>
+                <h3 className="font-bold text-gray-700 text-lg font-serif tracking-wide">
+                  {message}
+                </h3>
+              </div>
+              <div className="flex gap-3">
+                <button
+                  onClick={onCancel}
+                  className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-500 rounded-2xl font-bold transition-colors"
+                >
+                  取消
+                </button>
+                <button
+                  onClick={onConfirm}
+                  className="flex-1 py-3 bg-app-blue hover:bg-app-blue-dark text-white rounded-2xl font-bold shadow-soft transition-colors"
+                >
+                  確定
+                </button>
+              </div>
+            </div>
+          </div>
+        );
+      };
+
+      const SortableDayList = ({
+        day,
+        isReordering,
+        onUpdateEvents,
+        className,
+        children,
+      }) => {
+        const listRef = useRef(null);
+        const sortableRef = useRef(null);
+        const currentDayRef = useRef(day);
+        const onUpdateEventsRef = useRef(onUpdateEvents);
+
+        useEffect(() => {
+          currentDayRef.current = day;
+          onUpdateEventsRef.current = onUpdateEvents;
+        }, [day, onUpdateEvents]);
+
+        useEffect(() => {
+          const el = listRef.current;
+          if (sortableRef.current) {
+            try {
+              sortableRef.current.destroy();
+            } catch (e) {}
+            sortableRef.current = null;
+          }
+
+          if (isReordering && el && window.Sortable) {
+            sortableRef.current = new window.Sortable(el, {
+              handle: ".drag-handle",
+              animation: 150,
+              ghostClass: "opacity-50",
+              onEnd: (evt) => {
+                if (evt.oldIndex === evt.newIndex) return;
+                const currentDay = currentDayRef.current;
+                const newEvents = [...currentDay.events];
+                const [moved] = newEvents.splice(evt.oldIndex, 1);
+                newEvents.splice(evt.newIndex, 0, moved);
+                onUpdateEventsRef.current(currentDay.id, newEvents);
+              },
+            });
+          }
+
+          return () => {
+            if (sortableRef.current) {
+              try {
+                sortableRef.current.destroy();
+              } catch (e) {}
+              sortableRef.current = null;
+            }
+          };
+        }, [isReordering]);
+
+        return (
+          <div ref={listRef} className={className}>
+            {children}
+          </div>
+        );
+      };
+
+      // UPDATED: Advanced Weather Widget
+      const WeatherWidget = ({ weather, locationToday, locationTomorrow, displayDate }) => {
+        if (!weather || !weather.current || !weather.daily) return null;
+        
+        // Current Weather
+        const wCode = weather.current.weather_code;
+        const temp = Math.round(weather.current.temperature_2m);
+        const feelsLike = Math.round(weather.current.apparent_temperature);
+
+        const getIcon = (c) => {
+          if (c <= 1) return "sun";
+          if (c <= 3) return "cloud";
+          if (c <= 48) return "cloud";
+          if (c <= 67) return "rain";
+          if (c <= 77) return "snow";
+          if (c <= 86) return "rain";
+          if (c > 95) return "rain";
+          return "rain";
+        };
+        
+        // Clothing Advice Logic
+        const getClothingAdvice = (t) => {
+            if (t < 5) return "極凍！發熱衣、羽絨、手套";
+            if (t < 10) return "寒冷，大衣、毛衣、發熱衣";
+            if (t < 15) return "偏冷，建議洋蔥式穿搭";
+            if (t < 20) return "涼爽，薄長袖、薄外套";
+            if (t < 25) return "舒適，短袖搭配薄襯衫";
+            return "炎熱，透氣短袖衣物";
+        };
+
+        const clothingText = getClothingAdvice(temp);
+        
+        // Daily Forecast Data
+        const daily = weather.daily;
+        // Construct array of days
+        const forecastDays = daily.time.map((t, i) => ({
+            date: t, // API Date (Real world)
+            code: daily.weather_code[i],
+            max: Math.round(daily.temperature_2m_max[i]),
+            min: Math.round(daily.temperature_2m_min[i]),
+            pop: daily.precipitation_probability_max ? daily.precipitation_probability_max[i] : 0
+        }));
+        
+        const todayPop = forecastDays[0].pop;
+        const tomorrow = forecastDays[1];
+
+        return (
+          <div className="kawaii-card mb-6 relative overflow-hidden bg-gradient-to-br from-white via-[#fffbf2] to-white">
+            
+            <div className="flex flex-col md:flex-row divide-y md:divide-y-0 md:divide-x divide-orange-100/60">
+                
+                {/* --- LEFT HALF: TODAY --- */}
+                <div className="flex-1 p-5 flex flex-col items-center justify-center relative">
+                    <span className="absolute top-3 left-4 text-xs font-black tracking-widest text-app-blue bg-orange-100/50 px-2 py-0.5 rounded-md">今日</span>
+                    
+                    <div className="flex items-center gap-4 mb-3 mt-2">
+                        <Icon path={ICONS[getIcon(wCode)]} size={64} className="text-theme-yellow drop-shadow-md filter saturate-110" />
+                        <div className="flex flex-col">
+                            <span className="text-6xl font-black text-theme-text tracking-tighter leading-none">{temp}°</span>
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className="text-xs font-bold text-gray-400">體感 {feelsLike}°</span>
+                                <span className="text-xs font-bold text-gray-400">最低 {forecastDays[0].min}°</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-center gap-2 w-full px-2">
+                        {/* Location Badge (Today) */}
+                        <div className="flex items-center gap-1 text-[10px] font-bold text-app-blue bg-white/80 px-2 py-1 rounded-full border border-blue-100 shadow-sm">
+                            <Icon path={ICONS.pin} size={10} /> {locationToday}
+                        </div>
+
+                        {todayPop >= 0 && (
+                            <div className="flex items-center gap-1 text-xs font-bold text-blue-500 bg-blue-50/80 px-3 py-1.5 rounded-full border border-blue-100">
+                                <Icon path={ICONS.drop} size={12} /> {todayPop}%
+                            </div>
+                        )}
+                        <div className="flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-100/60 px-3 py-1.5 rounded-full border border-orange-200/50 max-w-full">
+                            <Icon path={ICONS.shirt} size={12} className="shrink-0" />
+                            <span className="truncate">{clothingText}</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* --- RIGHT HALF: TOMORROW --- */}
+                <div className="flex-1 p-5 flex flex-col items-center justify-center relative bg-gray-50/30">
+                    <span className="absolute top-3 left-4 text-xs font-black tracking-widest text-gray-400 bg-gray-200/50 px-2 py-0.5 rounded-md">明日</span>
+                    
+                    {tomorrow ? (
+                        <>
+                            <div className="flex items-center gap-4 mb-3 mt-2">
+                                <Icon path={ICONS[getIcon(tomorrow.code)]} size={56} className="text-theme-sub opacity-80" />
+                                <div className="flex flex-col">
+                                    <div className="flex items-baseline gap-1">
+                                        <span className="text-5xl font-black text-gray-600 tracking-tighter leading-none">{tomorrow.max}°</span>
+                                        <span className="text-xl font-bold text-gray-400 opacity-60">{tomorrow.min}°</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex flex-wrap items-center justify-center gap-2 w-full px-2">
+                                {/* Location Badge (Tomorrow) */}
+                                <div className="flex items-center gap-1 text-[10px] font-bold text-gray-500 bg-white/80 px-2 py-1 rounded-full border border-gray-200 shadow-sm">
+                                    <Icon path={ICONS.pin} size={10} /> {locationTomorrow}
+                                </div>
+
+                                {tomorrow.pop >= 0 && (
+                                    <div className="flex items-center gap-1 text-xs font-bold text-blue-400 bg-blue-50/50 px-3 py-1.5 rounded-full border border-blue-100/50">
+                                        <Icon path={ICONS.drop} size={12} /> {tomorrow.pop}%
+                                    </div>
+                                )}
+                                <div className="flex items-center gap-1 text-xs font-bold text-gray-500 bg-white/80 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm max-w-full">
+                                    <Icon path={ICONS.shirt} size={12} className="shrink-0" />
+                                    <span className="truncate">{getClothingAdvice(Math.round((tomorrow.max + tomorrow.min) / 2))}</span>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-gray-300 font-bold text-sm">無資料</div>
+                    )}
+                </div>
+
+            </div>
+          </div>
+        );
+      };
+
+      // --- Main Application ---
+      const App = () => {
+        const [activeTab, setActiveTab] = useState("itinerary");
+        const [user, setUser] = useState(null);
+        const [db, setDb] = useState(null);
+        const [weather, setWeather] = useState(null);
+        const [exchangeRate, setExchangeRate] = useState(null);
+        const [data, setData] = useState({
+          itinerary: DEFAULT_ITINERARY, // Use DEFAULT with Kyoto day
+          shopping: [],
+          mustBuy: [],
+          expenses: [],
+          info: [],
+          settings: { members: ["我"] },
+          preparation: [],
+        });
+        const [selectedDayId, setSelectedDayId] = useState(1);
+        const [modalConfig, setModalConfig] = useState({ isOpen: false });
+        const [reorderingDayId, setReorderingDayId] = useState(null);
+        const [weatherLocation, setWeatherLocation] = useState({ name: "大阪", lat: 34.6937, lon: 135.5023 });
+
+
+        // Form States
+        const [expenseForm, setExpenseForm] = useState({
+          item: "",
+          total: "",
+          payer: "",
+          involved: [],
+          currency: "JPY", // Default currency
+          date: getFormattedDate(), // Default to today YYYY-MM-DD
+        });
+        const [editingExpenseId, setEditingExpenseId] = useState(null);
+        const [editingEventId, setEditingEventId] = useState(null);
+        const [editingInfoId, setEditingInfoId] = useState(null);
+        const [editingShoppingId, setEditingShoppingId] = useState(null);
+        const [editingRec, setEditingRec] = useState(null);
+        
+        // Preparation Edit State
+        const [editingPrepId, setEditingPrepId] = useState(null);
+        const [prepForm, setPrepForm] = useState({ task: "", link: "" });
+        
+        // Member Management State
+        const [newMemberName, setNewMemberName] = useState("");
+        const [editMemberData, setEditMemberData] = useState({ oldName: null, newName: '' });
+
+        const [newItem, setNewItem] = useState({
+          name: "",
+          qty: 1,
+          note: "",
+          link: "",
+          image: "",
+        });
+        const [mustBuyForm, setMustBuyForm] = useState({
+          area: "",
+          item: "",
+          link: "",
+          image: "",
+        });
+        const [infoForm, setInfoForm] = useState({
+          title: "",
+          link: "",
+          note: "",
+        });
+
+        // Initialize
+        useEffect(() => {
+          const init = async () => {
+            if (!window.Firebase) return;
+            try {
+              const app = window.Firebase.initializeApp(YOUR_FIREBASE_CONFIG);
+              const auth = window.Firebase.getAuth(app);
+              const firestore = window.Firebase.getFirestore(app);
+              setDb(firestore);
+              await window.Firebase.signInAnonymously(auth);
+              window.Firebase.onAuthStateChanged(auth, (u) => setUser(u));
+            } catch (e) {
+              console.error(e);
+            }
+          };
+          const timer = setInterval(() => {
+            if (window.Firebase) {
+              clearInterval(timer);
+              init();
+            }
+          }, 500);
+          return () => clearInterval(timer);
+        }, []);
+
+        // Listeners
+        useEffect(() => {
+          if (!user || !db) return;
+          const listen = (key, def) =>
+            window.Firebase.onSnapshot(
+              window.Firebase.doc(
+                window.Firebase.collection(
+                  db,
+                  `artifacts/${APP_ID}/public/data/trip_data`
+                ),
+                key
+              ),
+              (s) =>
+                setData((p) => ({
+                  ...p,
+                  [key]: s.exists() ? s.data().list || s.data() : def,
+                }))
+            );
+          const unsubs = [
+            listen("itinerary", DEFAULT_ITINERARY), // Fallback to new default with Kyoto
+            listen("shopping", []),
+            listen("mustBuy", []),
+            listen("expenses", []),
+            listen("info", []),
+            listen("settings", { members: ["我"] }),
+            listen("preparation", []),
+          ];
+          return () => unsubs.forEach((u) => u());
+        }, [user, db]);
+
+        useEffect(() => {
+          if (
+            data.settings?.members &&
+            !expenseForm.payer &&
+            !editingExpenseId &&
+            expenseForm.involved.length === 0
+          ) {
+            setExpenseForm((p) => ({
+              ...p,
+              payer: data.settings.members[0] || "",
+              involved: [...data.settings.members],
+              currency: "JPY", // Reset currency as well if needed
+              date: getFormattedDate(),
+            }));
+          }
+        }, [data.settings, editingExpenseId]);
+
+        // Weather & Exchange Rate
+        // UPDATED: Logic to switch weather based on selected day title AND fetch forecast
+        useEffect(() => {
+            // Find current day data
+            const currentDay = data.itinerary.find(d => d.id === selectedDayId) || data.itinerary[0];
+            const loc = getLocationFromDay(currentDay);
+            setWeatherLocation(loc); // Update UI state
+
+            // Fetch weather for determined location (Daily + Current)
+            fetch(
+                `https://api.open-meteo.com/v1/forecast?latitude=${loc.lat}&longitude=${loc.lon}&daily=weather_code,temperature_2m_max,temperature_2m_min,precipitation_probability_max&current=temperature_2m,weather_code,apparent_temperature&timezone=Asia%2FTokyo`
+            )
+            .then((r) => r.json())
+            .then((d) => setWeather(d))
+            .catch(console.error);
+
+          fetch("https://api.exchangerate-api.com/v4/latest/JPY")
+            .then((r) => r.json())
+            .then((d) => {
+              if (d && d.rates) setExchangeRate(d.rates.TWD);
+            })
+            .catch(console.error);
+        }, [selectedDayId, data.itinerary]); // Dependency on selectedDayId
+
+        const save = async (key, val) => {
+          if (!user || !db) return;
+          await window.Firebase.setDoc(
+            window.Firebase.doc(
+              window.Firebase.collection(
+                db,
+                `artifacts/${APP_ID}/public/data/trip_data`
+              ),
+              key
+            ),
+            key === "settings" ? val : { list: val }
+          );
+        };
+
+        const openConfirm = (msg, cb) =>
+          setModalConfig({
+            isOpen: true,
+            message: msg,
+            onConfirm: () => {
+              cb();
+              setModalConfig({ isOpen: false });
+            },
+            onCancel: () => setModalConfig({ isOpen: false }),
+          });
+
+        // Logic
+        const updateItineraryLocal = (dId, eId, k, v) =>
+          setData((p) => ({
+            ...p,
+            itinerary: p.itinerary.map((d) =>
+              d.id !== dId
+                ? d
+                : {
+                    ...d,
+                    events: d.events.map((e) =>
+                      e.id === eId ? { ...e, [k]: v } : e
+                    ),
+                  }
+            ),
+          }));
+        const saveSingleEvent = () => {
+          save("itinerary", data.itinerary);
+          setEditingEventId(null);
+        };
+        const addItineraryEventLocal = (dId) => {
+          const newId = `new_${Date.now()}`;
+          const newData = data.itinerary.map((d) =>
+            d.id === dId
+              ? {
+                  ...d,
+                  events: [
+                    ...d.events,
+                    {
+                      id: newId,
+                      time: "待定",
+                      location: "新地點",
+                      transport: "",
+                      note: "",
+                    },
+                  ],
+                }
+              : d
+          );
+          setData((p) => ({ ...p, itinerary: newData }));
+          save("itinerary", newData);
+          setEditingEventId(newId);
+        };
+        const deleteItineraryEventLocal = (dId, eId) => {
+          openConfirm("確定要刪除此行程活動嗎？", () => {
+            const newData = data.itinerary.map((d) =>
+              d.id === dId
+                ? { ...d, events: d.events.filter((e) => e.id !== eId) }
+                : d
+            );
+            setData((p) => ({ ...p, itinerary: newData }));
+            save("itinerary", newData);
+            setEditingEventId(null);
+          });
+        };
+        
+        // NEW: Member Update Logic
+        const handleUpdateMember = async () => {
+            const { oldName, newName } = editMemberData;
+            if (!newName || newName === oldName) {
+                setEditMemberData({ oldName: null, newName: '' });
+                return;
+            }
+
+            // 1. Update Settings
+            const newMembers = data.settings.members.map(m => m === oldName ? newName : m);
+            
+            // 2. Update Expenses (Historical data fix)
+            const newExpenses = data.expenses.map(ex => ({
+                ...ex,
+                payer: ex.payer === oldName ? newName : ex.payer,
+                involved: ex.involved.map(inv => inv === oldName ? newName : inv)
+            }));
+
+            await save("settings", { members: newMembers });
+            await save("expenses", newExpenses);
+
+            setEditMemberData({ oldName: null, newName: '' });
+        };
+
+
+        // Views
+        const renderNav = () => (
+          <div
+            className="
+                fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 w-[90%] max-w-md h-16 
+                bg-[#fffdf7]/95 backdrop-blur-xl rounded-full shadow-nav border border-white/50 flex items-center justify-around overflow-hidden
+                md:static md:translate-x-0 md:w-24 md:h-full md:max-w-none md:rounded-none md:border-0 md:border-r md:border-white/50 md:flex-col md:justify-start md:pt-10 md:gap-6 md:bg-[#fffdf7]/80 md:backdrop-blur-xl md:shadow-none md:overflow-visible
+             "
+          >
+            {[
+              { id: "itinerary", icon: ICONS.map, label: "行程" },
+              { id: "shopping", icon: ICONS.shoppingBag, label: "購物" },
+              { id: "tools", icon: ICONS.wallet, label: "記帳" },
+              { id: "recommend", icon: ICONS.mount, label: "推薦" },
+              { id: "info", icon: ICONS.info, label: "資訊" },
+            ].map((t) => (
+              <button
+                key={t.id}
+                onClick={() => setActiveTab(t.id)}
+                className={`flex flex-col items-center justify-center w-12 h-12 rounded-full transition-all duration-300 ${
+                  activeTab === t.id
+                    ? "text-app-blue bg-orange-50 transform -translate-y-2 shadow-sm border border-orange-100"
+                    : "text-gray-400 hover:text-gray-600 hover:bg-orange-50/30"
+                }`}
+              >
+                <Icon
+                  path={t.icon}
+                  size={22}
+                  className={activeTab === t.id ? "stroke-[2.5px]" : ""}
+                />
+                {activeTab !== t.id && (
+                  <span className="text-[9px] font-bold mt-0.5">{t.label}</span>
+                )}
+              </button>
+            ))}
+          </div>
+        );
+
+        // Preparation List Component
+        const renderPreparation = () => {
+          const handlePrepSave = () => {
+            if (prepForm.task) {
+              if (editingPrepId) {
+                const updatedList = data.preparation.map((item) =>
+                  item.id === editingPrepId ? { ...item, ...prepForm } : item
+                );
+                save("preparation", updatedList);
+                setEditingPrepId(null);
+              } else {
+                save("preparation", [
+                  ...data.preparation,
+                  { id: Date.now(), ...prepForm, checked: false },
+                ]);
+              }
+              setPrepForm({ task: "", link: "" });
+            }
+          };
+
+          return (
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar">
+              <div className="max-w-4xl mx-auto w-full">
+                <div className="kawaii-card p-5 mb-6 sticky top-0 z-20">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                       <h3 className="font-bold text-gray-600 flex items-center gap-2">
+                         <Icon path={ICONS.clipboard} size={20} className="text-theme-green" />
+                         行前準備清單
+                       </h3>
+                       {editingPrepId && (
+                        <button
+                          onClick={() => {
+                            setEditingPrepId(null);
+                            setPrepForm({ task: "", link: "" });
+                          }}
+                          className="text-xs text-gray-400"
+                        >
+                          取消
+                        </button>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <input
+                        value={prepForm.task}
+                        onChange={(e) => setPrepForm({ ...prepForm, task: e.target.value })}
+                        placeholder="待辦事項 (如: 買網卡)"
+                        className="flex-1 bg-theme-bg rounded-xl px-4 py-3 font-bold text-sm w-full"
+                      />
+                      <button
+                        onClick={handlePrepSave}
+                        className={`w-12 h-auto rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all text-white ${editingPrepId ? "bg-theme-green" : "bg-app-blue"}`}
+                      >
+                         {editingPrepId ? <Icon path={ICONS.check} size={24} /> : <Icon path={ICONS.plus} size={24} />}
+                      </button>
+                    </div>
+                    <input
+                        value={prepForm.link}
+                        onChange={(e) => setPrepForm({ ...prepForm, link: e.target.value })}
+                        placeholder="相關連結 (選填)"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-2 text-xs"
+                      />
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {(data.preparation || []).map((item) => (
+                    <div key={item.id} className="kawaii-card p-4 flex items-center gap-3 group">
+                       <div
+                        onClick={() => save("preparation", data.preparation.map(x => x.id === item.id ? { ...x, checked: !x.checked } : x))}
+                        className={`w-6 h-6 rounded-full border-2 flex items-center justify-center cursor-pointer transition-colors ${item.checked ? "bg-theme-green border-theme-green text-white" : "border-gray-300"}`}
+                      >
+                        {item.checked && <Icon path={ICONS.check} size={14} strokeWidth="3" />}
+                      </div>
+                      
+                      <div className="flex-1 min-w-0">
+                         <div className={`font-bold text-gray-700 ${item.checked ? "line-through text-gray-400" : ""}`}>
+                           {item.task}
+                         </div>
+                         {item.link && (
+                           <a href={ensureUrlProtocol(item.link)} target="_blank" rel="noopener noreferrer" className="text-xs text-app-blue flex items-center gap-1 mt-1 hover:underline">
+                             <Icon path={ICONS.link} size={12} /> 開啟連結
+                           </a>
+                         )}
+                      </div>
+
+                      <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button 
+                          onClick={() => {
+                            setEditingPrepId(item.id);
+                            setPrepForm({ task: item.task, link: item.link || "" });
+                          }}
+                          className="text-gray-300 hover:text-app-blue"
+                        >
+                          <Icon path={ICONS.edit} size={18} />
+                        </button>
+                        <button 
+                          onClick={() => openConfirm("刪除此項目?", () => save("preparation", data.preparation.filter(x => x.id !== item.id)))}
+                          className="text-gray-300 hover:text-red-400"
+                        >
+                          <Icon path={ICONS.trash} size={18} />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  
+                  {(!data.preparation || data.preparation.length === 0) && (
+                    <div className="text-center text-gray-400 py-10 text-sm">
+                      還沒有行前準備項目，新增一個吧！
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          );
+        }
+
+        const renderItinerary = () => {
+          const currentDayIdx = data.itinerary.findIndex(d => d.id === selectedDayId);
+          const currentDay = data.itinerary[currentDayIdx] || data.itinerary[0];
+          const nextDay = data.itinerary[currentDayIdx + 1]; // Can be undefined
+          
+          // Determine locations
+          // WeatherLocation state is updated by useEffect, but it only tracks current day.
+          // For display purposes in the widget, we calculate here.
+          // Note: weather data itself is still fetched only for the current selected day's location.
+          const nextLoc = getLocationFromDay(nextDay);
+            
+          // Special View for Preparation
+          if (selectedDayId === 'prep') {
+             return (
+               <div className="flex-1 flex flex-col overflow-hidden h-full">
+                  <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
+                    <button
+                      onClick={() => setSelectedDayId('prep')}
+                      className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-[#fffdf7] shadow-soft scale-105 ring-4 ring-white/50 text-app-blue"
+                    >
+                      <Icon path={ICONS.clipboard} size={24} className="mb-1" />
+                      <span className="text-xs font-bold">行前</span>
+                    </button>
+                    
+                    {(data.itinerary || []).map((d, idx) => {
+                       const parts = d.date ? d.date.split(" ") : [];
+                       return (
+                        <button
+                          key={d.id}
+                          onClick={() => setSelectedDayId(d.id)}
+                          className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500"
+                        >
+                          <span className="text-[10px] font-bold mb-0.5 opacity-70">Day {idx + 1}</span>
+                          <span className="text-lg font-black leading-none">{parts[0]}</span>
+                          {parts[1] && <span className="text-xs font-bold mt-0.5 opacity-80">{parts[1]}</span>}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {renderPreparation()}
+               </div>
+             )
+          }
+          
+          // EXTRACT DATE STRING FOR WEATHER WIDGET
+          const parts = currentDay.date ? currentDay.date.split(" ") : [""];
+          const dateStr = parts[0]; // e.g., "2/6"
+
+          return (
+            <div className="flex-1 flex flex-col overflow-hidden h-full">
+              <div className="flex overflow-x-auto gap-3 px-6 py-4 no-scrollbar flex-shrink-0 md:justify-center">
+                 <button
+                    onClick={() => setSelectedDayId('prep')}
+                    className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500 hover:bg-white/60"
+                  >
+                    <Icon path={ICONS.clipboard} size={24} className="mb-1 opacity-70" />
+                    <span className="text-xs font-bold">行前</span>
+                 </button>
+
+                {(data.itinerary || []).map((d, idx) => {
+                  const parts = d.date ? d.date.split(" ") : [];
+                  const dateText = parts[0] || "";
+                  const weekText = parts[1] || "";
+
+                  return (
+                    <button
+                      key={d.id}
+                      onClick={() => setSelectedDayId(d.id)}
+                      className={`flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all ${
+                        selectedDayId === d.id
+                          ? "bg-[#fffdf7] shadow-soft scale-105 ring-4 ring-white/50 text-app-blue"
+                          : "bg-white/40 text-gray-500"
+                      }`}
+                    >
+                      <span className="text-[10px] font-bold mb-0.5 opacity-70">
+                        Day {idx + 1}
+                      </span>
+                      <span className="text-lg font-black leading-none">
+                        {dateText}
+                      </span>
+                      {weekText && (
+                        <span className="text-xs font-bold mt-0.5 opacity-80">
+                          {weekText}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+
+              <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar">
+                <div className="max-w-4xl mx-auto w-full">
+                  <WeatherWidget 
+                    weather={weather} 
+                    locationName={weatherLocation.name}
+                    locationToday={weatherLocation.name}
+                    locationTomorrow={nextLoc.name}
+                    displayDate={dateStr}
+                  />
+                  <div className="flex justify-between items-center mb-6">
+                    <h2 className="text-2xl font-black text-theme-text font-serif bg-white/40 px-4 py-1 rounded-full">
+                      {currentDay.title}
+                    </h2>
+                    <button
+                      onClick={() =>
+                        setReorderingDayId(
+                          reorderingDayId === currentDay.id
+                            ? null
+                            : currentDay.id
+                        )
+                      }
+                      className="p-2 bg-white/50 rounded-xl text-app-blue"
+                    >
+                      <Icon
+                        path={reorderingDayId ? ICONS.check : ICONS.sort}
+                        size={20}
+                      />
+                    </button>
+                  </div>
+                  <SortableDayList
+                    day={currentDay}
+                    isReordering={reorderingDayId === currentDay.id}
+                    onUpdateEvents={(dId, evs) => {
+                      const newData = data.itinerary.map((d) =>
+                        d.id === dId ? { ...d, events: evs } : d
+                      );
+                      setData((p) => ({ ...p, itinerary: newData }));
+                      save("itinerary", newData);
+                    }}
+                    className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 md:gap-6 lg:grid-cols-2"
+                  >
+                    {(currentDay.events || []).map((e) => (
+                      <div
+                        key={e.id}
+                        className="flex gap-3 md:gap-6 relative group"
+                      >
+                         {/* Left Column: Time */}
+                        <div className="w-20 md:w-24 flex-shrink-0 flex flex-col items-end pt-4 pr-3">
+                            <span className="font-mono font-black text-app-blue text-xl md:text-2xl whitespace-nowrap">{e.time}</span>
+                        </div>
+
+                        {/* Middle Column: Timeline */}
+                        <div className="relative flex flex-col items-center w-6 flex-shrink-0">
+                             {/* Line */}
+                             <div className="w-0.5 bg-orange-200 h-full absolute top-0"></div>
+                             {/* Dot */}
+                             <div className="w-3 h-3 bg-app-blue rounded-full border-2 border-[#fff8f0] z-10 mt-7 shadow-sm"></div>
+                        </div>
+
+                        {/* Right Column: Card */}
+                        <div className="flex-1 pb-6 pt-2 min-w-0">
+                          {reorderingDayId && (
+                            <div className="absolute top-2 right-2 text-app-blue p-2 cursor-move z-20 drag-handle">
+                                <Icon path={ICONS.grip} size={20} />
+                            </div>
+                          )}
+                           
+                           {/* Content Card */}
+                           <div className="kawaii-card p-4 md:p-5 relative">
+                                <div className="flex justify-between items-start mb-2">
+                                     <h3 className="text-lg font-bold text-theme-text mb-1 flex-1">
+                                        {e.location}
+                                    </h3>
+                                    {!reorderingDayId && (
+                                        <button
+                                        onClick={() => setEditingEventId(e.id)}
+                                        className="text-gray-300 hover:text-app-blue flex-shrink-0 ml-2"
+                                        >
+                                        <Icon path={ICONS.edit} size={16} />
+                                        </button>
+                                    )}
+                                </div>
+                                
+                                {editingEventId === e.id ? (
+                                    <div className="space-y-3 mt-2">
+                                        <input
+                                        value={e.location}
+                                        onChange={(ev) =>
+                                            updateItineraryLocal(
+                                            currentDay.id,
+                                            e.id,
+                                            "location",
+                                            ev.target.value
+                                            )
+                                        }
+                                        className="w-full bg-orange-50 rounded-xl px-3 py-2 text-sm font-bold"
+                                        />
+                                        <input
+                                        value={e.time}
+                                        onChange={(ev) =>
+                                            updateItineraryLocal(
+                                            currentDay.id,
+                                            e.id,
+                                            "time",
+                                            ev.target.value
+                                            )
+                                        }
+                                        className="w-full bg-orange-50 rounded-xl px-3 py-2 text-sm"
+                                        />
+                                        <input
+                                        value={e.transport}
+                                        onChange={(ev) =>
+                                            updateItineraryLocal(
+                                            currentDay.id,
+                                            e.id,
+                                            "transport",
+                                            ev.target.value
+                                            )
+                                        }
+                                        className="w-full bg-orange-50 rounded-xl px-3 py-2 text-xs"
+                                        placeholder="交通"
+                                        />
+                                        <textarea
+                                        value={e.note}
+                                        onChange={(ev) =>
+                                            updateItineraryLocal(
+                                            currentDay.id,
+                                            e.id,
+                                            "note",
+                                            ev.target.value
+                                            )
+                                        }
+                                        className="w-full bg-orange-50 rounded-xl px-3 py-2 text-xs"
+                                        rows="2"
+                                        ></textarea>
+                                        <div className="flex gap-2">
+                                        <button
+                                            onClick={saveSingleEvent}
+                                            className="flex-1 bg-theme-green text-white py-2 rounded-xl text-xs font-bold shadow-md"
+                                        >
+                                            儲存
+                                        </button>
+                                        <button
+                                            onClick={() => {
+                                            openConfirm("刪除?", () => {
+                                                const newData = data.itinerary.map((d) =>
+                                                d.id === currentDay.id
+                                                    ? {
+                                                        ...d,
+                                                        events: d.events.filter(
+                                                        (x) => x.id !== e.id
+                                                        ),
+                                                    }
+                                                    : d
+                                                );
+                                                setData((p) => ({
+                                                ...p,
+                                                itinerary: newData,
+                                                }));
+                                                save("itinerary", newData);
+                                                setEditingEventId(null);
+                                            });
+                                            }}
+                                            className="px-3 bg-red-100 text-red-400 rounded-xl"
+                                        >
+                                            <Icon path={ICONS.trash} size={16} />
+                                        </button>
+                                        </div>
+                                    </div>
+                                    ) : (
+                                    <>
+                                        {e.transport && (
+                                        <div className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold mb-3 border border-gray-200">
+                                            <Icon path={ICONS.train} size={12} />{" "}
+                                            {e.transport}
+                                        </div>
+                                        )}
+                                        {e.note && (
+                                        <div className="mt-1 pt-2 border-t-2 border-dashed border-gray-100 text-sm text-gray-500 whitespace-pre-line">
+                                            <LinkifiedText text={e.note} />
+                                        </div>
+                                        )}
+                                    </>
+                                    )}
+                           </div>
+                        </div>
+                      </div>
+                    ))}
+                    {!reorderingDayId && (
+                       <div className="flex gap-3 md:gap-6 pl-0 md:pl-0"> 
+                           <div className="w-20 md:w-24 flex-shrink-0"></div> {/* Spacer for time column */}
+                           <div className="w-6 flex-shrink-0 relative flex justify-center">
+                               <div className="w-0.5 bg-orange-200 h-8 absolute top-0"></div>
+                           </div>
+                           <div className="flex-1">
+                                <button
+                                    onClick={() => addItineraryEventLocal(currentDay.id)}
+                                    className="w-full border-3 border-dashed border-white/50 bg-white/20 hover:bg-white/40 rounded-[2rem] p-6 flex flex-col items-center justify-center text-gray-400 hover:text-app-blue transition-all font-bold min-h-[100px]"
+                                >
+                                    <Icon path={ICONS.plus} size={24} /> 新增活動
+                                </button>
+                           </div>
+                       </div>
+                    )}
+                  </SortableDayList>
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const renderExpenses = () => {
+          const handleExpense = () => {
+            if (!expenseForm.item || !expenseForm.total) return;
+            const total = Number(expenseForm.total);
+            const entry = {
+              id: editingExpenseId || Date.now(),
+              date: new Date().toLocaleDateString("zh-TW", {
+                month: "2-digit",
+                day: "2-digit",
+              }),
+              item: expenseForm.item,
+              total,
+              payer: expenseForm.payer,
+              involved: expenseForm.involved,
+              currency: expenseForm.currency, // Store selected currency
+              perPerson: Math.round(total / (expenseForm.involved.length || 1)),
+            };
+            save(
+              "expenses",
+              editingExpenseId
+                ? data.expenses.map((e) =>
+                    e.id === editingExpenseId ? entry : e
+                  )
+                : [entry, ...data.expenses]
+            );
+            setEditingExpenseId(null);
+            setExpenseForm({
+              item: "",
+              total: "",
+              payer: data.settings.members[0],
+              involved: [...data.settings.members],
+              currency: "JPY", // Reset to default
+            });
+          };
+
+          const calculateSummary = () => {
+            const summary = {};
+            let totalJpy = 0; // Raw JPY spend
+            let totalTwd = 0; // Raw TWD spend
+
+            (data.settings.members || []).forEach(
+              (m) => (summary[m] = { pay: 0, own: 0 })
+            );
+
+            (data.expenses || []).forEach((ex) => {
+              const amount = Number(ex.total);
+              
+              // Sum raw amounts based on currency
+              if (ex.currency === 'TWD') {
+                  totalTwd += amount;
+              } else {
+                  totalJpy += amount;
+              }
+
+              // Calculation for split (still normalized to JPY base for fairness if mixed)
+              let amountInJpy = amount;
+              if (ex.currency === 'TWD' && exchangeRate) {
+                  amountInJpy = amount / exchangeRate;
+              }
+              
+              const split = amountInJpy / (ex.involved.length || 1);
+              
+              if (summary[ex.payer]) summary[ex.payer].pay += amountInJpy;
+              ex.involved.forEach((m) => {
+                if (summary[m]) summary[m].own += split;
+              });
+            });
+            return { summary, totalJpy, totalTwd };
+          };
+          
+          const { summary, totalJpy, totalTwd } = calculateSummary();
+          
+          // Group expenses by Date
+          const expensesByDate = {};
+          data.expenses.forEach(ex => {
+              // Group Key is ex.date (MM/DD)
+              if(!expensesByDate[ex.date]) {
+                  expensesByDate[ex.date] = { list: [], totalJpy: 0, totalTwd: 0 };
+              }
+              expensesByDate[ex.date].list.push(ex);
+              
+              if (ex.currency === 'TWD') {
+                  expensesByDate[ex.date].totalTwd += Number(ex.total);
+              } else {
+                  expensesByDate[ex.date].totalJpy += Number(ex.total);
+              }
+          });
+          
+          // Sort dates desc
+          const sortedDates = Object.keys(expensesByDate).sort((a,b) => b.localeCompare(a));
+
+
+          return (
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
+              <div className="md:flex md:gap-6 md:items-start md:max-w-6xl md:mx-auto">
+                <div className="md:w-96 md:shrink-0 md:sticky md:top-6">
+                  
+                  {/* NEW: Split Total Spending Block */}
+                  <div className="grid grid-cols-2 gap-3 mb-6">
+                        {/* JPY Card */}
+                        <div className="kawaii-card p-4 flex flex-col items-center justify-center relative overflow-hidden group">
+                            <div className="absolute -right-2 -top-2 opacity-10 transform rotate-12 group-hover:scale-110 transition-transform">
+                                <span className="text-6xl font-black text-theme-pink">¥</span>
+                            </div>
+                            <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">日幣總支出</span>
+                            <span className="text-2xl font-black text-theme-text font-mono">
+                                <span className="text-sm mr-1">¥</span>{Math.round(totalJpy).toLocaleString()}
+                            </span>
+                        </div>
+
+                        {/* TWD Card */}
+                        <div className="kawaii-card p-4 flex flex-col items-center justify-center relative overflow-hidden group">
+                            <div className="absolute -right-2 -top-2 opacity-10 transform rotate-12 group-hover:scale-110 transition-transform">
+                                <span className="text-6xl font-black text-theme-blue">$</span>
+                            </div>
+                             <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-1">台幣總支出</span>
+                            <span className="text-2xl font-black text-theme-text font-mono">
+                                 <span className="text-sm mr-1">NT$</span>{Math.round(totalTwd).toLocaleString()}
+                            </span>
+                        </div>
+                  </div>
+
+                  {/* Summary Card */}
+                  <div className="kawaii-card p-5 mb-6">
+                    <h3 className="font-bold text-gray-700 mb-3 flex items-center gap-2">
+                      <Icon path={ICONS.wallet} /> 費用統計 (以日幣計算)
+                    </h3>
+                    <div className="space-y-3">
+                      {Object.entries(summary).map(([name, stat]) => {
+                        const balance = stat.pay - stat.own;
+                        return (
+                          <div
+                            key={name}
+                            className="flex justify-between items-center border-b border-dashed border-gray-100 pb-2 last:border-0 last:pb-0"
+                          >
+                            <span className="font-bold text-gray-600">
+                              {name}
+                            </span>
+                            <div className="text-right">
+                              <div className="text-xs text-gray-400">
+                                應付 ¥{Math.round(stat.own).toLocaleString()} 
+                                <span className="scale-90 inline-block text-[10px] ml-1 opacity-70">(≈NT${Math.round(stat.own * (exchangeRate || 0.21)).toLocaleString()})</span>
+                              </div>
+                              <div
+                                className={`font-bold font-mono ${
+                                  balance >= 0
+                                    ? "text-theme-green"
+                                    : "text-red-400"
+                                }`}
+                              >
+                                {balance >= 0 ? "收" : "付"} ¥
+                                {Math.abs(Math.round(balance)).toLocaleString()}
+                                <span className="text-xs opacity-60 ml-1 font-sans text-gray-400 font-normal">
+                                    (≈NT${Math.abs(Math.round(balance * (exchangeRate || 0.21))).toLocaleString()})
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  {/* Add/Edit Form */}
+                  <div className="kawaii-card p-6 sticky top-0 z-20 mb-6 md:static">
+                    <div className="flex justify-between mb-4 items-center">
+                      <h2 className="text-xl font-bold text-theme-text flex items-center gap-2">
+                        <div className="bg-theme-yellow p-1.5 rounded-lg text-white">
+                          <Icon path={ICONS.wallet} />
+                        </div>{" "}
+                        {editingExpenseId ? "編輯" : "新增"}
+                      </h2>
+                      {editingExpenseId && (
+                        <button
+                          onClick={() => {
+                            setEditingExpenseId(null);
+                            setExpenseForm({
+                              item: "",
+                              total: "",
+                              payer: data.settings.members[0],
+                              involved: [...data.settings.members],
+                              currency: "JPY",
+                            });
+                          }}
+                          className="text-xs text-gray-400"
+                        >
+                          取消
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      value={expenseForm.item}
+                      onChange={(e) =>
+                        setExpenseForm({ ...expenseForm, item: e.target.value })
+                      }
+                      placeholder="項目"
+                      className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold mb-3"
+                    />
+                    <div className="flex flex-col md:flex-row gap-3 mb-3">
+                      <input
+                        type="number"
+                        value={expenseForm.total}
+                        onChange={(e) =>
+                          setExpenseForm({
+                            ...expenseForm,
+                            total: e.target.value,
+                          })
+                        }
+                        placeholder="金額"
+                        className="w-full md:w-1/3 bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      
+                      {/* Currency Selector */}
+                       <select
+                        value={expenseForm.currency}
+                        onChange={(e) =>
+                          setExpenseForm({
+                            ...expenseForm,
+                            currency: e.target.value,
+                          })
+                        }
+                        className="w-full md:w-1/3 bg-theme-bg rounded-xl px-2 font-bold py-3 text-center"
+                      >
+                        <option value="JPY">JPY (¥)</option>
+                        <option value="TWD">TWD ($)</option>
+                      </select>
+
+                      <select
+                        value={expenseForm.payer}
+                        onChange={(e) =>
+                          setExpenseForm({
+                            ...expenseForm,
+                            payer: e.target.value,
+                          })
+                        }
+                        className="w-full md:w-1/3 bg-theme-bg rounded-xl px-2 font-bold py-3 text-center"
+                      >
+                        {data.settings.members.map((m) => (
+                          <option key={m} value={m}>
+                            {m}付
+                          </option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {data.settings.members.map((m) => (
+                        <button
+                          key={m}
+                          onClick={() =>
+                            setExpenseForm((p) => ({
+                              ...p,
+                              involved: p.involved.includes(m)
+                                ? p.involved.filter((x) => x !== m)
+                                : [...p.involved, m],
+                            }))
+                          }
+                          className={`px-3 py-1 rounded-lg text-xs font-bold border-2 ${
+                            expenseForm.involved.includes(m)
+                              ? "border-app-blue bg-app-blue text-white"
+                              : "border-gray-200 text-gray-400"
+                          }`}
+                        >
+                          {m}
+                        </button>
+                      ))}
+                    </div>
+                    <button
+                      onClick={handleExpense}
+                      className="w-full bg-app-blue text-white py-3 rounded-xl font-bold shadow-soft transition-colors hover:bg-app-blue-dark"
+                    >
+                      確認
+                    </button>
+                  </div>
+                </div>
+
+                <div className="flex-1 space-y-8 md:space-y-0 md:grid md:grid-cols-1 md:gap-4">
+                  {/* Render Expenses Grouped by Date */}
+                  {sortedDates.map(dateStr => {
+                      const group = expensesByDate[dateStr];
+                      const [m, d] = dateStr.split("/");
+
+                      return (
+                          <div key={dateStr} className="space-y-3">
+                              <div className="flex items-center gap-3 px-1">
+                                   <div className="bg-theme-bg border border-white rounded-lg w-10 h-10 flex flex-col items-center justify-center flex-shrink-0 shadow-sm">
+                                      <span className="text-[8px] text-gray-400 font-bold">{m}月</span>
+                                      <span className="text-sm font-black text-app-blue leading-none">{d}</span>
+                                   </div>
+                                   <div className="flex-1 border-b border-dashed border-gray-300"></div>
+                                   <div className="flex flex-col items-end">
+                                      {group.totalJpy > 0 && <span className="text-xs font-bold text-gray-500">¥{group.totalJpy.toLocaleString()}</span>}
+                                      {group.totalTwd > 0 && <span className="text-xs font-bold text-gray-500">NT${group.totalTwd.toLocaleString()}</span>}
+                                   </div>
+                              </div>
+                              
+                              <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
+                                {group.list.map((ex) => {
+                                    const symbol = ex.currency === 'TWD' ? 'NT$' : '¥';
+                                    return (
+                                    <div
+                                        key={ex.id}
+                                        className={`kawaii-card p-4 flex items-center gap-4 ${
+                                        editingExpenseId === ex.id ? "border-app-blue" : ""
+                                        }`}
+                                    >
+                                        <div className="flex-1 min-w-0">
+                                        <div className="flex items-center gap-2 mb-1">
+                                            <span className="font-bold text-theme-text truncate">
+                                            {ex.item}
+                                            </span>
+                                            <span className="bg-theme-green text-white text-[10px] px-2 rounded font-bold">
+                                            {ex.payer}
+                                            </span>
+                                        </div>
+                                        <div className="font-black text-theme-text text-lg">
+                                            每人 {symbol}{ex.perPerson.toLocaleString()}
+                                        </div>
+                                        <div className="text-xs text-gray-400 mt-1">
+                                            總計 {symbol}{Number(ex.total).toLocaleString()} (
+                                            {ex.involved.length}人)
+                                        </div>
+                                        </div>
+                                        <div className="flex flex-col gap-2">
+                                        <button
+                                            onClick={() => {
+                                            setEditingExpenseId(ex.id);
+                                            setExpenseForm({
+                                                item: ex.item,
+                                                total: ex.total,
+                                                payer: ex.payer,
+                                                involved: ex.involved,
+                                                currency: ex.currency || 'JPY',
+                                            });
+                                            }}
+                                            className="text-gray-300 hover:text-app-blue"
+                                        >
+                                            <Icon path={ICONS.edit} />
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                            openConfirm("刪除?", () =>
+                                                save(
+                                                "expenses",
+                                                data.expenses.filter((e) => e.id !== ex.id)
+                                                )
+                                            )
+                                            }
+                                            className="text-gray-300 hover:text-red-400"
+                                        >
+                                            <Icon path={ICONS.trash} />
+                                        </button>
+                                        </div>
+                                    </div>
+                                    );
+                                })}
+                              </div>
+                          </div>
+                      )
+                  })}
+                  
+                  {data.expenses.length === 0 && (
+                      <div className="text-center text-gray-400 py-10">目前沒有記帳資料</div>
+                  )}
+
+                </div>
+              </div>
+              
+              {/* Member Mgmt - Moved to Bottom */}
+              <div className="md:max-w-6xl md:mx-auto mt-6">
+                <div className="kawaii-card p-5">
+                    <div className="flex justify-between mb-3">
+                      <span className="font-bold text-gray-600">成員管理</span>
+                      <div className="flex gap-2">
+                        <input
+                          value={newMemberName}
+                          onChange={(e) => setNewMemberName(e.target.value)}
+                          className="w-20 bg-theme-bg rounded px-2 text-xs"
+                        />
+                        <button
+                          onClick={() => {
+                            if (newMemberName) {
+                              save("settings", {
+                                members: [
+                                  ...data.settings.members,
+                                  newMemberName,
+                                ],
+                              });
+                              setNewMemberName("");
+                            }
+                          }}
+                          className="bg-theme-green text-white px-2 rounded text-xs"
+                        >
+                          +
+                        </button>
+                      </div>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {data.settings.members.map((m) => {
+                          const isEditing = editMemberData.oldName === m;
+                          
+                          return isEditing ? (
+                              <div key={m} className="flex items-center gap-1">
+                                  <input 
+                                    className="border rounded px-1 py-0.5 text-xs w-20"
+                                    value={editMemberData.newName}
+                                    onChange={(e) => setEditMemberData({...editMemberData, newName: e.target.value})}
+                                  />
+                                  <button onClick={handleUpdateMember} className="text-green-500 text-xs">OK</button>
+                                  <button onClick={() => setEditMemberData({ oldName: null, newName: '' })} className="text-gray-400 text-xs">X</button>
+                              </div>
+                          ) : (
+                            <span
+                              key={m}
+                              className="bg-white border-2 border-dashed border-gray-200 px-2 py-1 rounded text-xs font-bold text-gray-500 flex items-center gap-1 group"
+                            >
+                              {m}{" "}
+                              <div className="flex gap-1 ml-1 opacity-60 group-hover:opacity-100">
+                                 <button onClick={() => setEditMemberData({ oldName: m, newName: m })} className="hover:text-app-blue">
+                                     <Icon path={ICONS.edit} size={12} />
+                                 </button>
+                                  <button
+                                    onClick={() =>
+                                      openConfirm("移除?", () =>
+                                        save("settings", {
+                                          members: data.settings.members.filter(
+                                            (x) => x !== m
+                                          ),
+                                        })
+                                      )
+                                    }
+                                    className="hover:text-red-400"
+                                  >
+                                    <Icon path={ICONS.x} size={12} />
+                                  </button>
+                              </div>
+                            </span>
+                          )
+                      })}
+                    </div>
+                  </div>
+              </div>
+
+            </div>
+          );
+        };
+
+        const renderShopping = () => {
+          const handleShoppingSave = () => {
+            if (newItem.name) {
+              if (editingShoppingId) {
+                // Edit existing
+                const updatedList = data.shopping.map((item) =>
+                  item.id === editingShoppingId
+                    ? { ...item, ...newItem } // merge new values
+                    : item
+                );
+                save("shopping", updatedList);
+                setEditingShoppingId(null);
+              } else {
+                // Create new
+                const item = { ...newItem, id: Date.now(), checked: false };
+                if (item.link && !item.image) {
+                  try {
+                    const domain = new URL(item.link).hostname;
+                    item.image = `https://www.google.com/s2/favicons?domain=${domain}&sz=64`;
+                  } catch (e) {}
+                }
+                save("shopping", [...data.shopping, item]);
+              }
+              setNewItem({ name: "", qty: 1, note: "", link: "", image: "" });
+            }
+          };
+
+          return (
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
+              <div className="md:max-w-6xl md:mx-auto">
+                <div className="kawaii-card p-5 mb-6 sticky top-0 z-20 md:max-w-2xl md:mx-auto md:relative md:mb-10">
+                  <div className="flex flex-col gap-2">
+                    <div className="flex justify-between items-center">
+                      <span className="font-bold text-gray-500 text-sm">
+                        {editingShoppingId ? "編輯項目" : "新增購物"}
+                      </span>
+                      {editingShoppingId && (
+                        <button
+                          onClick={() => {
+                            setEditingShoppingId(null);
+                            setNewItem({
+                              name: "",
+                              qty: 1,
+                              note: "",
+                              link: "",
+                              image: "",
+                            });
+                          }}
+                          className="text-xs text-gray-400"
+                        >
+                          取消編輯
+                        </button>
+                      )}
+                    </div>
+                    <input
+                      value={newItem.name}
+                      onChange={(e) =>
+                        setNewItem({ ...newItem, name: e.target.value })
+                      }
+                      placeholder="想買什麼？"
+                      className="bg-theme-bg rounded-xl px-4 py-3 text-sm font-bold w-full"
+                    />
+
+                    <div className="flex gap-2">
+                      <input
+                        value={newItem.link}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, link: e.target.value })
+                        }
+                        placeholder="連結"
+                        className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                        onBlur={() => {
+                          if (
+                            newItem.link &&
+                            !newItem.image &&
+                            !editingShoppingId
+                          ) {
+                            try {
+                              const domain = new URL(newItem.link).hostname;
+                              setNewItem((prev) => ({
+                                ...prev,
+                                image: `https://www.google.com/s2/favicons?domain=${domain}&sz=64`,
+                              }));
+                            } catch (e) {}
+                          }
+                        }}
+                      />
+                      <input
+                        value={newItem.image}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, image: e.target.value })
+                        }
+                        placeholder="圖片"
+                        className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                      />
+                    </div>
+
+                    {newItem.image && (
+                      <div className="flex justify-center py-2">
+                        <img
+                          src={newItem.image}
+                          className="w-16 h-16 rounded-lg border border-gray-200 object-contain bg-white"
+                          onError={(e) => (e.target.style.display = "none")}
+                        />
+                      </div>
+                    )}
+
+                    <div className="flex gap-2 items-center">
+                      <input
+                        type="number"
+                        value={newItem.qty}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, qty: e.target.value })
+                        }
+                        className="w-16 bg-theme-bg rounded-xl px-2 py-2 text-center font-bold"
+                        placeholder="1"
+                      />
+                      <input
+                        value={newItem.note}
+                        onChange={(e) =>
+                          setNewItem({ ...newItem, note: e.target.value })
+                        }
+                        placeholder="備註"
+                        className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                      />
+                      <button
+                        onClick={handleShoppingSave}
+                        className={`w-12 h-10 rounded-xl flex items-center justify-center shadow-soft flex-shrink-0 active:scale-95 transition-all text-white ${
+                          editingShoppingId
+                            ? "bg-theme-green"
+                            : "bg-app-blue"
+                        }`}
+                      >
+                        {editingShoppingId ? (
+                          <span className="text-xs font-bold">儲存</span>
+                        ) : (
+                          <Icon path={ICONS.plus} size={24} />
+                        )}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+                <div className="space-y-3 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
+                  {(data.shopping || []).map((i) => (
+                    <div
+                      key={i.id}
+                      onClick={() =>
+                        save(
+                          "shopping",
+                          data.shopping.map((x) =>
+                            x.id === i.id ? { ...x, checked: !x.checked } : x
+                          )
+                        )
+                      }
+                      className={`kawaii-card p-3 flex items-start gap-3 cursor-pointer relative group ${
+                        i.checked ? "opacity-60" : ""
+                      } ${
+                        editingShoppingId === i.id
+                          ? "border-app-blue ring-2 ring-orange-100"
+                          : ""
+                      }`}
+                    >
+                      <div
+                        className={`mt-1 w-6 h-6 rounded-full border-2 flex-shrink-0 flex items-center justify-center ${
+                          i.checked
+                            ? "bg-theme-green border-theme-green text-white"
+                            : "border-gray-300"
+                        }`}
+                      >
+                        {i.checked && (
+                          <Icon path={ICONS.check} size={14} strokeWidth="3" />
+                        )}
+                      </div>
+
+                      {i.image ? (
+                        <img
+                          src={i.image}
+                          className="w-16 h-16 rounded-lg object-contain border border-gray-100 bg-white flex-shrink-0"
+                          onError={(e) => (e.target.style.display = "none")}
+                        />
+                      ) : (
+                        i.link && (
+                          <div className="w-16 h-16 rounded-lg bg-theme-bg flex items-center justify-center text-app-blue flex-shrink-0">
+                            <Icon path={ICONS.link} size={24} />
+                          </div>
+                        )
+                      )}
+
+                      <div className="flex-1 min-w-0">
+                        <div className="font-bold text-gray-700 truncate text-lg">
+                          {i.name}
+                        </div>
+                        {i.link && (
+                          <a
+                            href={ensureUrlProtocol(i.link)}
+                            target="_blank"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-xs text-app-blue flex items-center gap-1 hover:underline mt-1 bg-orange-50 w-fit px-2 py-0.5 rounded-full"
+                          >
+                            <Icon path={ICONS.externalLink} size={10} />{" "}
+                            購買連結
+                          </a>
+                        )}
+                        {i.note && (
+                          <div className="text-xs text-gray-400 mt-1 break-words bg-gray-50 p-1.5 rounded">
+                            {i.note}
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex flex-col items-end gap-2 flex-shrink-0">
+                        <span className="bg-theme-bg text-app-blue text-xs font-black px-2 py-1 rounded-lg border border-orange-100">
+                          x{i.qty}
+                        </span>
+                        <div className="flex gap-1">
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setEditingShoppingId(i.id);
+                              setNewItem({
+                                name: i.name,
+                                qty: i.qty,
+                                note: i.note || "",
+                                link: i.link || "",
+                                image: i.image || "",
+                              });
+                            }}
+                            className="text-gray-300 hover:text-app-blue p-1"
+                          >
+                            <Icon path={ICONS.edit} size={16} />
+                          </button>
+                          <button
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              openConfirm("刪除?", () =>
+                                save(
+                                  "shopping",
+                                  data.shopping.filter((x) => x.id !== i.id)
+                                )
+                              );
+                            }}
+                            className="text-gray-300 hover:text-red-400 p-1"
+                          >
+                            <Icon path={ICONS.trash} size={16} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        const renderList = (type) => {
+          const isRec = type === "recommend";
+          const list = (isRec ? data.mustBuy : data.info) || [];
+          const add = () => {
+            if (isRec) {
+              if (mustBuyForm.area && mustBuyForm.item) {
+                let newList = [...(data.mustBuy || [])];
+
+                // If editing, remove the old one first
+                if (editingRec) {
+                  newList = JSON.parse(JSON.stringify(newList));
+                  const { areaIdx, itemIdx } = editingRec;
+
+                  if (newList[areaIdx]) {
+                    newList[areaIdx].items.splice(itemIdx, 1);
+                    if (newList[areaIdx].items.length === 0) {
+                      newList.splice(areaIdx, 1);
+                    }
+                  }
+                }
+
+                // Add new item (with object structure)
+                const newItemObj = {
+                  name: mustBuyForm.item,
+                  link: mustBuyForm.link,
+                  image: mustBuyForm.image,
+                };
+
+                const targetAreaIndex = newList.findIndex(
+                  (z) => z.area === mustBuyForm.area
+                );
+
+                if (targetAreaIndex > -1) {
+                  newList[targetAreaIndex].items.push(newItemObj);
+                } else {
+                  newList.push({
+                    area: mustBuyForm.area,
+                    items: [newItemObj],
+                  });
+                }
+
+                save("mustBuy", newList);
+                setMustBuyForm({ area: "", item: "", link: "", image: "" });
+                setEditingRec(null);
+              }
+            } else {
+              if (infoForm.title) {
+                const payload = editingInfoId
+                  ? list.map((i) =>
+                      i.id === editingInfoId
+                        ? { ...infoForm, id: editingInfoId }
+                        : i
+                    )
+                  : [...list, { ...infoForm, id: Date.now() }];
+                save("info", payload);
+                setInfoForm({ title: "", link: "", note: "" });
+                setEditingInfoId(null);
+              }
+            }
+          };
+
+          return (
+            <div className="flex-1 overflow-y-auto px-6 pb-32 md:pb-10 custom-scrollbar h-full">
+              <div className="md:max-w-6xl md:mx-auto">
+                <div className="kawaii-card p-5 mb-6 sticky top-0 z-20 md:max-w-2xl md:mx-auto md:relative md:mb-10">
+                  {isRec ? (
+                    <div className="flex flex-col gap-3">
+                      <div className="flex justify-between items-center">
+                        <span className="font-bold text-gray-500 text-sm">
+                          {editingRec ? "編輯推薦" : "新增推薦"}
+                        </span>
+                        {editingRec && (
+                          <button
+                            onClick={() => {
+                              setEditingRec(null);
+                              setMustBuyForm({
+                                area: "",
+                                item: "",
+                                link: "",
+                                image: "",
+                              });
+                            }}
+                            className="text-xs text-gray-400"
+                          >
+                            取消編輯
+                          </button>
+                        )}
+                      </div>
+                      <input
+                        value={mustBuyForm.area}
+                        onChange={(e) =>
+                          setMustBuyForm({
+                            ...mustBuyForm,
+                            area: e.target.value,
+                          })
+                        }
+                        list="areas"
+                        placeholder="區域 (例如: 京都)"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <datalist id="areas">
+                        {list.map((z) => (
+                          <option key={z.area} value={z.area} />
+                        ))}
+                      </datalist>
+
+                      <input
+                        value={mustBuyForm.item}
+                        onChange={(e) =>
+                          setMustBuyForm({
+                            ...mustBuyForm,
+                            item: e.target.value,
+                          })
+                        }
+                        placeholder="推薦項目 (必買/必吃)"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+
+                      {/* NEW: Link & Image Inputs for Recommend */}
+                      <div className="flex gap-2">
+                        <input
+                          value={mustBuyForm.link}
+                          onChange={(e) =>
+                            setMustBuyForm({
+                              ...mustBuyForm,
+                              link: e.target.value,
+                            })
+                          }
+                          placeholder="連結 (自動抓縮圖)"
+                          className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                          onBlur={() => {
+                            if (mustBuyForm.link && !mustBuyForm.image) {
+                              try {
+                                const encoded = encodeURIComponent(
+                                  mustBuyForm.link
+                                );
+                                setMustBuyForm((p) => ({
+                                  ...p,
+                                  image: `https://api.microlink.io/?url=${encoded}&embed=image.url`,
+                                }));
+                              } catch (e) {}
+                            }
+                          }}
+                        />
+                        <input
+                          value={mustBuyForm.image}
+                          onChange={(e) =>
+                            setMustBuyForm({
+                              ...mustBuyForm,
+                              image: e.target.value,
+                            })
+                          }
+                          placeholder="圖片網址"
+                          className="flex-1 bg-theme-bg rounded-xl px-3 py-2 text-xs min-w-0"
+                        />
+                      </div>
+
+                      {/* Preview Image */}
+                      {mustBuyForm.image && (
+                        <div className="flex justify-center py-2">
+                          <img
+                            src={mustBuyForm.image}
+                            className="w-24 h-24 rounded-xl border border-gray-200 object-cover bg-white shadow-sm"
+                            onError={(e) => handleImageError(e, mustBuyForm.link)}
+                          />
+                        </div>
+                      )}
+
+                      <button
+                        onClick={add}
+                        className={`w-full text-white py-3 rounded-xl font-bold shadow-soft active:scale-95 transition-all text-shadow ${
+                          editingRec ? "bg-theme-green" : "bg-theme-yellow"
+                        }`}
+                      >
+                        {editingRec ? "儲存" : "新增推薦"}
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex flex-col gap-3">
+                      <input
+                        value={infoForm.title}
+                        onChange={(e) =>
+                          setInfoForm({ ...infoForm, title: e.target.value })
+                        }
+                        placeholder="標題"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <input
+                        value={infoForm.link}
+                        onChange={(e) =>
+                          setInfoForm({ ...infoForm, link: e.target.value })
+                        }
+                        placeholder="連結"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold"
+                      />
+                      <textarea
+                        value={infoForm.note}
+                        onChange={(e) =>
+                          setInfoForm({ ...infoForm, note: e.target.value })
+                        }
+                        placeholder="備註"
+                        className="w-full bg-theme-bg rounded-xl px-4 py-3 font-bold text-xs"
+                        rows="2"
+                      ></textarea>
+                      <div className="flex gap-2">
+                        {editingInfoId && (
+                          <button
+                            onClick={() => {
+                              setEditingInfoId(null);
+                              setInfoForm({ title: "", link: "", note: "" });
+                            }}
+                            className="w-1/3 bg-gray-200 rounded-lg text-xs font-bold"
+                          >
+                            取消
+                          </button>
+                        )}
+                        <button
+                          onClick={add}
+                          className="flex-1 bg-app-blue text-white py-3 rounded-xl font-bold shadow-sm active:scale-95"
+                        >
+                          {editingInfoId ? "修改" : "新增"}
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+                <div className="space-y-4 md:space-y-0 md:grid md:grid-cols-2 lg:grid-cols-3 md:gap-4">
+                  {isRec
+                    ? list.map((z, i) => (
+                        <div
+                          key={i}
+                          className="kawaii-card overflow-hidden h-fit"
+                        >
+                          <div className="bg-orange-50 px-4 py-2 font-bold text-gray-600 flex gap-2">
+                            <Icon
+                              path={ICONS.pin}
+                              size={16}
+                              className="text-theme-yellow"
+                            />
+                            {z.area}
+                          </div>
+                          <div className="p-2">
+                            {(z.items || []).map((it, j) => {
+                              // Handle both string (legacy) and object formats
+                              const isObj = typeof it === "object";
+                              const name = isObj ? it.name : it;
+                              const link = isObj ? it.link : "";
+                              const image = isObj ? it.image : "";
+
+                              return (
+                                <div
+                                  key={j}
+                                  className={`relative rounded-xl transition-all duration-200 ${
+                                    link
+                                      ? "hover:bg-orange-50 cursor-pointer active:scale-[0.99] group"
+                                      : "hover:bg-gray-50"
+                                  }`}
+                                >
+                                  {/* --- FULL CARD CLICKABLE OVERLAY --- */}
+                                  {/* This hidden link covers the whole item but sits below the buttons */}
+                                  {link && (
+                                    <a
+                                      href={ensureUrlProtocol(link)}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="absolute inset-0 z-0 rounded-xl"
+                                      aria-label={`Open ${name}`}
+                                    />
+                                  )}
+
+                                  <div className="flex items-start gap-4 p-3 relative z-10 pointer-events-none">
+                                    {/* Thumbnail - Visual Only */}
+                                    {image ? (
+                                      <img
+                                        src={image}
+                                        className="w-24 h-24 rounded-xl border border-gray-200 object-cover bg-white flex-shrink-0 shadow-sm"
+                                        onError={(e) =>
+                                          handleImageError(e, link)
+                                        }
+                                      />
+                                    ) : link ? (
+                                      <div className="w-24 h-24 rounded-xl bg-orange-50 flex items-center justify-center text-orange-300 flex-shrink-0 border border-orange-100">
+                                        <Icon path={ICONS.link} size={32} />
+                                      </div>
+                                    ) : null}
+
+                                    <div className="flex-1 min-w-0 flex flex-col h-24 justify-between pointer-events-none z-10">
+                                      <span
+                                        className={`font-bold text-lg block leading-snug line-clamp-2 ${
+                                          link
+                                            ? "text-app-blue underline decoration-dotted decoration-2"
+                                            : "text-gray-600"
+                                        }`}
+                                      >
+                                        {name}
+                                      </span>
+                                      {link && (
+                                        <span className="text-xs bg-app-blue/10 text-app-blue px-2 py-1 rounded-full w-fit flex items-center gap-1 mt-1">
+                                          <Icon
+                                            path={ICONS.externalLink}
+                                            size={10}
+                                          />
+                                          查看詳情
+                                        </span>
+                                      )}
+                                    </div>
+
+                                    {/* Buttons - Must be clickable (pointer-events-auto) */}
+                                    <div className="flex flex-col gap-1 flex-shrink-0 pointer-events-auto z-20">
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation(); // Stop click from hitting the overlay link (though z-index handles it mostly)
+                                          setEditingRec({
+                                            areaIdx: i,
+                                            itemIdx: j,
+                                          });
+                                          setMustBuyForm({
+                                            area: z.area,
+                                            item: name,
+                                            link: link,
+                                            image: image,
+                                          });
+                                        }}
+                                        className="text-gray-300 hover:text-app-blue p-1 bg-white/50 rounded-full"
+                                      >
+                                        <Icon path={ICONS.edit} size={16} />
+                                      </button>
+                                      <button
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          openConfirm("刪除?", () => {
+                                            const l = [...list];
+                                            l[i].items.splice(j, 1);
+                                            if (l[i].items.length === 0) {
+                                              l.splice(i, 1);
+                                            }
+                                            save("mustBuy", l);
+                                          });
+                                        }}
+                                        className="text-gray-300 hover:text-red-400 p-1 bg-white/50 rounded-full"
+                                      >
+                                        <Icon path={ICONS.x} size={16} />
+                                      </button>
+                                    </div>
+                                  </div>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      ))
+                    : list.map((item) => (
+                        <div
+                          key={item.id}
+                          className="kawaii-card p-4 relative group h-fit"
+                        >
+                          <div className="absolute top-3 right-3 flex gap-2">
+                            <button
+                              onClick={() => {
+                                setEditingInfoId(item.id);
+                                setInfoForm({
+                                  title: item.title,
+                                  link: item.link || "",
+                                  note: item.note || "",
+                                });
+                              }}
+                              className="text-gray-300 hover:text-app-blue"
+                            >
+                              <Icon path={ICONS.edit} size={16} />
+                            </button>
+                            <button
+                              onClick={() =>
+                                openConfirm("刪除?", () =>
+                                  save(
+                                    "info",
+                                    list.filter((x) => x.id !== item.id)
+                                  )
+                                )
+                              }
+                              className="text-gray-300 hover:text-red-400"
+                            >
+                              <Icon path={ICONS.trash} size={16} />
+                            </button>
+                          </div>
+                          <h3 className="font-bold text-lg text-gray-700 mb-1">
+                            {item.title}
+                          </h3>
+                          {item.link && (
+                            <a
+                              href={ensureUrlProtocol(item.link)}
+                              target="_blank"
+                              className="text-xs bg-orange-50 text-app-blue px-2 py-1 rounded flex items-center gap-1 w-fit mb-2"
+                            >
+                              <Icon path={ICONS.globe} size={10} /> 開啟連結
+                            </a>
+                          )}
+                          {item.note && (
+                            <div className="text-xs text-gray-500 whitespace-pre-line bg-gray-50 p-2 rounded">
+                              <LinkifiedText text={item.note} />
+                            </div>
+                          )}
+                        </div>
+                      ))}
+                </div>
+              </div>
+            </div>
+          );
+        };
+
+        return (
+          <div className="relative h-screen w-full overflow-hidden flex flex-col items-center justify-center text-theme-text">
+            <div className="w-full h-full relative flex flex-col md:flex-row bg-app-bg/50 md:bg-transparent transition-all duration-300">
+              {renderNav()}
+
+              <div className="relative z-10 flex-1 overflow-hidden flex flex-col">
+                <div className="pt-safe px-6 pb-2 flex justify-between items-end mt-4 md:mt-2">
+                  <h1 className="text-2xl font-black text-theme-text tracking-wider font-serif flex items-center gap-2">
+                    KANSAI{" "}
+                    <span className="text-xs bg-app-blue text-white px-2 py-0.5 rounded-full shadow-sm">
+                      TRIP
+                    </span>
+                  </h1>
+                  {exchangeRate && (
+                    <div className="flex flex-col items-end animate-fade-in bg-white/80 backdrop-blur-md px-3 py-1.5 rounded-xl shadow-sm border border-white/50">
+                      <span className="text-[10px] text-gray-500 font-bold">
+                        目前匯率
+                      </span>
+                      <span className="text-sm font-black text-app-blue">
+                        1 JPY ≈ {exchangeRate} TWD
+                      </span>
+                    </div>
+                  )}
+                </div>
+                {activeTab === "itinerary" && renderItinerary()}
+                {activeTab === "shopping" && renderShopping()}
+                {activeTab === "tools" && renderExpenses()}
+                {(activeTab === "recommend" || activeTab === "info") &&
+                  renderList(activeTab)}
+              </div>
+
+              <ConfirmModal
+                isOpen={modalConfig.isOpen}
+                message={modalConfig.message}
+                onConfirm={modalConfig.onConfirm}
+                onCancel={modalConfig.onCancel}
+              />
+            </div>
+          </div>
+        );
+      };
+
+      const root = ReactDOM.createRoot(document.getElementById("root"));
+      root.render(<App />);
+    </script>
+  </body>
+</html>
