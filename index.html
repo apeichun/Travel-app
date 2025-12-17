@@ -513,6 +513,13 @@
             return "炎熱，透氣短袖衣物";
         };
 
+        // Umbrella Advice Logic (New)
+        const getUmbrellaAdvice = (pop) => {
+            if (pop >= 50) return "必帶雨傘 ☔";
+            if (pop >= 30) return "建議帶傘 ☂️";
+            return "免帶雨傘 ✨";
+        };
+
         const clothingText = getClothingAdvice(temp);
         
         // Daily Forecast Data
@@ -528,6 +535,10 @@
         
         const todayPop = forecastDays[0].pop;
         const tomorrow = forecastDays[1];
+
+        // Umbrella status
+        const umbrellaToday = getUmbrellaAdvice(todayPop);
+        const umbrellaTomorrow = tomorrow ? getUmbrellaAdvice(tomorrow.pop) : "";
 
         return (
           <div className="kawaii-card mb-6 relative overflow-hidden bg-gradient-to-br from-white via-[#fffbf2] to-white">
@@ -560,6 +571,12 @@
                                 <Icon path={ICONS.drop} size={12} /> {todayPop}%
                             </div>
                         )}
+                        
+                        {/* Umbrella Advice (Today) */}
+                        <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full border ${todayPop >= 30 ? 'text-purple-500 bg-purple-50 border-purple-100' : 'text-green-600 bg-green-50 border-green-100'}`}>
+                            <span>{umbrellaToday}</span>
+                        </div>
+
                         <div className="flex items-center gap-1 text-xs font-bold text-orange-600 bg-orange-100/60 px-3 py-1.5 rounded-full border border-orange-200/50 max-w-full">
                             <Icon path={ICONS.shirt} size={12} className="shrink-0" />
                             <span className="truncate">{clothingText}</span>
@@ -594,6 +611,12 @@
                                         <Icon path={ICONS.drop} size={12} /> {tomorrow.pop}%
                                     </div>
                                 )}
+                                
+                                {/* Umbrella Advice (Tomorrow) */}
+                                <div className={`flex items-center gap-1 text-xs font-bold px-3 py-1.5 rounded-full border ${tomorrow.pop >= 30 ? 'text-purple-500 bg-purple-50 border-purple-100' : 'text-green-600 bg-green-50 border-green-100'}`}>
+                                    <span>{umbrellaTomorrow}</span>
+                                </div>
+
                                 <div className="flex items-center gap-1 text-xs font-bold text-gray-500 bg-white/80 px-3 py-1.5 rounded-full border border-gray-200 shadow-sm max-w-full">
                                     <Icon path={ICONS.shirt} size={12} className="shrink-0" />
                                     <span className="truncate">{getClothingAdvice(Math.round((tomorrow.max + tomorrow.min) / 2))}</span>
