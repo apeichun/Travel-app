@@ -2797,7 +2797,8 @@
               <div className="relative z-10 flex-1 overflow-hidden flex flex-col">
                 
                 {/* NEW: SCENIC TRAVEL BANNER (Hand-drawn / Scrapbook Style) */}
-                <div className="w-full h-48 relative overflow-hidden select-none shadow-nav z-10">
+                {/* Adjusted height for mobile: h-32 (128px) vs md:h-48 (192px) */}
+                <div className="w-full h-32 md:h-48 relative overflow-hidden select-none shadow-nav z-10 transition-all duration-300">
                     
                     {/* Background: Sky Gradient */}
                     <div className="absolute inset-0 bg-gradient-to-b from-[#e0f7fa] via-[#fffbf2] to-[#fff8f0]"></div>
@@ -2807,29 +2808,29 @@
                          style={{ backgroundImage: 'radial-gradient(#5d4d4a 1px, transparent 1px)', backgroundSize: '20px 20px' }}>
                     </div>
 
-                    {/* Animated Clouds */}
-                    <div className="absolute top-4 left-[10%] text-white opacity-80 animate-float" style={{ animationDuration: '8s' }}>
-                         <Icon path={ICONS.cloud} size={48} />
+                    {/* Animated Clouds - Adjusted positions for smaller height */}
+                    <div className="absolute top-2 md:top-4 left-[10%] text-white opacity-80 animate-float" style={{ animationDuration: '8s' }}>
+                         <Icon path={ICONS.cloud} size={48} className="scale-75 md:scale-100" />
                     </div>
-                    <div className="absolute top-8 right-[20%] text-white opacity-60 animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}>
-                         <Icon path={ICONS.cloud} size={32} />
+                    <div className="absolute top-4 md:top-8 right-[20%] text-white opacity-60 animate-float" style={{ animationDuration: '12s', animationDelay: '2s' }}>
+                         <Icon path={ICONS.cloud} size={32} className="scale-75 md:scale-100" />
                     </div>
 
                     {/* Plane with Dotted Trail */}
-                    <div className="absolute top-6 animate-fly opacity-60 text-app-blue z-0">
-                        <Icon path={ICONS.plane} size={24} className="transform rotate-12" />
-                        <div className="absolute top-1/2 right-full w-24 h-0.5 border-t-2 border-dashed border-app-blue/30 transform -translate-y-1/2 origin-right"></div>
+                    <div className="absolute top-4 md:top-6 animate-fly opacity-60 text-app-blue z-0">
+                        <Icon path={ICONS.plane} size={24} className="transform rotate-12 scale-75 md:scale-100" />
+                        <div className="absolute top-1/2 right-full w-16 md:w-24 h-0.5 border-t-2 border-dashed border-app-blue/30 transform -translate-y-1/2 origin-right"></div>
                     </div>
 
                     {/* --- SCENE: Hills & Landmarks --- */}
-                    <div className="absolute bottom-0 w-full h-24 flex items-end justify-center">
+                    <div className="absolute bottom-0 w-full h-20 md:h-24 flex items-end justify-center">
                         
-                        {/* Back Hills (Parallax-ish) */}
-                        <div className="absolute bottom-0 w-[120%] h-16 bg-[#a3b18a] rounded-[50%] translate-y-8 -translate-x-10 opacity-60"></div>
-                        <div className="absolute bottom-0 w-[120%] h-20 bg-[#8ab060] rounded-[60%] translate-y-10 translate-x-10 opacity-80"></div>
+                        {/* Back Hills (Parallax-ish) - Adjusted height */}
+                        <div className="absolute bottom-0 w-[120%] h-12 md:h-16 bg-[#a3b18a] rounded-[50%] translate-y-8 -translate-x-10 opacity-60"></div>
+                        <div className="absolute bottom-0 w-[120%] h-16 md:h-20 bg-[#8ab060] rounded-[60%] translate-y-10 translate-x-10 opacity-80"></div>
 
-                        {/* Landmarks Container */}
-                        <div className="relative z-10 flex items-end gap-16 mb-2">
+                        {/* Landmarks Container - Scaled down for mobile */}
+                        <div className="relative z-10 flex items-end gap-8 md:gap-16 mb-2 scale-75 md:scale-100 origin-bottom transition-transform duration-300">
                             
                             {/* Osaka Castle */}
                             <div className="flex flex-col items-center group cursor-pointer transform hover:-translate-y-2 transition-all duration-500">
@@ -2869,9 +2870,9 @@
                     <div className="absolute bottom-0 left-0 w-full h-3 bg-white wavy-border" style={{ clipPath: 'polygon(0% 100%, 100% 100%, 100% 0%, 0% 10%)' }}></div> {/* Rough torn paper effect simulation via simple shape or just a bar */}
                     <div className="absolute bottom-0 left-0 w-full h-1 bg-[#5d4d4a] opacity-10"></div>
 
-                    {/* Title Overlay */}
-                    <div className="absolute top-4 w-full text-center">
-                         <h1 className="inline-block text-3xl font-black text-theme-text tracking-widest font-serif drop-shadow-sm bg-white/60 px-4 py-1 rounded-xl border-2 border-[#5d4d4a]/20 backdrop-blur-sm transform rotate-[-1deg]">
+                    {/* Title Overlay - Adjusted size and position for mobile */}
+                    <div className="absolute top-3 md:top-4 w-full text-center">
+                         <h1 className="inline-block text-xl md:text-3xl font-black text-theme-text tracking-widest font-serif drop-shadow-sm bg-white/60 px-3 md:px-4 py-0.5 md:py-1 rounded-xl border-2 border-[#5d4d4a]/20 backdrop-blur-sm transform rotate-[-1deg] transition-all duration-300">
                             KANSAI <span className="text-app-blue">2026</span>
                         </h1>
                     </div>
