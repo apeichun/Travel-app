@@ -55,6 +55,9 @@
               "fade-in": "fadeIn 0.5s ease-out",
               pop: "pop 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
               wiggle: "wiggle 1s ease-in-out infinite",
+              float: "float 6s ease-in-out infinite",
+              fly: "fly 20s linear infinite",
+              "spin-slow": "spin 8s linear infinite",
             },
             keyframes: {
               fadeIn: {
@@ -68,6 +71,14 @@
               wiggle: {
                 "0%, 100%": { transform: "rotate(-3deg)" },
                 "50%": { transform: "rotate(3deg)" },
+              },
+              float: {
+                "0%, 100%": { transform: "translateY(0)" },
+                "50%": { transform: "translateY(-10px)" },
+              },
+              fly: {
+                "0%": { transform: "translateX(-100%) translateY(20px) rotate(5deg)" },
+                "100%": { transform: "translateX(100vw) translateY(-20px) rotate(5deg)" },
               }
             },
           },
@@ -327,52 +338,67 @@
           events: [],
         }
       ];
-
-      // --- Icons (UPDATED: Thicker Clean Outline Paths for Hand-drawn feel) ---
+      // --- Icons (UPDATED: ALL Icons to Hand-Drawn Style) ---
       const ICONS = {
-        map: "M9 20l-5.447 2.724A1 1 0 012 21.832V4.168a1 1 0 011.447-.894L9 6m0 14l6-3m-6 3V6m6 14l5.447 2.724A1 1 0 0022 21.832V4.168a1 1 0 00-1.447-.894L15 6m0 14V6m0 0L9 3",
-        shoppingBag: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z",
-        wallet:
-          "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z",
-        info: "M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z",
-        mount: "M12 3l9 16H3l9-16z",
-        plus: "M12 4v16m8-8H4",
-        x: "M6 18L18 6M6 6l12 12",
-        edit: "M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z",
-        trash:
-          "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16",
-        check: "M5 13l4 4L19 7",
-        train:
-          "M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z M2 22h20",
-        pin: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z",
-        grip: "M3 12h18 M3 6h18 M3 18h18",
-        globe:
-          "M2 12h20 M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1 4-10 15.3 15.3 0 0 1 4-10z",
-        link: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71",
-        externalLink:
-          "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6 M15 3h6v6 M10 14L21 3",
-        sort: "M4 6h16 M4 12h16 M4 18h16",
+        // Navigation & Core
+        map: "M9 20l-5.447 2.724A1 1 0 012 21.832V4.168a1 1 0 011.447-.894L9 6m0 14l6-3m-6 3V6m6 14l5.447 2.724A1 1 0 0022 21.832V4.168a1 1 0 00-1.447-.894L15 6m0 14V6m0 0L9 3", // Keep classic map, it works well
+        shoppingBag: "M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z", // Classic bag
+        wallet: "M3 10h18M7 15h1m4 0h1m-7 4h12a3 3 0 003-3V8a3 3 0 00-3-3H6a3 3 0 00-3 3v8a3 3 0 003 3z", // Classic wallet
+        info: "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zm0-15v.01M12 17v-5", // Circle info
+        mount: "M3 20h18L12 4 3 20zm5-4h8", // Mountain with snow line
+        
+        // Actions
+        plus: "M12 5v14M5 12h14", // Simple plus
+        x: "M18 6L6 18M6 6l12 12", // Simple X
+        edit: "M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z", // Pencil
+        trash: "M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16", // Bin
+        check: "M20 6L9 17l-5-5", // Checkmark
+        grip: "M4 15h16M4 9h16", // 2 lines for grip
+        sort: "M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4", // Arrows up down
         chevronDown: "M6 9l6 6 6-6",
         chevronUp: "M18 15l-6-6-6 6",
         
-        // NEW: Cartoon Travel Icons
-        plane: "M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z", // Paper plane
-        camera: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",
-        suitcase: "M5 7h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2",
-        balloon: "M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7z M10 21h4",
-
-        // REPLACED WEATHER ICONS with Clean Outlines
-        sun: "M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z",
-        cloud: "M3 15a4 4 0 004 4h9a5 5 0 10-.1-9.999 5.002 5.002 0 10-9.78 2.096A4.001 4.001 0 003 15z",
-        rain: "M19 16.9A5 5 0 0 0 18 7h-1.26a8 8 0 1 0-11.62 9 M13 11l-4 4 m0 -4v4 M9 11l4 4 m0 -4v4", // Adjusted rain
-        snow: "M12 3v18 M5 10l14 4 M5 14l14-4", // Simple snowflake
+        // Context
+        train: "M8 20l-3 3h14l-3-3M5 8h14M3 20h18a2 2 0 002-2V6a2 2 0 00-2-2H3a2 2 0 00-2 2v12a2 2 0 002 2z", // Train front
+        pin: "M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z", // Map pin with hole
+        globe: "M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10zM2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z", // Globe
+        link: "M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71", // Chain
+        externalLink: "M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6m4-3h6v6m-11 5L21 3", // Box arrow
+        chart: "M18 20V10M12 20V4M6 20v-6", // Bar chart
+        clipboard: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4", // Checklist
+        settings: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z", // Gear
+        copy: "M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2", // Papers
         
-        chart: "M3 3v18h18 M18 17l-5-5-4 4-4-4",
-        clipboard: "M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01",
-        settings: "M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z",
-        copy: "M8 5H6a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2v-1M8 5a2 2 0 002 2h2a2 2 0 002-2M8 5a2 2 0 012-2h2a2 2 0 012 2m0 0h2a2 2 0 012 2v3m2 4H10m0 0l3-3m-3 3l3 3",
-        drop: "M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z",
-        shirt: "M20.38 3.46L16 2l-4 6-4-6-4.38 1.46a2 2 0 00-1.17 1.14l-1.38 4.38A2 2 0 002.3 11.5l3.22 10.42a2 2 0 001.9 1.41h9.16a2 2 0 001.9-1.41l3.22-10.42a2 2 0 00-1.23-2.52l-1.38-4.38a2 2 0 00-1.17-1.14z",
+        // Weather
+        sun: "M12 3v2m0 14v2m9-9h-2M5 12H3m14.95-6.36l-1.41 1.41M7.46 17.66l-1.41 1.41M17.95 17.66l-1.41-1.41M7.46 6.34l-1.41-1.41M12 7a5 5 0 11-4.995 5.217L7 12l.005-.217A5 5 0 0112 7z", // Hand-drawn sun
+        cloud: "M5 15a4 4 0 100-8 4.5 4.5 0 004 2.5 5 5 0 1010 0 4.5 4.5 0 00-1.5 5 4 4 0 100 8h-11z", // Fluffy cloud
+        rain: "M16 13v6m-4-7v6m-4-5v6M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242", // Cloud rain
+        snow: "M8 15l2.25-3M8 9l2.25 3M16 15l-2.25-3M16 9l-2.25 3M12 3v18M5 10l14 4M5 14l14-4", // Snowflake
+        drop: "M12 2.69l5.66 5.66a8 8 0 1 1-11.31 0z", // Water drop
+        shirt: "M9 3a1 1 0 011-1h4a1 1 0 011 1v2H9V3zm0 2V4H5.293l-1.64 1.639a.5.5 0 00.353.854h.994v13.5a.5.5 0 00.5.5h13a.5.5 0 00.5-.5V6.493h.994a.5.5 0 00.353-.854L18.707 4H15v1", // T-shirt
+
+        // Travel / Transport
+        plane: "M22 2L11 13 M22 2l-7 20-4-9-9-4 20-7z", // Paper plane
+        
+        camera: "M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z M12 17a4 4 0 1 0 0-8 4 4 0 0 0 0 8z M12 13a.5.5 0 110-1 .5.5 0 010 1z", 
+        suitcase: "M5 7h14a2 2 0 012 2v10a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z M8 7V5a2 2 0 012-2h4a2 2 0 012 2v2 M12 11v4", 
+        balloon: "M12 2a7 7 0 00-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 001 1h6a1 1 0 001-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 00-7-7z M10 21h4",
+
+        walk: "M14 4a2 2 0 1 1-4 0 2 2 0 0 1 4 0z M15 9L12 20 M12 9L9 20 M9 13h6 M12 9v-2", 
+        bus: "M5 16h14M5 16v4m14-4v4M3 10h18M7 10V4h10v6M3 10v6h18v-6",
+        car: "M5 12h14M7 12l2-5h6l2 5M5 12v5h14v-5M7 17v2M17 17v2",
+        
+        // NEW: Kansai Banner Specific Icons (Hand-drawn style)
+        torii: "M4 6h16 M4 6v-2h16v2 M6 6v14 M18 6v14 M2 9h20 M6 9l-1 2 M18 9l1 2", // Torii Gate
+        deer: "M12 9c-2 0-3 1.5-3 3 0 2 1.5 3 3 3s3-1 3-3c0-1.5-1-3-3-3z M7 6c0 0 1 3 2 4 M17 6c0 0-1 3-2 4", // Deer Face
+        castle: "M12 3l-4 3h8l-4-3z M10 6h4v3h-4V6z M6 9l-2 2h16l-2-2H6z M8 11h8v4H8v-4z M4 15l-2 2h20l-2-2H4z M6 17h12v4H6v-4z", // Japanese Castle
+        usj: "M12 2a10 10 0 100 20 10 10 0 000-20zm0 18a8 8 0 110-16 8 8 0 010 16z M2 12h20 M12 2v20", // Globe
+        sakura: "M12 6c-1-2-3-2-4 0-1 2 1 4 4 6 3-2 5-4 4-6-1-2-3-2-4 0z", // Cherry Blossom Petal
+        
+        // NEW: Payment Icons
+        cash: "M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8zm0-13a5 5 0 0 1 5 5h-2a3 3 0 0 0-3-3V7a3 3 0 0 0-3 3H7a5 5 0 0 1 5-5z", // Coin style
+        creditCard: "M3 6h18v12H3V6zm0 4h18m-18 6h3", // Card with strip and chip
+        mobilePay: "M7 4h10v16H7V4zm5 13h.01", // Phone
       };
 
       // --- Time Options (15 min intervals) ---
@@ -404,6 +430,19 @@
           <path d={path} />
         </svg>
       );
+
+      // --- Helper: Get Transport Icon ---
+      const getTransportIconPath = (transportText) => {
+          if (!transportText) return ICONS.train; // Default
+          const t = transportText.toLowerCase();
+          
+          if (t.includes("步") || t.includes("走") || t.includes("walk")) return ICONS.walk;
+          if (t.includes("機") || t.includes("飛") || t.includes("flight") || t.includes("plane")) return ICONS.plane;
+          if (t.includes("公車") || t.includes("巴") || t.includes("bus")) return ICONS.bus;
+          if (t.includes("計程車") || t.includes("taxi") || t.includes("uber") || t.includes("car") || t.includes("駕")) return ICONS.car;
+          
+          return ICONS.train; // Default to train/rail
+      };
 
       const LinkifiedText = ({ text }) => {
         if (!text) return null;
@@ -705,6 +744,7 @@
           payer: "",
           involved: [],
           currency: "JPY", // Default currency
+          paymentMethod: "現金", // Default payment method
           date: getFormattedDate(), // Default to today YYYY-MM-DD
         });
         const [editingExpenseId, setEditingExpenseId] = useState(null);
@@ -1509,7 +1549,8 @@
 
                                         {e.transport && (
                                         <div className="inline-flex items-center gap-1.5 bg-gray-100 text-gray-500 px-3 py-1 rounded-full text-xs font-bold mb-3 border-2 border-dashed border-gray-300">
-                                            <Icon path={ICONS.train} size={12} />{" "}
+                                            {/* Dynamic Icon based on transport text */}
+                                            <Icon path={getTransportIconPath(e.transport)} size={14} />{" "}
                                             {e.transport}
                                         </div>
                                         )}
@@ -1562,6 +1603,7 @@
               payer: expenseForm.payer,
               involved: expenseForm.involved,
               currency: expenseForm.currency, // Store selected currency
+              paymentMethod: expenseForm.paymentMethod || "現金", // Store payment method
               perPerson: Math.round(total / (expenseForm.involved.length || 1)),
             };
             save(
@@ -1579,6 +1621,7 @@
               payer: data.settings.members[0],
               involved: [...data.settings.members],
               currency: "JPY", // Reset to default
+              paymentMethod: "現金",
             });
           };
 
@@ -1773,6 +1816,7 @@
                               payer: data.settings.members[0],
                               involved: [...data.settings.members],
                               currency: "JPY",
+                              paymentMethod: "現金",
                             });
                           }}
                           className="text-xs text-gray-400"
@@ -1835,6 +1879,29 @@
                         ))}
                       </select>
                     </div>
+
+                    {/* NEW: Payment Method Selection */}
+                    <div className="flex gap-2 mb-3 overflow-x-auto no-scrollbar pb-1">
+                      {[
+                        { id: "現金", icon: ICONS.cash, label: "現金" },
+                        { id: "信用卡", icon: ICONS.creditCard, label: "信用卡" },
+                        { id: "行動支付", icon: ICONS.mobilePay, label: "行動支付" },
+                      ].map((pm) => (
+                        <button
+                          key={pm.id}
+                          onClick={() => setExpenseForm({...expenseForm, paymentMethod: pm.id})}
+                          className={`flex items-center gap-1 px-3 py-2 rounded-xl text-xs font-bold whitespace-nowrap border-2 transition-all ${
+                            expenseForm.paymentMethod === pm.id
+                              ? "bg-theme-pink text-white border-theme-pink shadow-sm"
+                              : "bg-white text-gray-400 border-gray-200"
+                          }`}
+                        >
+                          <Icon path={pm.icon} size={14} />
+                          {pm.label}
+                        </button>
+                      ))}
+                    </div>
+
                     <div className="flex flex-wrap gap-2 mb-4">
                       {data.settings.members.map((m) => (
                         <button
@@ -1895,6 +1962,12 @@
                               <div className="space-y-3 md:grid md:grid-cols-2 md:gap-3 md:space-y-0">
                                 {group.list.map((ex) => {
                                     const symbol = ex.currency === 'TWD' ? 'NT$' : '¥';
+                                    
+                                    // Determine icon for existing items (fallback to cash)
+                                    let pmIcon = ICONS.cash;
+                                    if (ex.paymentMethod === "信用卡") pmIcon = ICONS.creditCard;
+                                    if (ex.paymentMethod === "行動支付") pmIcon = ICONS.mobilePay;
+
                                     return (
                                     <div
                                         key={ex.id}
@@ -1907,7 +1980,11 @@
                                             <span className="font-bold text-theme-text truncate">
                                             {ex.item}
                                             </span>
-                                            <span className="bg-theme-green text-white text-[10px] px-2 rounded font-bold border border-green-700">
+                                            {/* Payment Method Icon */}
+                                            <div className="text-gray-400" title={ex.paymentMethod || "現金"}>
+                                                <Icon path={pmIcon} size={14} />
+                                            </div>
+                                            <span className="bg-theme-green text-white text-[10px] px-2 rounded font-bold border border-green-700 ml-auto">
                                             {ex.payer}
                                             </span>
                                         </div>
@@ -1929,6 +2006,7 @@
                                                 payer: ex.payer,
                                                 involved: ex.involved,
                                                 currency: ex.currency || 'JPY',
+                                                paymentMethod: ex.paymentMethod || "現金",
                                             });
                                             }}
                                             className="text-gray-300 hover:text-app-blue"
