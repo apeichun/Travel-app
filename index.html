@@ -1165,6 +1165,8 @@
                     
                     {(data.itinerary || []).map((d, idx) => {
                        const parts = d.date ? d.date.split(" ") : [];
+                       const dateText = parts[0] || "";
+                       const weekText = parts[1] || "";
                        return (
                         <button
                           key={d.id}
@@ -1172,8 +1174,9 @@
                           className="flex flex-col items-center justify-center min-w-[70px] h-auto py-2 rounded-[1.2rem] transition-all bg-white/40 text-gray-500 border-2 border-transparent hover:border-gray-200"
                         >
                           <span className="text-[10px] font-bold mb-0.5 opacity-70">Day {idx + 1}</span>
-                          <span className="text-lg font-black leading-none">{parts[0]}</span>
-                          {parts[1] && <span className="text-xs font-bold mt-0.5 opacity-80">{parts[1]}</span>}
+                          <span className="text-sm font-black leading-none whitespace-nowrap">
+                            {dateText} <span className="text-xs font-bold opacity-80">{weekText}</span>
+                          </span>
                         </button>
                       );
                     })}
@@ -1216,14 +1219,9 @@
                       <span className="text-[10px] font-bold mb-0.5 opacity-70">
                         Day {idx + 1}
                       </span>
-                      <span className="text-lg font-black leading-none">
-                        {dateText}
+                      <span className="text-sm font-black leading-none whitespace-nowrap">
+                        {dateText} <span className="text-xs font-bold opacity-80">{weekText}</span>
                       </span>
-                      {weekText && (
-                        <span className="text-xs font-bold mt-0.5 opacity-80">
-                          {weekText}
-                        </span>
-                      )}
                     </button>
                   );
                 })}
